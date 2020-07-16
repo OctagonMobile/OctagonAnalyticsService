@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'OctagonAnalyticsService_Example' do
+  pod 'OctagonAnalyticsService', :path => '../'
+
+  target 'OctagonAnalyticsService_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
