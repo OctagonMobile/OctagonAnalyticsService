@@ -2,8 +2,8 @@
 //  AppDelegate.swift
 //  OctagonAnalyticsService
 //
-//  Created by rmz.rmz@live.com on 07/16/2020.
-//  Copyright (c) 2020 rmz.rmz@live.com. All rights reserved.
+//  Created by Rameez on 07/16/2020.
+//  Copyright (c) 2020 OctagonMobile. All rights reserved.
 //
 
 import UIKit
