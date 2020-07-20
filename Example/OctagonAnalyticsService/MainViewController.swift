@@ -7,18 +7,25 @@
 //
 
 import UIKit
+import Alamofire
 import OctagonAnalyticsService
 
 class MainViewController: UIViewController {
-    
-    var serviceConfig: ServiceConfiguration?
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
-        initialSetup()
+        
+        ServiceProvider.shared.loginWith("demouser", password: "demouser654321") { (result, error) in
+            
+            guard error == nil else {
+                print("\(error!.localizedDescription)")
+                return
+            }
+            
+            if let resp = result as? LoginResponse {
+                print("Name = \(resp.userName)\nDemoUser = \(resp.isDemoUser)")
+            }
+        }
     }
     
-    private func initialSetup() {
-        serviceConfig = ServiceConfiguration("")
-    }
 }
