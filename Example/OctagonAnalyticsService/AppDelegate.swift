@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
-        ServiceConfiguration.configure("http://ec2-35-158-106-139.eu-central-1.compute.amazonaws.com:5601", version: .v654)
+        ServiceConfiguration.configure("http://ec2-35-158-106-139.eu-central-1.compute.amazonaws.com:5602", version: .v732)
         return true
     }
 

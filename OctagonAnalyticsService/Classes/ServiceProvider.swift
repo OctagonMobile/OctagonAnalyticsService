@@ -36,24 +36,17 @@ public struct ServiceProvider {
         }
     }
     
-}
-
-protocol OAServiceErrorProtocol: LocalizedError {
-    var title: String? { get }
-    var code: Int { get }
-}
-
-public struct OAServiceError: OAServiceErrorProtocol {
-    var title: String?
-    var code: Int
-    public var errorDescription: String? { return _description }
-    public var failureReason: String? { return _description }
-
-    private var _description: String
-
-    init(title: String? = nil, description: String, code: Int) {
-        self.title = title ?? "Error"
-        self._description = description
-        self.code = code
+    public func logout(_ completion: CompletionBlock?) {
+        let request = AuthenticationBuilder.logout
+        
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                completion?(nil, serviceError)
+            case .success( _):
+                completion?(true, nil)
+            }
+        }
     }
 }
