@@ -7,7 +7,18 @@
 
 import Foundation
 
-//MARK: Login Models
+//MARK: Public
+public class LoginResponse {
+    public var userName: String
+    public var isDemoUser: Bool
+ 
+    init(_ responseModel: LoginResponseBase) {
+        self.userName = responseModel.userName
+        self.isDemoUser = responseModel.isDemoUser
+    }
+}
+
+//MARK: Private Login Models
 class LoginResponseBase: Decodable {
     
     var userName: String
@@ -31,16 +42,6 @@ class LoginResponseBase: Decodable {
     
     func asUIModel() -> LoginResponse {
         return LoginResponse(self)
-    }
-}
-
-public class LoginResponse {
-    public var userName: String
-    public var isDemoUser: Bool
- 
-    init(_ responseModel: LoginResponseBase) {
-        self.userName = responseModel.userName
-        self.isDemoUser = responseModel.isDemoUser
     }
 }
 

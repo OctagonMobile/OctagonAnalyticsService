@@ -73,4 +73,6 @@ public extension URLRequestBuilder {
 public enum ServerPaths: String {
     case login  =   "api/v1/auth/login"
     case logout =   "api/v1/auth/logout"
+    
+    case dashboardList = "api/saved_objects/_find"
 }

@@ -30,15 +30,27 @@
                                     <action selector="loginButtonAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Aw1-qU-TjK"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MaH-ae-7me">
+                                <rect key="frame" x="116.5" y="64" width="142" height="34"/>
+                                <state key="normal" title="Load Dashboards">
+                                    <color key="titleColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="loadDashboardsButtonAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="vuZ-sJ-mKX"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="O8A-BW-6xK" firstAttribute="centerY" secondItem="kh9-bI-dsS" secondAttribute="centerY" id="Fb6-EK-vfR"/>
+                            <constraint firstItem="MaH-ae-7me" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="20" id="Hui-Pi-4BR"/>
                             <constraint firstItem="O8A-BW-6xK" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="SXM-fz-QWj"/>
+                            <constraint firstItem="MaH-ae-7me" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="feR-VZ-5Qi"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="TKI-qX-ehB"/>
                     <connections>
+                        <outlet property="loadDashboardsButton" destination="MaH-ae-7me" id="Ibp-MX-8OC"/>
                         <outlet property="loginButton" destination="O8A-BW-6xK" id="kcd-cE-lf9"/>
                     </connections>
                 </viewController>

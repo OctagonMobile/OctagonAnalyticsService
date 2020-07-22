@@ -28,4 +28,24 @@ public enum VersionType: String {
         case .v732: return LoginResponse732.self
         }
     }
+    
+    var dashboardListModel: DashboardListReponseBase.Type {
+        switch self {
+        case .v654, .v732: return DashboardListReponseBase.self
+        }
+    }
+    
+    var dashboardItemResponseModel: DashboardItemResponseBase.Type {
+        switch self {
+        case .v654: return DashboardItemResponseBase.self
+        case .v732: return DashboardItemResponse732.self
+        }
+    }
+
+    var panelModel: PanelBase.Type {
+        switch self {
+        case .v654: return Panel654.self
+        case .v732: return Panel732.self
+        }
+    }
 }
