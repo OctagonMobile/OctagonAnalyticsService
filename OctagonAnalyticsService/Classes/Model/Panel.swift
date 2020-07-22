@@ -10,7 +10,7 @@ import Foundation
 //MARK: Public
 public class Panel {
     
-    var id: String
+    var id: String?
     var panelIndex: String
     var row: Int
     var column: Int
@@ -19,7 +19,6 @@ public class Panel {
 
 
     init(_ responseModel: PanelBase) {
-        self.id         =   responseModel.panelId
         self.panelIndex =   responseModel.panelIndex
         self.row        =   responseModel.gridData.x
         self.column     =   responseModel.gridData.y
@@ -32,7 +31,7 @@ public class Panel {
 class PanelBase: Decodable {
     
     //ReadOnly
-    var panelId: String { return "" }
+    var dashboardItemBase: DashboardItemResponseBase?
     
     var panelIndex: String
     var version: String
@@ -82,10 +81,7 @@ class GridData: Decodable {
 
 //MARK: Version 6.5.4
 class Panel654: PanelBase {
-    
-    override var panelId: String {
-        return id
-    }
+        
     var id: String
     private enum CodingKeys: String, CodingKey {
         case id    =   "id"
@@ -97,10 +93,19 @@ class Panel654: PanelBase {
         self.id = try container.decode(String.self, forKey: .id)
         try super.init(from: decoder)
     }
+    
+    override func asUIModel() -> Panel {
+        let panel = super.asUIModel()
+        panel.id = id
+        return panel
+    }
 }
 
 //MARK: Version 7.3.2
 class Panel732: PanelBase {
+    var dashboardItemResponse: DashboardItemResponse732? {
+        return dashboardItemBase as? DashboardItemResponse732
+    }
     
     var panelRefName: String
     private enum CodingKeys: String, CodingKey {
@@ -112,6 +117,12 @@ class Panel732: PanelBase {
         
         self.panelRefName = try container.decode(String.self, forKey: .panelRefName)
         try super.init(from: decoder)
+    }
+    
+    override func asUIModel() -> Panel {
+        let panel = super.asUIModel()
+        panel.id = dashboardItemResponse?.references.filter({$0.name == panelRefName}).first?.id
+        return panel
     }
 }
 

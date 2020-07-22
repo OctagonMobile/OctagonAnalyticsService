@@ -47,6 +47,8 @@ class DashboardItemResponseBase: Decodable {
         self.id         = try container.decode(String.self, forKey: .id)
         self.type       = try container.decode(String.self, forKey: .type)
         self.attributes = try container.decode(DashboardAttributesResponseBase.self, forKey: .attributes)
+        
+        self.attributes.panels.forEach({ $0.dashboardItemBase = self })
     }
 
     func asUIModel() -> DashboardItem {
