@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
 
   s.description      = <<-DESC
 OctagonAnalyticsService - Kibana API service provider for iOS application.
+Kibana is a trademark of Elasticsearch BV, registered in the US and in other countries.
                        DESC
 
   s.homepage         = 'https://github.com/OctagonMobile/OctagonAnalyticsService'
