@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'OctagonAnalyticsService'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'OctagonAnalyticsService - API provider for iOS.'
 
 # This description is used to generate tags and improve search results.
@@ -40,5 +40,5 @@ OctagonAnalyticsService - Kibana API service provider for iOS application.
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
    s.dependency 'Alamofire'
-   s.dependency 'AlamofireImage'
+#   s.dependency 'AlamofireImage'
 end
