@@ -139,3 +139,28 @@ extension Dictionary {
     }
 }
 
+
+extension String {
+    func formattedDate(_ format: String) -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.date(from: self)
+    }
+}
+
+
+//This extension is used temporary purpose
+extension Date {
+
+    init(milliseconds:Int) {
+        self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
+    }
+    
+    func toFormat(_ format: String) -> String {
+        let dateformat = DateFormatter()
+        dateformat.locale = Locale.current
+        dateformat.dateFormat = format
+        return dateformat.string(from: self)
+    }
+
+}

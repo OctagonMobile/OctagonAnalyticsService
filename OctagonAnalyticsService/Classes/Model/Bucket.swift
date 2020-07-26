@@ -9,15 +9,15 @@ import Foundation
 
 public class Bucket {
     
-    var key                     =   ""
+    public var key                     =   ""
     
-    var docCount                =   0.0
+    public var docCount                =   0.0
     
-    var bucketValue             =   0.0
+    public var bucketValue             =   0.0
     
-    var metricValue             =   0.0
+    public var metricValue             =   0.0
     
-    var bucketType: BucketType  =   .unKnown
-    var subAggsResult: AggResult?
+    public var bucketType: BucketType  =   .unKnown
+    public var subAggsResult: AggResult?
     
 }

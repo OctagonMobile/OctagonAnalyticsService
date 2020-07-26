@@ -100,14 +100,14 @@ public extension Collection where Element == Double {
 
 public class Aggregation {
 
-    var id: String                      = ""
-    var schema: String                  = ""
-    var field: String                   = ""
+    public var id: String                      = ""
+    public var schema: String                  = ""
+    public var field: String                   = ""
 
-    var metricType: MetricType          = .unKnown
-    var bucketType: BucketType          = .unKnown
+    public var metricType: MetricType          = .unKnown
+    public var bucketType: BucketType          = .unKnown
     
-    var params: AggregationParams?
+    public var params: AggregationParams?
 
     init(_ responseModel: AggregationResponse) {
         self.id         =   responseModel.id
@@ -121,11 +121,11 @@ public class Aggregation {
 
 public class AggregationParams {
     
-    var precision: Int                  = 5
-    var interval: IntervalType          = IntervalType.unKnown
-    var customInterval: String          = ""
-    var intervalInt: Int                = 0
-    var aggregate: AggregateFunction    = .unknown
+    public var precision: Int                  = 5
+    public var interval: IntervalType          = IntervalType.unKnown
+    public var customInterval: String          = ""
+    public var intervalInt: Int                = 0
+    public var aggregate: AggregateFunction    = .unknown
 
     init(_ responseModel: AggregationResponseParams) {
         self.precision      =   responseModel.precision ?? 5

@@ -11,8 +11,8 @@ public typealias Legend = (text: String, color: UIColor)
 
 public class AggResult {
     
-    var buckets: [Bucket]           =   []
+    public var buckets: [Bucket]           =   []
     private var colorIndex = 0
     private var colorsDict: [String: UIColor] = [:]
-    var chartLegends: [Legend] = []
+    public var chartLegends: [Legend] = []
 }

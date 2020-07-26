@@ -11,38 +11,54 @@ import Alamofire
 //MARK: Public
 public class Panel {
     
-    var id: String?
-    var panelIndex: String
-    var row: Int
-    var column: Int
-    var width: Int
-    var height: Int
-    var visState: VisState?
-    var searchQuery: String =   ""
-    weak var dashboardItem: DashboardItem?
-    var selectedDateString: String     =   ""
+    public var id: String?
+    public var panelIndex: String
+    public var row: Int
+    public var column: Int
+    public var width: Int
+    public var height: Int
+    public var visState: VisState?
+    public var searchQuery: String =   ""
+    public weak var dashboardItem: DashboardItem?
+    public var selectedDateString: String     =   ""
     
-    var datePickerMode: DatePickerMode  =   .calendarPicker
+    public var datePickerMode: DatePickerMode  =   .calendarPicker
     
     // YET to parse the following properties
-    var displayDateString: String {
+    public var displayDateString: String {
         return selectedDateString
 //        return datePickerMode == .quickPicker ? (QuickPicker(rawValue: selectedDateString)?.localizedValue ?? selectedDateString) : selectedDateString
     }
 
-    var chartContentList: [ChartContent] = []
+    public var chartContentList: [ChartContent] = []
     
-    var parsedAgg: AggResult?
+    public var parsedAgg: AggResult?
     
-    var bucketType: BucketType {
+    public var bucketType: BucketType {
         return visState?.aggregationsArray.filter( {$0.id == AggregationId.bucket.rawValue }).first?.bucketType ?? .unKnown
     }
     
-    var bucketAggregation: Aggregation? {
+    public var bucketAggregation: Aggregation? {
         return visState?.aggregationsArray.filter( {$0.id == AggregationId.bucket.rawValue }).first
     }
 
-    var tableHeaders: [String] = []
+    public var tableHeaders: [String] = []
+    
+    public var currentSelectedDates: (Date?, Date?)? {
+        guard let fromTime = dashboardItem?.fromTime, let totime = dashboardItem?.toTime else { return nil }
+        var from = dashboardItem?.fromTime.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+        var to = dashboardItem?.toTime.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+        return (from, to)
+//        if from == nil, to == nil, dashboardItem?.datePickerMode == DatePickerMode.quickPicker {
+//            let mappedValue = DatePickerMapper.shared.mappedPickerValueWith(fromTime, toDate: totime)
+//            from = mappedValue.1?.selectedDate().fromDate
+//            to = mappedValue.1?.selectedDate().toDate
+//        }
+//        return (from, to)
+    }
+
+    // Counter used to parse data only
+    public var counter: Int = 0
 
     init(_ responseModel: PanelBase) {
         self.panelIndex =   responseModel.panelIndex
@@ -81,7 +97,7 @@ public class Panel {
     }
 }
 
-enum DatePickerMode: String {
+public enum DatePickerMode: String {
     case quickPicker            =   "QuickPicker"
     case calendarPicker         =   "CalendarPicker"
 }

@@ -17,7 +17,7 @@ public class DashboardItem {
     public var desc: String
     public var panels: [Panel]  =   []
     public var fromTime: String
-    public var totime: String
+    public var toTime: String
 
     init(_ responseModel: DashboardItemResponseBase) {
         self.title      =   responseModel.attributes.title
@@ -26,7 +26,7 @@ public class DashboardItem {
         self.desc       =   responseModel.attributes.desc
         self.panels     =   responseModel.attributes.panels.compactMap({ $0.asUIModel() })
         self.fromTime   =   responseModel.attributes.timeFrom
-        self.totime     =   responseModel.attributes.timeTo
+        self.toTime     =   responseModel.attributes.timeTo
     }
 }
 
