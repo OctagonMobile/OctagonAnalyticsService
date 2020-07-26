@@ -48,4 +48,11 @@ public enum VersionType: String {
         case .v732: return Panel732.self
         }
     }
+    
+    var visStateModel: VisStateHolderBase.Type {
+        switch self {
+        case .v654, .v732: return VisStateHolderBase.self
+        }
+    }
+    
 }

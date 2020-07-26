@@ -12,7 +12,6 @@ import OctagonAnalyticsService
 
 class MainViewController: UIViewController {
         
-    @IBOutlet weak var loadDashboardsButton: UIButton!
     @IBOutlet weak var loginButton: UIButton!
     
     //MARK: Overridden Functions
@@ -21,8 +20,6 @@ class MainViewController: UIViewController {
         title   =   "Demo App"
         
         loginButton.setTitle("Login", for: .normal)
-        loginButton.setTitle("Logout", for: .selected)
-        loadDashboardsButton.isHidden = true
     }
     
     //MARK: Services
@@ -36,52 +33,21 @@ class MainViewController: UIViewController {
             
             if let resp = result as? LoginResponse {
                 print("Name = \(resp.userName)\nIsDemoUser = \(resp.isDemoUser)\n-----------------")
-                self?.loadDashboardsButton.isHidden = false
+                let dashboards = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "DashboardsViewController")
+                self?.navigationController?.pushViewController(dashboards, animated: true)
+
             }
         }
     }
     
-    private func logout() {
-        ServiceProvider.shared.logout {[weak self] (res, error) in
-            guard error == nil else {
-                print("\(error!.localizedDescription)")
-                return
-            }
-            
-            if let _ = res as? Bool {
-                print("Logged Out\n----------")
-                self?.loadDashboardsButton.isHidden = true
-            }
-        }
-    }
     
-    private func loadDashboards() {
-        ServiceProvider.shared.loadDashboards(1, pageSize: 20) { (res, error) in
-            guard error == nil else {
-                print("\(error!.localizedDescription)")
-                return
-            }
-            
-            if let list = res as? DashboardListResponse {
-                print("DashboardList")
-                print("Total Dashboards = \(list.total)\n----------")
-            }
-        }
-    }
+
+    
     //MARK: Button Action
     @IBAction func loginButtonAction(_ sender: UIButton) {
         
-        if !sender.isSelected {
-            login()
-        } else {
-            logout()
-        }
-        
-        sender.isSelected = !sender.isSelected
-    }
-    
-    @IBAction func loadDashboardsButtonAction(_ sender: UIButton) {
-        loadDashboards()
+        login()
+
     }
     
 }

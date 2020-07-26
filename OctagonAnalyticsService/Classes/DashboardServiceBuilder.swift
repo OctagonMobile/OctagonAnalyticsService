@@ -11,14 +11,14 @@ import Alamofire
 public enum DashboardServiceBuilder: URLRequestBuilder {
     
     case loadDashboards(pageNumber: Int, pageSize: Int)
-    case logout
+    case loadVisStateForId(panelId: String)
     
-    public var path: ServerPaths {
+    public var serverPath: ServerPaths {
         switch self {
         case .loadDashboards:
             return ServerPaths.dashboardList
-        case .logout:
-            return ServerPaths.logout
+        case .loadVisStateForId(panelId: let id):
+            return ServerPaths.visStateData(panelId: id)
         }
     }
     
@@ -26,7 +26,7 @@ public enum DashboardServiceBuilder: URLRequestBuilder {
         switch self {
         case .loadDashboards(pageNumber: let pageNo, pageSize: let pageSize):
             return ["type": "dashboard", "page": pageNo, "per_page": pageSize]
-        case .logout:
+        case .loadVisStateForId:
             return nil
         }
     }

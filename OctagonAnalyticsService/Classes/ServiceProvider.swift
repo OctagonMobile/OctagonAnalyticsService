@@ -10,7 +10,7 @@ import Alamofire
 
 public typealias CompletionBlock = (_ result: Any?,_ error: OAServiceError?) -> Void
 
-public struct ServiceProvider {
+public class ServiceProvider {
     
     public static var shared   = ServiceProvider()
     
@@ -73,4 +73,29 @@ public struct ServiceProvider {
         }
 
     }
+    
+    private var dispatchGroup   =   DispatchGroup()
+    private var visStateRequestErros: [OAServiceError]  =   []
+    
+    public func loadAndUpdateVisStateForPanels(_ dashboard: DashboardItem, completion: CompletionBlock?) {
+        let panels: [Panel] = dashboard.panels
+        visStateRequestErros.removeAll()
+        for panel in panels {
+            dispatchGroup.enter()
+            panel.updateVisStateFor {[weak self] (res, error) in
+                
+                guard error == nil else {
+                    self?.visStateRequestErros.append(error!)
+                    self?.dispatchGroup.leave()
+                    return
+                }
+                self?.dispatchGroup.leave()
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            completion?(true, self?.visStateRequestErros.first)
+        }
+    }
+    
 }

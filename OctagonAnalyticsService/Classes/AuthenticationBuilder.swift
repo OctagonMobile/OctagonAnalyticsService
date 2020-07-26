@@ -13,7 +13,7 @@ public enum AuthenticationBuilder: URLRequestBuilder {
     case login(userId: String, password: String)
     case logout
     
-    public var path: ServerPaths {
+    public var serverPath: ServerPaths {
         switch self {
         case .login:
             return ServerPaths.login

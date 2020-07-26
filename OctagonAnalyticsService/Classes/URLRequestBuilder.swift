@@ -13,7 +13,7 @@ public protocol URLRequestBuilder: URLRequestConvertible {
     var mainURL: URL { get }
     var requestURL: URL { get }
     // MARK: - Path
-    var path: ServerPaths { get }
+    var serverPath: ServerPaths { get }
 
     var headers: HTTPHeaders { get }
     // MARK: - Parameters
@@ -34,7 +34,7 @@ public extension URLRequestBuilder {
     }
 
     var requestURL: URL {
-        return mainURL.appendingPathComponent(path.rawValue)
+        return mainURL.appendingPathComponent(serverPath.path)
     }
 
     var headers: HTTPHeaders {
@@ -70,9 +70,20 @@ public extension URLRequestBuilder {
 }
 
 
-public enum ServerPaths: String {
-    case login  =   "api/v1/auth/login"
-    case logout =   "api/v1/auth/logout"
+public enum ServerPaths {
     
-    case dashboardList = "api/saved_objects/_find"
+    case login
+    case logout
+    
+    case dashboardList
+    case visStateData(panelId: String)
+    
+    var path: String {
+        switch self {
+        case .login: return "api/v1/auth/login"
+        case .logout: return "api/v1/auth/logout"
+        case .dashboardList: return "api/saved_objects/_find"
+        case .visStateData(panelId: let id): return "api/saved_objects/visualization" + "/" + id
+        }
+    }
 }

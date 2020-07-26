@@ -13,8 +13,8 @@ protocol OAServiceErrorProtocol: LocalizedError {
 }
 
 public struct OAServiceError: OAServiceErrorProtocol {
-    var title: String?
-    var code: Int
+    public var title: String?
+    public var code: Int
     public var errorDescription: String? { return _description }
     public var failureReason: String? { return _description }
 

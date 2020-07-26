@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5165BF5B24C9DFC100D22C69 /* DashboardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5165BF5A24C9DFC100D22C69 /* DashboardsViewController.swift */; };
 		516D9FC924C03DC800D37BD6 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516D9FC824C03DC800D37BD6 /* MainViewController.swift */; };
 		578334CE30EF8BA00EBA4588 /* Pods_OctagonAnalyticsService_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1063C17CE1DE04433BC771F7 /* Pods_OctagonAnalyticsService_Tests.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
@@ -33,6 +34,7 @@
 		1FA55A2B89E5F21CE99D4F5A /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		319EDBDBA9CD3EEB480DA97A /* Pods-OctagonAnalyticsService_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OctagonAnalyticsService_Example.debug.xcconfig"; path = "Target Support Files/Pods-OctagonAnalyticsService_Example/Pods-OctagonAnalyticsService_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		40B537F3F196F79B7817841E /* Pods-OctagonAnalyticsService_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OctagonAnalyticsService_Tests.release.xcconfig"; path = "Target Support Files/Pods-OctagonAnalyticsService_Tests/Pods-OctagonAnalyticsService_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		5165BF5A24C9DFC100D22C69 /* DashboardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardsViewController.swift; sourceTree = "<group>"; };
 		516D9FC824C03DC800D37BD6 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* OctagonAnalyticsService_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OctagonAnalyticsService_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				516D9FC824C03DC800D37BD6 /* MainViewController.swift */,
+				5165BF5A24C9DFC100D22C69 /* DashboardsViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -334,6 +337,7 @@
 			files = (
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				516D9FC924C03DC800D37BD6 /* MainViewController.swift in Sources */,
+				5165BF5B24C9DFC100D22C69 /* DashboardsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

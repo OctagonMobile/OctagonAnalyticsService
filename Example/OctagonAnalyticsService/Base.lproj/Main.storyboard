@@ -18,45 +18,86 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O8A-BW-6xK">
-                                <rect key="frame" x="165" y="303.5" width="45" height="60"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O8A-BW-6xK">
+                                <rect key="frame" x="157.5" y="303.5" width="60" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="biv-gO-Dpi"/>
                                 </constraints>
-                                <state key="normal" title="Login">
-                                    <color key="titleColor" systemColor="systemTealColor" red="0.35294117650000001" green="0.7843137255" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <state key="normal" title="Login"/>
                                 <connections>
                                     <action selector="loginButtonAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="Aw1-qU-TjK"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MaH-ae-7me">
-                                <rect key="frame" x="116.5" y="64" width="142" height="34"/>
-                                <state key="normal" title="Load Dashboards">
-                                    <color key="titleColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <connections>
-                                    <action selector="loadDashboardsButtonAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="vuZ-sJ-mKX"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="O8A-BW-6xK" firstAttribute="centerY" secondItem="kh9-bI-dsS" secondAttribute="centerY" id="Fb6-EK-vfR"/>
-                            <constraint firstItem="MaH-ae-7me" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="20" id="Hui-Pi-4BR"/>
                             <constraint firstItem="O8A-BW-6xK" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="SXM-fz-QWj"/>
-                            <constraint firstItem="MaH-ae-7me" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="feR-VZ-5Qi"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="TKI-qX-ehB"/>
                     <connections>
-                        <outlet property="loadDashboardsButton" destination="MaH-ae-7me" id="Ibp-MX-8OC"/>
                         <outlet property="loginButton" destination="O8A-BW-6xK" id="kcd-cE-lf9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1076" y="128.18590704647679"/>
+        </scene>
+        <!--Dashboards View Controller-->
+        <scene sceneID="goJ-Uu-79u">
+            <objects>
+                <viewController storyboardIdentifier="DashboardsViewController" id="s44-5d-197" customClass="DashboardsViewController" customModule="OctagonAnalyticsService_Example" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ReV-9z-P3g"/>
+                        <viewControllerLayoutGuide type="bottom" id="pXl-EI-gNf"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Fer-wb-24D">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vax-Gd-r4d">
+                                <rect key="frame" x="312" y="44" width="48" height="30"/>
+                                <state key="normal" title="Logout"/>
+                                <connections>
+                                    <action selector="logoutButtonAction:" destination="s44-5d-197" eventType="touchUpInside" id="sb4-nP-gZi"/>
+                                </connections>
+                            </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Q3h-xM-UwE">
+                                <rect key="frame" x="0.0" y="74" width="375" height="593"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="MiP-Jl-RVq">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="43.5"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="MiP-Jl-RVq" id="hdT-CT-hoS">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="Q3h-xM-UwE" firstAttribute="top" secondItem="Vax-Gd-r4d" secondAttribute="bottom" id="CFw-jK-uab"/>
+                            <constraint firstItem="Q3h-xM-UwE" firstAttribute="leading" secondItem="Fer-wb-24D" secondAttribute="leading" id="FpU-xg-3nO"/>
+                            <constraint firstItem="Vax-Gd-r4d" firstAttribute="top" secondItem="ReV-9z-P3g" secondAttribute="bottom" id="LCh-kR-G0R"/>
+                            <constraint firstItem="pXl-EI-gNf" firstAttribute="top" secondItem="Q3h-xM-UwE" secondAttribute="bottom" id="Q9M-gK-Rdf"/>
+                            <constraint firstAttribute="trailing" secondItem="Q3h-xM-UwE" secondAttribute="trailing" id="jzC-5C-7KP"/>
+                            <constraint firstAttribute="trailing" secondItem="Vax-Gd-r4d" secondAttribute="trailing" constant="15" id="xc8-WS-Lrw"/>
+                        </constraints>
+                    </view>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <connections>
+                        <outlet property="logoutButton" destination="Vax-Gd-r4d" id="7wO-qV-2UZ"/>
+                        <outlet property="tableView" destination="Q3h-xM-UwE" id="LGS-Pb-OM9"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="q3J-DT-oGI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1988" y="127.28635682158921"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="grs-vb-GZC">
