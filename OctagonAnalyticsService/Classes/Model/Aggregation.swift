@@ -19,7 +19,7 @@ public enum MetricType: String {
     case average        =   "avg"
     case median         =   "median"
     
-    var displayValue: String {
+    public var displayValue: String {
         switch self {
         case .count: return "Count"
         case .sum: return "Sum of"
@@ -74,7 +74,7 @@ public enum IntervalType: String {
     case yearly         =   "y"
     case custom         =   "custom"
 
-    static var customTypes: [IntervalType] {
+    public static var customTypes: [IntervalType] {
         return [.millisecond, .second, .minute, .hourly,
                 .daily, .weekly, .monthly, .yearly]
     }

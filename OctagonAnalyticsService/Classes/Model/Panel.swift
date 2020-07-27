@@ -46,8 +46,8 @@ public class Panel {
     
     public var currentSelectedDates: (Date?, Date?)? {
         guard let fromTime = dashboardItem?.fromTime, let totime = dashboardItem?.toTime else { return nil }
-        var from = dashboardItem?.fromTime.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-        var to = dashboardItem?.toTime.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+        let from = fromTime.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+        let to = totime.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
         return (from, to)
 //        if from == nil, to == nil, dashboardItem?.datePickerMode == DatePickerMode.quickPicker {
 //            let mappedValue = DatePickerMapper.shared.mappedPickerValueWith(fromTime, toDate: totime)

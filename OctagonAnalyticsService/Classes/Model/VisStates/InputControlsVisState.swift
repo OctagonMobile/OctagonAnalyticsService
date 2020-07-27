@@ -9,7 +9,7 @@ import Foundation
 
 public class InputControlsVisState: VisState {
     
-    var controls: [Control]  =  []
+    public var controls: [Control]  =  []
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)

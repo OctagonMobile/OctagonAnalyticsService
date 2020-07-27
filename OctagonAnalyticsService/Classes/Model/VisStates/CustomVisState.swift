@@ -20,9 +20,9 @@ public class WebContentVisState: VisState {
 
 public class TagCloudVisState: VisState {
     
-    var minFontSize: NSInteger    = 14
+    public var minFontSize: NSInteger    = 14
     
-    var maxFontSize: NSInteger    = 60
+    public var maxFontSize: NSInteger    = 60
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
@@ -34,8 +34,8 @@ public class TagCloudVisState: VisState {
 
 public class MarkDownVisState: VisState {
     
-    var markdownText: String    =   ""
-    var fontSize: CGFloat       =   12.0
+    public var markdownText: String    =   ""
+    public var fontSize: CGFloat       =   12.0
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
@@ -46,7 +46,7 @@ public class MarkDownVisState: VisState {
 
 public class PieChartVisState: VisState {
     
-    var isDonut: Bool   = false
+    public var isDonut: Bool   = false
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
@@ -56,9 +56,9 @@ public class PieChartVisState: VisState {
 
 public class TileVisState: VisState {
     
-    var imageHashField: String      = ""
-    var maxDistance: Int            = 15
-    var containerId: Int            = 1
+    public var imageHashField: String      = ""
+    public var maxDistance: Int            = 15
+    public var containerId: Int            = 1
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
@@ -70,9 +70,9 @@ public class TileVisState: VisState {
 
 public class GraphVisState: VisState {
     
-    var query: String               =   ""
-    var nodeImageBaseUrl: String    =   ""
-    var nodeImageProperty: String   =   ""
+    public var query: String               =   ""
+    public var nodeImageBaseUrl: String    =   ""
+    public var nodeImageProperty: String   =   ""
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
@@ -84,7 +84,11 @@ public class GraphVisState: VisState {
 
 public class MetricVisState: VisState {
     
-    var fontSize: CGFloat?            = 10.0
+    public var fontSize: CGFloat?            = 10.0
     
-
+    override init(_ responseModel: VisStateBase) {
+        super.init(responseModel)
+        
+        self.fontSize   =   responseModel.params.fontSize ?? 10.0
+    }
 }

@@ -69,8 +69,8 @@ extension MapVisState {
 
 public class MapLayer {
     
-    var layerName: String       =   ""
-    var buttonTitle: String     =   ""
+    public var layerName: String       =   ""
+    public var buttonTitle: String     =   ""
 
     //MARK: Functions
     init(_ responseModel: MapLayerResponse) {
