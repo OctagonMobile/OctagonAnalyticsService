@@ -20,7 +20,7 @@ public class Bucket {
     public var bucketType: BucketType  =   .unKnown
     public var subAggsResult: AggResult?
     
-    var displayValue: Double {
+    public var displayValue: Double {
         let aggregationsCount = (visState?.otherAggregationsArray.count ?? 0)
         let metricType = visState?.metricAggregationsArray.first?.metricType ?? MetricType.unKnown
         let shouldShowBucketValue = (metricType == .sum || metricType == .max || metricType == .min || metricType == .average || metricType == .median || metricType == .topHit)
@@ -42,7 +42,7 @@ public class Bucket {
     private var parentBucket: Bucket?
     private var visState: VisState?
 
-    var aggIndex: Int {
+    public var aggIndex: Int {
         var level = -1
         var tempBucket: Bucket? = self
         while tempBucket != nil {

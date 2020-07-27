@@ -50,12 +50,12 @@ public class MapVisState: VisState {
 extension MapVisState {
     
     public struct HeatMapServiceConstant {
-        static let queryString = "?request=GetCapabilities&Service=WMS"
-        static let version = "1.3.0"
-        static let epsg =  "3857" //"4326"
-        static let format = "image/png"
-        static let tileSize = "256"
-        static let transparent = true
+        public static let queryString = "?request=GetCapabilities&Service=WMS"
+        public static let version = "1.3.0"
+        public static let epsg =  "3857" //"4326"
+        public static let format = "image/png"
+        public static let tileSize = "256"
+        public static let transparent = true
     }
     
     public enum MapType: String {
