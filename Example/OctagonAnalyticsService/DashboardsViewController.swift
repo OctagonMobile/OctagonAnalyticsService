@@ -87,6 +87,9 @@ extension DashboardsViewController: UITableViewDelegate, UITableViewDataSource {
         
         let dashboard = dashboards[indexPath.row]
         
+        let yetToLoadVisState = dashboard.panels.contains(where: { $0.visState == nil })
+        guard yetToLoadVisState else { return }
+        
         ServiceProvider.shared.loadAndUpdateVisStateForPanels(dashboard) { (res, error) in
             guard error == nil else {
                 print("\(error!.localizedDescription)")
