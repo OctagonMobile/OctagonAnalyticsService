@@ -66,31 +66,10 @@ public class Panel {
         self.column     =   responseModel.gridData.y
         self.width      =   responseModel.gridData.w
         self.height     =   responseModel.gridData.h
+        self.visState   =   responseModel.visState?.asUIModel()
 //        self.dashboardItem = responseModel.dashboardItemBase?.asUIModel()
     }
     
-    func updateVisStateFor(_ completion: CompletionBlock?) {
-        
-        let request = DashboardServiceBuilder.loadVisStateForId(panelId: id!)
-        AF.request(request).responseData {[weak self] (response) in
-            switch response.result {
-            case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
-            case .success(let value):
-                do {
-                    let decoder = JSONDecoder()
-                    let visStateModel = try decoder.decode(ServiceConfiguration.version.visStateModel.self, from: value)
-                    self?.visState = visStateModel.asUIModel()
-                    completion?(visStateModel, nil)
-                } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
-                }
-            }
-        }
-    }
-
     public func loadChartData(_ completion: CompletionBlock?) {
         
         completion?(nil, nil)
@@ -137,6 +116,7 @@ class PanelBase: Decodable {
     var panelIndex: String
     var version: String
     var gridData: GridData
+    var visState: VisStateBase?
     
     private enum CodingKeys: String, CodingKey {
         case version    =   "version"

@@ -43,15 +43,34 @@ public class VisState {
         case normal   =   "normal"
         case stacked  =   "stacked"
     }
+    
 }
 
 //MARK: VisState
+class VisStateContainer: Decodable, ParseJsonArrayProtocol {
+
+    var visStateHolder: [VisStateHolderBase]?
+    private enum CodingKeys: String, CodingKey {
+        case savedObjects  =   "saved_objects"
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container   = try decoder.container(keyedBy: CodingKeys.self)
+
+        if let jsonArray: [[String: Any]] = try container.decode(Array<Any>.self, forKey: .savedObjects) as? [[String: Any]] {
+            self.visStateHolder = try parse(jsonArray, type: ServiceConfiguration.version.visStateModel.self)
+        }
+    }
+}
+
 class VisStateHolderBase: Decodable {
+    
+    var id:String
     
     var visStateBase: VisStateBase?
     
     private enum CodingKeys: String, CodingKey {
-        case attributes
+        case id, attributes
         enum AttributesCodingKeys: String, CodingKey {
             case visState
         }
@@ -59,6 +78,8 @@ class VisStateHolderBase: Decodable {
 
     required init(from decoder: Decoder) throws {
         let container   = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.id     =   try container.decode(String.self, forKey: .id)
         let attributesContainer = try container.nestedContainer(keyedBy: CodingKeys.AttributesCodingKeys.self, forKey: .attributes)
        
         let json = try attributesContainer.decode(String.self, forKey: .visState)
@@ -107,6 +128,9 @@ class VisStateBase: Decodable {
         self.aggregationsArray  =   try container.decode([AggregationResponse].self, forKey: .aggs)
     }
     
+    func asUIModel() -> VisState? {
+        return VisState(self)
+    }
 }
 
 class VisStateParams: Decodable {

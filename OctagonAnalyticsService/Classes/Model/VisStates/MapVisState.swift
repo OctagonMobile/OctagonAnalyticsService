@@ -49,7 +49,7 @@ public class MapVisState: VisState {
 
 extension MapVisState {
     
-    struct HeatMapServiceConstant {
+    public struct HeatMapServiceConstant {
         static let queryString = "?request=GetCapabilities&Service=WMS"
         static let version = "1.3.0"
         static let epsg =  "3857" //"4326"

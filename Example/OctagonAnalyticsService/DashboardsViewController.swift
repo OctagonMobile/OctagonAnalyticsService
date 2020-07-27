@@ -84,20 +84,5 @@ extension DashboardsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
-        let dashboard = dashboards[indexPath.row]
-        
-        let yetToLoadVisState = dashboard.panels.contains(where: { $0.visState == nil })
-        guard yetToLoadVisState else { return }
-        
-        ServiceProvider.shared.loadAndUpdateVisStateForPanels(dashboard) { (res, error) in
-            guard error == nil else {
-                print("\(error!.localizedDescription)")
-                return
-            }
-
-            print("VisState updated for Dashboard = \(dashboard.title)")
-            self.loadVizDataForDashboard(dashboard)
-        }
     }
 }

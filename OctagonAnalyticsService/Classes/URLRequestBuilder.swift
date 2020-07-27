@@ -76,14 +76,14 @@ public enum ServerPaths {
     case logout
     
     case dashboardList
-    case visStateData(panelId: String)
-    
+    case visStateContent
+
     var path: String {
         switch self {
         case .login: return "api/v1/auth/login"
         case .logout: return "api/v1/auth/logout"
         case .dashboardList: return "api/saved_objects/_find"
-        case .visStateData(panelId: let id): return "api/saved_objects/visualization" + "/" + id
+        case .visStateContent: return "api/saved_objects/_bulk_get"
         }
     }
 }

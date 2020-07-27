@@ -55,16 +55,58 @@ public class ServiceProvider {
     public func loadDashboards(_ pageNumber: Int, pageSize: Int, completion: CompletionBlock?) {
         let request = DashboardServiceBuilder.loadDashboards(pageNumber: pageNumber, pageSize: pageSize)
         
-        AF.request(request).responseData { (response) in
+        AF.request(request).responseData {[weak self] (response) in
             switch response.result {
             case .failure(let error):
                 let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
                 completion?(nil, serviceError)
             case .success(let value):
                 do {
-                    let decoder = JSONDecoder()
-                    let dashboardListModel = try decoder.decode(ServiceConfiguration.version.dashboardListModel.self, from: value)
-                    completion?(dashboardListModel.asUIModel(), nil)
+                    let dashboardListModel = try JSONDecoder().decode(ServiceConfiguration.version.dashboardListModel.self, from: value)
+                    
+                    let idsList = dashboardListModel.dashboards.compactMap({ $0.attributes.panelsJsonList.compactMap { (dict) -> String? in
+                        return dict["id"] as? String
+                        }})
+
+                    
+                    let panelsIdList: [String] = idsList.reduce([], +)
+                    self?.loadVisStateDataFor(panelsIdList) { (res, err) in
+                        
+                        guard err == nil else {
+                            completion?(nil, err)
+                            return
+                        }
+                        
+                        guard let visStateContent = res as? VisStateContainer else {
+                            let serviceError = OAServiceError(description: "Something went wrong, please retry", code: 1000)
+                            completion?(nil, serviceError)
+                            return
+                        }
+                        
+                        dashboardListModel.dashboards.forEach { (dashboards) in
+                            var panels: [PanelBase] =   []
+                            dashboards.attributes.panelsJsonList.forEach { (dict) in
+                                guard let id = dict["id"] as? String,
+                                    let visState = visStateContent.visStateHolder?.filter({ $0.id == id}).first else { return }
+                                
+                                do {
+                                    let data = try JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+                                    let panel = try JSONDecoder().decode(ServiceConfiguration.version.panelModel.self, from: data)
+                                    panel.visState  =   visState.visStateBase
+                                    panels.append(panel)
+                                }
+                                catch let error {
+                                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                                    completion?(nil, serviceError)
+                                }
+                            }
+                            
+                            dashboards.attributes.panels = panels
+                        }
+                        
+                        completion?(dashboardListModel.asUIModel(), nil)
+                    }
+                    
                 } catch let error {
                     let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
                     completion?(nil, serviceError)
@@ -74,28 +116,27 @@ public class ServiceProvider {
 
     }
     
-    private var dispatchGroup   =   DispatchGroup()
-    private var visStateRequestErros: [OAServiceError]  =   []
-    
-    public func loadAndUpdateVisStateForPanels(_ dashboard: DashboardItem, completion: CompletionBlock?) {
-        let panels: [Panel] = dashboard.panels
-        visStateRequestErros.removeAll()
-        for panel in panels {
-            dispatchGroup.enter()
-            panel.updateVisStateFor {[weak self] (res, error) in
-                
-                guard error == nil else {
-                    self?.visStateRequestErros.append(error!)
-                    self?.dispatchGroup.leave()
-                    return
+    func loadVisStateDataFor(_ ids: [String], completion: CompletionBlock?) {
+        
+        let request = DashboardServiceBuilder.loadVisStateData(ids: ids)
+        
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                completion?(nil, serviceError)
+            case .success(let value):
+                do {
+                    
+                    let content = try JSONDecoder().decode(VisStateContainer.self, from: value)
+                    completion?(content, nil)
+
+                } catch let error {
+                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                    completion?(nil, serviceError)
                 }
-                self?.dispatchGroup.leave()
             }
         }
         
-        dispatchGroup.notify(queue: .main) { [weak self] in
-            completion?(true, self?.visStateRequestErros.first)
-        }
     }
-    
 }

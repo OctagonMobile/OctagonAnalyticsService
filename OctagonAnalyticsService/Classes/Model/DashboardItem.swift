@@ -18,6 +18,8 @@ public class DashboardItem {
     public var panels: [Panel]  =   []
     public var fromTime: String
     public var toTime: String
+    
+    var panelsJsonList: [[String: Any]] =   []
 
     init(_ responseModel: DashboardItemResponseBase) {
         self.title      =   responseModel.attributes.title
@@ -64,6 +66,8 @@ class DashboardAttributesResponseBase: Decodable, ParseJsonArrayProtocol {
     var desc: String
     var panels: [PanelBase] =   []
     
+    var panelsJsonList: [[String: Any]] =   []
+    
     private enum CodingKeys: String, CodingKey {
         case title      =   "title"
         case timeFrom   =   "timeFrom"
@@ -83,7 +87,7 @@ class DashboardAttributesResponseBase: Decodable, ParseJsonArrayProtocol {
         let json = try container.decode(String.self, forKey: .panels)
         if let data = json.data(using: .utf8),
             let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [[String: Any]] {
-            self.panels = try parse(jsonArray, type: ServiceConfiguration.version.panelModel.self)
+            self.panelsJsonList = jsonArray
         }
     }
 }

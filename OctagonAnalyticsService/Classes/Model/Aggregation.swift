@@ -61,26 +61,6 @@ public enum AggregateFunction: String {
     case unknown
 }
 
-public enum IntervalType: String {
-    case unKnown        =   "unKnown"
-    case auto           =   "auto"
-    case millisecond    =   "ms"
-    case second         =   "s"
-    case minute         =   "m"
-    case hourly         =   "h"
-    case daily          =   "d"
-    case weekly         =   "w"
-    case monthly        =   "M"
-    case yearly         =   "y"
-    case custom         =   "custom"
-
-    public static var customTypes: [IntervalType] {
-        return [.millisecond, .second, .minute, .hourly,
-                .daily, .weekly, .monthly, .yearly]
-    }
-}
-
-
 public extension Collection where Element == Double {
     func apply(aggregate: AggregateFunction) -> Double {
         switch aggregate {
@@ -121,6 +101,25 @@ public class Aggregation {
 
 public class AggregationParams {
     
+    public enum IntervalType: String {
+        case unKnown        =   "unKnown"
+        case auto           =   "auto"
+        case millisecond    =   "ms"
+        case second         =   "s"
+        case minute         =   "m"
+        case hourly         =   "h"
+        case daily          =   "d"
+        case weekly         =   "w"
+        case monthly        =   "M"
+        case yearly         =   "y"
+        case custom         =   "custom"
+
+        public static var customTypes: [IntervalType] {
+            return [.millisecond, .second, .minute, .hourly,
+                    .daily, .weekly, .monthly, .yearly]
+        }
+    }
+
     public var precision: Int                  = 5
     public var interval: IntervalType          = IntervalType.unKnown
     public var customInterval: String          = ""
@@ -179,7 +178,7 @@ class AggregationResponseParams: Decodable {
     
     var field: String?
     var precision: Int?
-    var interval: IntervalType          = IntervalType.unKnown
+    var interval: AggregationParams.IntervalType          = AggregationParams.IntervalType.unKnown
     var customInterval: String?
     var intervalInt:Int?
     var aggregate: AggregateFunction    = .unknown
@@ -196,7 +195,7 @@ class AggregationResponseParams: Decodable {
         self.intervalInt    =   try? container.decode(Int.self, forKey: .interval)
 
         if let intrvlType  = try? container.decode(String.self, forKey: .interval) {
-            self.interval = IntervalType(rawValue: intrvlType) ?? .unKnown
+            self.interval = AggregationParams.IntervalType(rawValue: intrvlType) ?? .unKnown
         }
         
         if let aggregateFunc = try? container.decode(String.self, forKey: .aggregate) {
