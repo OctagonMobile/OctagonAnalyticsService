@@ -133,7 +133,19 @@ class PanelBase: Decodable {
     }
     
     func asUIModel() -> Panel {
-        return Panel(self)
+        switch self.visState?.type {
+        case .metric:       return MetricPanel(self)
+        case .tile:         return TilePanel(self)
+        case .search:       return SavedSearchPanel(self)
+        case .heatMap:      return HeatMapPanel(self)
+        case .mapTracking:  return MapTrackingPanel(self)
+        case .faceTile:     return FaceTilePanel(self)
+        case .neo4jGraph:   return GraphPanel(self)
+        case .gauge:        return GaugePanel(self)
+        case .inputControls:    return ControlsPanel(self)
+        default:
+            return Panel(self)
+        }
     }
 }
 
