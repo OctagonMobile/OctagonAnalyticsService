@@ -74,6 +74,10 @@ public class Panel {
         
         completion?(nil, nil)
     }
+    
+    internal func resetDataSource() {
+    }
+
 }
 
 public enum DatePickerMode: String {

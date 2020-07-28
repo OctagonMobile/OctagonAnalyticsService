@@ -21,6 +21,16 @@ public class DashboardItem {
     
     var panelsJsonList: [[String: Any]] =   []
 
+    //YET to update the following keys
+    public var searchQuery: String  =   ""
+    public var datePickerMode: DatePickerMode  =   .calendarPicker
+    public var selectedDateString: String     =   ""
+    public var displayDateString: String {
+        return selectedDateString
+//        return datePickerMode == .quickPicker ? (QuickPicker(rawValue: selectedDateString)?.localizedValue ?? selectedDateString) : selectedDateString
+    }
+
+
     init(_ responseModel: DashboardItemResponseBase) {
         self.title      =   responseModel.attributes.title
         self.id         =   responseModel.id
