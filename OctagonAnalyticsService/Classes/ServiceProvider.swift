@@ -63,55 +63,61 @@ public class ServiceProvider {
             case .success(let value):
                 do {
                     let dashboardListModel = try JSONDecoder().decode(ServiceConfiguration.version.dashboardListModel.self, from: value)
-                    
-                    let idsList = dashboardListModel.dashboards.compactMap({ $0.attributes.panelsJsonList.compactMap { (dict) -> String? in
-                        return dict["id"] as? String
-                        }})
-
-                    
-                    let panelsIdList: [String] = idsList.reduce([], +)
-                    self?.loadVisStateDataFor(panelsIdList) { (res, err) in
-                        
-                        guard err == nil else {
-                            completion?(nil, err)
-                            return
-                        }
-                        
-                        guard let visStateContent = res as? VisStateContainer else {
-                            let serviceError = OAServiceError(description: "Something went wrong, please retry", code: 1000)
-                            completion?(nil, serviceError)
-                            return
-                        }
-                        
-                        dashboardListModel.dashboards.forEach { (dashboards) in
-                            var panels: [PanelBase] =   []
-                            dashboards.attributes.panelsJsonList.forEach { (dict) in
-                                guard let id = dict["id"] as? String,
-                                    let visState = visStateContent.visStateHolder?.filter({ $0.id == id}).first else { return }
-                                
-                                do {
-                                    let data = try JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
-                                    let panel = try JSONDecoder().decode(ServiceConfiguration.version.panelModel.self, from: data)
-                                    panel.visState  =   visState.visStateBase
-                                    panels.append(panel)
-                                }
-                                catch let error {
-                                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                                    completion?(nil, serviceError)
-                                }
-                            }
-                            
-                            dashboards.attributes.panels = panels
-                        }
-                        
-                        completion?(dashboardListModel.asUIModel(), nil)
-                    }
-                    
+                    self?.UpdateVisStateFor(dashboardListModel, completion: completion)
                 } catch let error {
                     let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
                     completion?(nil, serviceError)
                 }
             }
+        }
+    }
+}
+
+//MARK: Private Functions
+extension ServiceProvider {
+    
+    func UpdateVisStateFor(_ dashboardListModel: DashboardListReponseBase, completion: CompletionBlock?) {
+        let idsList = dashboardListModel.dashboards.compactMap({ $0.attributes.panelsJsonList.compactMap { (dict) -> String? in
+            return dict["id"] as? String
+            }})
+
+
+        let panelsIdList: [String] = idsList.reduce([], +)
+        loadVisStateDataFor(panelsIdList) { (res, err) in
+
+            guard err == nil else {
+                completion?(nil, err)
+                return
+            }
+
+            guard let visStateContent = res as? VisStateContainer else {
+                let serviceError = OAServiceError(description: "Something went wrong, please retry", code: 1000)
+                completion?(nil, serviceError)
+                return
+            }
+
+            dashboardListModel.dashboards.forEach { (dashboards) in
+                var panels: [PanelBase] =   []
+                dashboards.attributes.panelsJsonList.forEach { (dict) in
+                    guard let id = dict["id"] as? String,
+                        let visState = visStateContent.visStateHolder?.filter({ $0.id == id}).first else { return }
+
+                    do {
+                        let data = try JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+                        let panel = try JSONDecoder().decode(ServiceConfiguration.version.panelModel.self, from: data)
+                        panel.visState  =   visState.visStateBase
+                        panels.append(panel)
+                    }
+                    catch let error {
+                        let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                        completion?(nil, serviceError)
+                    }
+                }
+
+                dashboards.attributes.panels = panels
+            }
+
+            completion?(dashboardListModel.asUIModel(), nil)
         }
 
     }
