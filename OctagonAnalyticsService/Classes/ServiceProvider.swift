@@ -77,12 +77,13 @@ public class ServiceProvider {
 extension ServiceProvider {
     
     func UpdateVisStateFor(_ dashboardListModel: DashboardListReponseBase, completion: CompletionBlock?) {
-        let idsList = dashboardListModel.dashboards.compactMap({ $0.attributes.panelsJsonList.compactMap { (dict) -> String? in
-            return dict["id"] as? String
-            }})
 
-
+        let idsList = dashboardListModel.dashboards.compactMap({ $0.allPanelsIdList })
         let panelsIdList: [String] = idsList.reduce([], +)
+        guard panelsIdList.count > 0 else {
+            completion?(nil, nil)
+            return
+        }
         loadVisStateDataFor(panelsIdList) { (res, err) in
 
             guard err == nil else {

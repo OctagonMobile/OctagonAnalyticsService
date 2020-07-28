@@ -41,6 +41,9 @@ class DashboardItemResponseBase: Decodable {
     var type: String
     var attributes: DashboardAttributesResponseBase
 
+    // Used to load the VisState Content
+    var allPanelsIdList: [String]   =   []
+
     private enum CodingKeys: String, CodingKey {
         case id         =   "id"
         case type       =   "type"
@@ -95,6 +98,14 @@ class DashboardAttributesResponseBase: Decodable, ParseJsonArrayProtocol {
     }
 }
 
+class DashboardItemResponse654: DashboardItemResponseBase {
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+
+        self.allPanelsIdList = self.attributes.panelsJsonList.compactMap({ $0["id"] as? String })
+    }
+}
+
 //MARK: Version 7.3.2
 class DashboardItemResponse732: DashboardItemResponseBase {
     var references: [References] = []
@@ -104,10 +115,18 @@ class DashboardItemResponse732: DashboardItemResponseBase {
     }
 
     required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
         let container   = try decoder.container(keyedBy: CodingKeys.self)
         
         self.references = try container.decode([References].self, forKey: .panelRefName)
-        try super.init(from: decoder)
+        
+        self.allPanelsIdList = self.references.compactMap({ $0.id })
+        
+        for row in self.attributes.panelsJsonList.indices {
+            guard let panelRefName = self.attributes.panelsJsonList[row]["panelRefName"] as? String else { continue }
+            let id = references.filter({ $0.name == panelRefName }).first?.id
+            self.attributes.panelsJsonList[row]["id"] = id
+        }
     }
 
 }

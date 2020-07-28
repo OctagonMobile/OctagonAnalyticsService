@@ -37,7 +37,7 @@ public enum VersionType: String {
     
     var dashboardItemResponseModel: DashboardItemResponseBase.Type {
         switch self {
-        case .v654: return DashboardItemResponseBase.self
+        case .v654: return DashboardItemResponse654.self
         case .v732: return DashboardItemResponse732.self
         }
     }

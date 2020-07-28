@@ -48,16 +48,7 @@ public class MapVisStateService: VisStateService {
 }
 
 extension MapVisStateService {
-    
-    public struct HeatMapServiceConstant {
-        public static let queryString = "?request=GetCapabilities&Service=WMS"
-        public static let version = "1.3.0"
-        public static let epsg =  "3857" //"4326"
-        public static let format = "image/png"
-        public static let tileSize = "256"
-        public static let transparent = true
-    }
-    
+        
     public enum MapType: String {
         case unknown                =   "Unknown"
         case heatMap                =   "Heatmap"
