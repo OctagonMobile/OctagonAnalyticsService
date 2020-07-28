@@ -7,10 +7,10 @@
 
 import Foundation
 
-public class NeoGraph {
+public class NeoGraphService {
     
-    public var nodesList: [NeoGraphNode]   =   []
-    public var edgesList: [NeoGraphEdge]   =   []
+    public var nodesList: [NeoGraphNodeService]   =   []
+    public var edgesList: [NeoGraphEdgeService]   =   []
 
     //MARK: Functions
 //    func mapping(map: Map) {
@@ -34,7 +34,7 @@ public class NeoGraph {
 }
 
 
-public class NeoGraphNode {
+public class NeoGraphNodeService {
 
     public var id: String?
     
@@ -53,7 +53,7 @@ public class NeoGraphNode {
 //    }
 }
 
-public class NeoGraphEdge {
+public class NeoGraphEdgeService {
     
     public var id: String?
     public var type: String?

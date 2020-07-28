@@ -7,9 +7,9 @@
 
 import Foundation
 
-public class InputControlsVisState: VisState {
+public class InputControlsVisStateService: VisStateService {
     
-    public var controls: [Control]  =  []
+    public var controls: [ControlService]  =  []
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
@@ -17,7 +17,7 @@ public class InputControlsVisState: VisState {
     }
 }
 
-public class Control {
+public class ControlService {
     
     public enum ControlType: String {
         case range
@@ -30,8 +30,8 @@ public class Control {
     public var parent: String          =   ""
     public var label: String           =   ""
     public var type: ControlType       =   .range
-    public var rangeOptions: RangeOptions?
-    public var listOptions: ListOptions?
+    public var rangeOptions: RangeOptionsService?
+    public var listOptions: ListOptionsService?
     
     init(_ responseModel: ControlsResponse) {
         self.id             =   responseModel.id ?? ""
@@ -43,14 +43,14 @@ public class Control {
         
         switch type {
         case .range:
-            rangeOptions    =   RangeOptions(responseModel.options)
+            rangeOptions    =   RangeOptionsService(responseModel.options)
         default:
-            listOptions     =   ListOptions(responseModel.options)
+            listOptions     =   ListOptionsService(responseModel.options)
         }
     }
 }
 
-public class RangeOptions {
+public class RangeOptionsService {
     
     public var decimalPlaces: Int  =   0
     public var step: Int           =   0
@@ -61,7 +61,7 @@ public class RangeOptions {
     }
 }
 
-public class ListOptions {
+public class ListOptionsService {
     
     public var type: BucketType        =   .unKnown
     public var multiselect: Bool       =   true

@@ -9,13 +9,13 @@ import Foundation
 import Alamofire
 
 //MARK: Public
-public class DashboardItem {
+public class DashboardItemService {
     
     public var title: String
     public var id: String
     public var type: String
     public var desc: String
-    public var panels: [Panel]  =   []
+    public var panels: [PanelService]  =   []
     public var fromTime: String
     public var toTime: String
     
@@ -23,13 +23,6 @@ public class DashboardItem {
 
     //YET to update the following keys
     public var searchQuery: String  =   ""
-    public var datePickerMode: DatePickerMode  =   .calendarPicker
-    public var selectedDateString: String     =   ""
-    public var displayDateString: String {
-        return selectedDateString
-//        return datePickerMode == .quickPicker ? (QuickPicker(rawValue: selectedDateString)?.localizedValue ?? selectedDateString) : selectedDateString
-    }
-
 
     init(_ responseModel: DashboardItemResponseBase) {
         self.title      =   responseModel.attributes.title
@@ -64,8 +57,8 @@ class DashboardItemResponseBase: Decodable {
         self.attributes.panels.forEach({ $0.dashboardItemBase = self })
     }
 
-    func asUIModel() -> DashboardItem {
-        return DashboardItem(self)
+    func asUIModel() -> DashboardItemService {
+        return DashboardItemService(self)
     }
 }
 

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class WebContentVisState: VisState {
+public class WebContentVisStateService: VisStateService {
     
     public var htmlString: String      = ""
     
@@ -18,7 +18,7 @@ public class WebContentVisState: VisState {
     }
 }
 
-public class TagCloudVisState: VisState {
+public class TagCloudVisStateService: VisStateService {
     
     public var minFontSize: NSInteger    = 14
     
@@ -32,7 +32,7 @@ public class TagCloudVisState: VisState {
     }
 }
 
-public class MarkDownVisState: VisState {
+public class MarkDownVisStateService: VisStateService {
     
     public var markdownText: String    =   ""
     public var fontSize: CGFloat       =   12.0
@@ -44,7 +44,7 @@ public class MarkDownVisState: VisState {
     }
 }
 
-public class PieChartVisState: VisState {
+public class PieChartVisStateService: VisStateService {
     
     public var isDonut: Bool   = false
     
@@ -54,7 +54,7 @@ public class PieChartVisState: VisState {
     }
 }
 
-public class TileVisState: VisState {
+public class TileVisStateService: VisStateService {
     
     public var imageHashField: String      = ""
     public var maxDistance: Int            = 15
@@ -68,7 +68,7 @@ public class TileVisState: VisState {
     }
 }
 
-public class GraphVisState: VisState {
+public class GraphVisStateService: VisStateService {
     
     public var query: String               =   ""
     public var nodeImageBaseUrl: String    =   ""
@@ -82,7 +82,7 @@ public class GraphVisState: VisState {
     }
 }
 
-public class MetricVisState: VisState {
+public class MetricVisStateService: VisStateService {
     
     public var fontSize: CGFloat?            = 10.0
     

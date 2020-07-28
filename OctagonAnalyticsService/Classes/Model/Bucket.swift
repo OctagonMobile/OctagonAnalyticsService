@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Bucket {
+public class BucketService {
     
     public var key                     =   ""
     
@@ -18,7 +18,7 @@ public class Bucket {
     public var metricValue             =   0.0
     
     public var bucketType: BucketType  =   .unKnown
-    public var subAggsResult: AggResult?
+    public var subAggsResult: AggResultService?
     
     public var displayValue: Double {
         let aggregationsCount = (visState?.otherAggregationsArray.count ?? 0)
@@ -35,16 +35,16 @@ public class Bucket {
         }
     }
 
-    public var parentBkt: Bucket? {
+    public var parentBkt: BucketService? {
         return parentBucket
     }
 
-    private var parentBucket: Bucket?
-    private var visState: VisState?
+    private var parentBucket: BucketService?
+    private var visState: VisStateService?
 
     public var aggIndex: Int {
         var level = -1
-        var tempBucket: Bucket? = self
+        var tempBucket: BucketService? = self
         while tempBucket != nil {
             level += 1
             tempBucket = tempBucket?.parentBucket

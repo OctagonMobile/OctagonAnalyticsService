@@ -7,14 +7,14 @@
 
 import Foundation
 
-public class VisState {
+public class VisStateService {
     public var title: String
     public var type: PanelType
 
-    public var aggregationsArray: [Aggregation]         = []
-    public var metricAggregationsArray: [Aggregation]   = []
-    public var segmentSchemeAggregation: Aggregation?
-    public var otherAggregationsArray: [Aggregation]    = []
+    public var aggregationsArray: [AggregationService]         = []
+    public var metricAggregationsArray: [AggregationService]   = []
+    public var segmentSchemeAggregation: AggregationService?
+    public var otherAggregationsArray: [AggregationService]    = []
 
     public var xAxisPosition: AxisPosition  =   .bottom
     public var seriesMode: SeriesMode       =   .stacked
@@ -88,21 +88,21 @@ class VisStateHolderBase: Decodable {
         }
     }
     
-    func asUIModel() -> VisState? {
+    func asUIModel() -> VisStateService? {
         guard let content = self.visStateBase else { return nil }
         switch content.type {
-        case .pieChart:                 return PieChartVisState(content)
-        case .tagCloud, .t4pTagcloud:   return TagCloudVisState(content)
-        case .tile:                     return TileVisState(content)
-        case .metric:                   return MetricVisState(content)
-        case .heatMap, .mapTracking:    return MapVisState(content)
-        case .neo4jGraph:               return GraphVisState(content)
-        case .html:                     return WebContentVisState(content)
-        case .markdown:                 return MarkDownVisState(content)
-        case .gauge, .goal:             return GaugeVisState(content)
-        case .inputControls:            return InputControlsVisState(content)
+        case .pieChart:                 return PieChartVisStateService(content)
+        case .tagCloud, .t4pTagcloud:   return TagCloudVisStateService(content)
+        case .tile:                     return TileVisStateService(content)
+        case .metric:                   return MetricVisStateService(content)
+        case .heatMap, .mapTracking:    return MapVisStateService(content)
+        case .neo4jGraph:               return GraphVisStateService(content)
+        case .html:                     return WebContentVisStateService(content)
+        case .markdown:                 return MarkDownVisStateService(content)
+        case .gauge, .goal:             return GaugeVisStateService(content)
+        case .inputControls:            return InputControlsVisStateService(content)
         default:
-            return VisState(content)
+            return VisStateService(content)
         }
     }
 }
@@ -128,8 +128,8 @@ class VisStateBase: Decodable {
         self.aggregationsArray  =   try container.decode([AggregationResponse].self, forKey: .aggs)
     }
     
-    func asUIModel() -> VisState? {
-        return VisState(self)
+    func asUIModel() -> VisStateService? {
+        return VisStateService(self)
     }
 }
 
@@ -165,11 +165,11 @@ class VisStateParams: Decodable {
     //MapVisState
     var wms: WmsParams?
     var userField: String?
-    var mapType: MapVisState.MapType?
+    var mapType: MapVisStateService.MapType?
     var mapLayers: [MapLayerResponse]?
     
     //GaugeVisState
-    var gaugeType: GaugeVisState.GaugeType?
+    var gaugeType: GaugeVisStateService.GaugeType?
     var gauge: GaugeResponse?
     
     //InputControlsVisState
@@ -216,12 +216,12 @@ class VisStateParams: Decodable {
         self.userField  =   try? container.decode(String.self, forKey: .user_field)
         self.mapLayers  =   try? container.decode([MapLayerResponse].self, forKey: .quickButtons)
         if let type = try? container.decode(String.self, forKey: .mapType) {
-            self.mapType    =   MapVisState.MapType(rawValue: type)
+            self.mapType    =   MapVisStateService.MapType(rawValue: type)
         }
         
         self.gauge  =   try? container.decode(GaugeResponse.self, forKey: .gauge)
         if let type = try? container.decode(String.self, forKey: .type) {
-            self.gaugeType  =   GaugeVisState.GaugeType(rawValue: type)
+            self.gaugeType  =   GaugeVisStateService.GaugeType(rawValue: type)
         }
         
         self.controls   =   try? container.decode([ControlsResponse].self, forKey: .controls)
@@ -231,7 +231,7 @@ class VisStateParams: Decodable {
 
 class SeriesParams: Decodable {
     
-    var mode: VisState.SeriesMode?
+    var mode: VisStateService.SeriesMode?
     
     private enum CodingKeys: String, CodingKey {
         case mode
@@ -241,7 +241,7 @@ class SeriesParams: Decodable {
         let container   =   try decoder.container(keyedBy: CodingKeys.self)
         
         if let sMode = try? container.decode(String.self, forKey: .mode) {
-            self.mode = VisState.SeriesMode(rawValue: sMode)
+            self.mode = VisStateService.SeriesMode(rawValue: sMode)
         }
     }
 }
@@ -249,7 +249,7 @@ class SeriesParams: Decodable {
 
 class CategoryAxes: Decodable {
     
-    var position: VisState.AxisPosition?
+    var position: VisStateService.AxisPosition?
 
     private enum CodingKeys: String, CodingKey {
         case position
@@ -259,7 +259,7 @@ class CategoryAxes: Decodable {
         let container   =   try decoder.container(keyedBy: CodingKeys.self)
         
         if let aPosition = try? container.decode(String.self, forKey: .position) {
-            self.position = VisState.AxisPosition(rawValue: aPosition)
+            self.position = VisStateService.AxisPosition(rawValue: aPosition)
         }
     }
 }
@@ -322,14 +322,14 @@ class MapLayerResponse: Decodable {
         self.buttonTitle    = try? container.decode(String.self, forKey: .layers)
     }
     
-    func asUIModel() -> MapLayer? {
-        return MapLayer(self)
+    func asUIModel() -> MapLayerService? {
+        return MapLayerService(self)
     }
 }
 
 //MARK: Gauage VisState
 class GaugeResponse: Decodable {
-    var subType: Gauge.GaugeSubType?
+    var subType: GaugeService.GaugeSubType?
     
     var ranges: [GaugeRangeResponse]?
     
@@ -341,14 +341,14 @@ class GaugeResponse: Decodable {
         let container   =   try decoder.container(keyedBy: CodingKeys.self)
         
         if let type = try? container.decode(String.self, forKey: .gaugeType) {
-            self.subType    =   Gauge.GaugeSubType(rawValue: type)
+            self.subType    =   GaugeService.GaugeSubType(rawValue: type)
         }
         
         self.ranges =   try? container.decode([GaugeRangeResponse].self, forKey: .colorsRange)
     }
     
-    func asUIModel() -> Gauge? {
-        return Gauge(self)
+    func asUIModel() -> GaugeService? {
+        return GaugeService(self)
     }
 }
 
@@ -368,8 +368,8 @@ class GaugeRangeResponse: Decodable {
         self.to     =   try? container.decode(CGFloat.self, forKey: .to)
     }
     
-    func asUIModel() -> GaugeRange? {
-        return GaugeRange(self)
+    func asUIModel() -> GaugeRangeService? {
+        return GaugeRangeService(self)
     }
 
 }
@@ -382,7 +382,7 @@ class ControlsResponse: Decodable {
     var indexPattern: String?
     var label: String?
     var parent: String?
-    var type: Control.ControlType?
+    var type: ControlService.ControlType?
     
     var options: Options?
     
@@ -401,14 +401,14 @@ class ControlsResponse: Decodable {
         self.parent     =   try? container.decode(String.self, forKey: .parent)
 
         if let type = try? container.decode(String.self, forKey: .type) {
-            self.type   =   Control.ControlType(rawValue: type)
+            self.type   =   ControlService.ControlType(rawValue: type)
         }
         
         self.options    =   try? container.decode(Options.self, forKey: .options)
     }
     
-    func asUIModel() -> Control? {
-        return Control(self)
+    func asUIModel() -> ControlService? {
+        return ControlService(self)
     }
 
     

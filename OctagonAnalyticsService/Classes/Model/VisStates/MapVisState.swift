@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class MapVisState: VisState {
+public class MapVisStateService: VisStateService {
     
     public var mapUrl: String {
         return mapUrl_l
@@ -28,7 +28,7 @@ public class MapVisState: VisState {
 
     public var mapType: MapType        = .unknown
     
-    public var mapLayers:  [MapLayer]      =   []
+    public var mapLayers:  [MapLayerService]      =   []
 
     private var mapUrl_l: String      =       ""
 
@@ -47,7 +47,7 @@ public class MapVisState: VisState {
     }
 }
 
-extension MapVisState {
+extension MapVisStateService {
     
     public struct HeatMapServiceConstant {
         public static let queryString = "?request=GetCapabilities&Service=WMS"
@@ -67,7 +67,7 @@ extension MapVisState {
     }
 }
 
-public class MapLayer {
+public class MapLayerService {
     
     public var layerName: String       =   ""
     public var buttonTitle: String     =   ""

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Metric {
+public class MetricService {
     public var id: String       = ""
     public var type: String     = ""
     public var value: NSNumber  = NSNumber(value: 0)
@@ -22,7 +22,7 @@ public class Metric {
             return ""
         }
     }
-    public weak var panel: MetricPanel?
+    public weak var panel: MetricPanelService?
     
     public var computedLabel: String {
         var computed = label

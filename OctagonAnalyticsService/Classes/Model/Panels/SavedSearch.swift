@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class SavedSearch {
+public class SavedSearchService {
 
     public var keys: [String]          = []
 

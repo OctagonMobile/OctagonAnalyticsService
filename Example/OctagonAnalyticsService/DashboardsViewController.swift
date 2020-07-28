@@ -11,7 +11,7 @@ import OctagonAnalyticsService
 
 class DashboardsViewController: UIViewController {
     
-    var dashboards: [DashboardItem] =   []
+    var dashboards: [DashboardItemService] =   []
 
     @IBOutlet weak var logoutButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
@@ -60,7 +60,7 @@ class DashboardsViewController: UIViewController {
         logout()
     }
     
-    private func loadVizDataForDashboard(_ dashboard: DashboardItem) {
+    private func loadVizDataForDashboard(_ dashboard: DashboardItemService) {
         
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class FaceTile {
+public class FaceTileService {
 
     public var fileName: String    =   ""
     

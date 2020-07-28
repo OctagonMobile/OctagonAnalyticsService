@@ -7,14 +7,14 @@
 
 import Foundation
 
-public class GaugeVisState: VisState {
+public class GaugeVisStateService: VisStateService {
     public enum GaugeType: String {
         case gauge      =   "gauge"
         case goal       =   "goal"
     }
     
     public var gaugeType: GaugeType    =   .gauge
-    public var gauge: Gauge?
+    public var gauge: GaugeService?
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
@@ -24,14 +24,14 @@ public class GaugeVisState: VisState {
     }
 }
 
-public class Gauge {
+public class GaugeService {
     
     public enum GaugeSubType: String {
         case arc    =   "Arc"
         case circle =   "Circle"
     }
 
-    public var ranges: [GaugeRange] =   []
+    public var ranges: [GaugeRangeService] =   []
     
     public var subType: GaugeSubType  =   .arc
     
@@ -42,7 +42,7 @@ public class Gauge {
     }
 }
 
-public class GaugeRange {
+public class GaugeRangeService {
     
     public var from: CGFloat   =   0.0
     public var to: CGFloat     =   0.0

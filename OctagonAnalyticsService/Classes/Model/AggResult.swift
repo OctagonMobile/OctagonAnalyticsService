@@ -9,9 +9,9 @@ import Foundation
 
 public typealias Legend = (text: String, color: UIColor)
 
-public class AggResult {
+public class AggResultService {
     
-    public var buckets: [Bucket]           =   []
+    public var buckets: [BucketService]           =   []
     private var colorIndex = 0
     private var colorsDict: [String: UIColor] = [:]
     public var chartLegends: [Legend] = []

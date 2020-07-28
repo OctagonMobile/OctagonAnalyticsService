@@ -8,7 +8,7 @@
 import Foundation
 import CoreLocation
 
-public class MapDetails: ChartContent {
+public class MapDetailsService: ChartContentService {
    
     public var location: CLLocation?
     

@@ -115,7 +115,7 @@ public class ServiceProvider {
         }
 
     }
-    
+        
     func loadVisStateDataFor(_ ids: [String], completion: CompletionBlock?) {
         
         let request = DashboardServiceBuilder.loadVisStateData(ids: ids)

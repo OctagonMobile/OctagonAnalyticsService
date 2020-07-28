@@ -13,7 +13,7 @@ public class DashboardListResponse {
     public var page: Int
     public var pageSize: Int
     public var total: Int
-    public var dashboards: [DashboardItem]
+    public var dashboards: [DashboardItemService]
 
     init(_ responseModel: DashboardListReponseBase) {
         self.page       =   responseModel.page

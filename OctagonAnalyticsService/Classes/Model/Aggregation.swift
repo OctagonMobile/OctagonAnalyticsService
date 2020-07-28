@@ -61,24 +61,7 @@ public enum AggregateFunction: String {
     case unknown
 }
 
-public extension Collection where Element == Double {
-    func apply(aggregate: AggregateFunction) -> Double {
-        switch aggregate {
-        case .average:
-            return reduce(0, +) / Double(count)
-        case .max:
-            return self.max() ?? 0.0
-        case .min:
-            return self.min() ?? 0.0
-        case .sum:
-            return reduce(0, +)
-        case .unknown:
-            return 0.0
-        }
-    }
-}
-
-public class Aggregation {
+public class AggregationService {
 
     public var id: String                      = ""
     public var schema: String                  = ""
@@ -87,7 +70,7 @@ public class Aggregation {
     public var metricType: MetricType          = .unKnown
     public var bucketType: BucketType          = .unKnown
     
-    public var params: AggregationParams?
+    public var params: AggregationParamsService?
 
     init(_ responseModel: AggregationResponse) {
         self.id         =   responseModel.id
@@ -99,7 +82,7 @@ public class Aggregation {
     }
 }
 
-public class AggregationParams {
+public class AggregationParamsService {
     
     public enum IntervalType: String {
         case unKnown        =   "unKnown"
@@ -168,8 +151,8 @@ class AggregationResponse : Decodable {
         }
     }
     
-    func asUIModel() -> Aggregation? {
-        return Aggregation(self)
+    func asUIModel() -> AggregationService? {
+        return AggregationService(self)
     }
 
 }
@@ -178,7 +161,7 @@ class AggregationResponseParams: Decodable {
     
     var field: String?
     var precision: Int?
-    var interval: AggregationParams.IntervalType          = AggregationParams.IntervalType.unKnown
+    var interval: AggregationParamsService.IntervalType          = AggregationParamsService.IntervalType.unKnown
     var customInterval: String?
     var intervalInt:Int?
     var aggregate: AggregateFunction    = .unknown
@@ -195,7 +178,7 @@ class AggregationResponseParams: Decodable {
         self.intervalInt    =   try? container.decode(Int.self, forKey: .interval)
 
         if let intrvlType  = try? container.decode(String.self, forKey: .interval) {
-            self.interval = AggregationParams.IntervalType(rawValue: intrvlType) ?? .unKnown
+            self.interval = AggregationParamsService.IntervalType(rawValue: intrvlType) ?? .unKnown
         }
         
         if let aggregateFunc = try? container.decode(String.self, forKey: .aggregate) {
@@ -203,7 +186,7 @@ class AggregationResponseParams: Decodable {
         }
     }
     
-    func asUIModel() -> AggregationParams? {
-        return AggregationParams(self)
+    func asUIModel() -> AggregationParamsService? {
+        return AggregationParamsService(self)
     }
 }

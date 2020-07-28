@@ -7,31 +7,31 @@
 
 import Foundation
 
-public class MetricPanel: Panel {
+public class MetricPanelService: PanelService {
  
-    public var metricsList: [Metric] = []
+    public var metricsList: [MetricService] = []
 
     override init(_ responseModel: PanelBase) {
         super.init(responseModel)
     }
 }
 
-public class TilePanel: Panel {
+public class TilePanelService: PanelService {
     
-    public var tileList: [Tile] = []
+    public var tileList: [TileService] = []
 
     override init(_ responseModel: PanelBase) {
         super.init(responseModel)
     }
 }
 
-public class SavedSearchPanel: Panel {
+public class SavedSearchPanelService: PanelService {
     
     public var totalSavedSearchCount: Int      = 0
     
     public var columns: [String]               = []
 
-    public var hits: [SavedSearch]             = []
+    public var hits: [SavedSearchService]             = []
 
     override init(_ responseModel: PanelBase) {
         super.init(responseModel)
@@ -41,9 +41,9 @@ public class SavedSearchPanel: Panel {
     }
 }
 
-public class HeatMapPanel: Panel {
+public class HeatMapPanelService: PanelService {
     
-    public var mapDetail: [MapDetails] = []
+    public var mapDetail: [MapDetailsService] = []
 
     override init(_ responseModel: PanelBase) {
         super.init(responseModel)
@@ -51,17 +51,17 @@ public class HeatMapPanel: Panel {
 
 }
 
-public class MapTrackingPanel: Panel {
+public class MapTrackingPanelService: PanelService {
     
     public var pathTrackersArray: [MapPath] = []
     
     /// List of Top "numberOfItemsToShowOnMap(50)" items based on number of locations in descending order
-    public var sortedTracks: [MapTrackPoint]            = []
+    public var sortedTracks: [MapTrackPointService]            = []
     
     /// Is map real time.
     public var isRealTime: Bool                    = false
     
-    private var tracks: [MapTrackPoint]          = []
+    private var tracks: [MapTrackPointService]          = []
     private let numberOfItemsToShowOnMap    = 20
 
     override init(_ responseModel: PanelBase) {
@@ -69,11 +69,11 @@ public class MapTrackingPanel: Panel {
     }
 }
 
-public class FaceTilePanel: Panel {
+public class FaceTilePanelService: PanelService {
     
     public var filterName: String?
     
-    public var faceTileList: [FaceTile] = []
+    public var faceTileList: [FaceTileService] = []
 
     override init(_ responseModel: PanelBase) {
         super.init(responseModel)
@@ -81,9 +81,9 @@ public class FaceTilePanel: Panel {
 
 }
 
-public class GraphPanel: Panel {
+public class GraphPanelService: PanelService {
     
-    public var graphData: NeoGraph?
+    public var graphData: NeoGraphService?
 
     override init(_ responseModel: PanelBase) {
         super.init(responseModel)
@@ -132,7 +132,7 @@ public class GraphPanel: Panel {
 
 }
 
-public class GaugePanel: Panel {
+public class GaugePanelService: PanelService {
     
     public var gaugeValue: CGFloat =   0.0
 
@@ -142,7 +142,7 @@ public class GaugePanel: Panel {
 }
 
 
-public class ControlsPanel: Panel {
+public class ControlsPanelService: PanelService {
     
     public var maxAgg: CGFloat?
     

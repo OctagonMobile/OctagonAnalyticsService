@@ -8,7 +8,7 @@
 import UIKit
 import MapKit
 
-public class MapTrackPoint: ChartContent {
+public class MapTrackPointService: ChartContentService {
 
     /// Timestamp
     public var timestamp: Date?
@@ -71,11 +71,11 @@ public class MapTrackPoint: ChartContent {
 
 public class MapPath: NSObject {
     
-    public var mapTrackPoints: [MapTrackPoint] = []
+    public var mapTrackPoints: [MapTrackPointService] = []
     
     public var userTraversedPathOverlays: [MapTrackingPolyline] = []
     
-    public var userCurrentPositionPoint: MapTrackPoint?
+    public var userCurrentPositionPoint: MapTrackPointService?
 
     public var userIdentifier: String? {
         return mapTrackPoints.first?.userField
@@ -84,12 +84,8 @@ public class MapPath: NSObject {
     public var color: UIColor?
     public var userPathColor: UIColor?
 
-    //MARK: Annotations
-    fileprivate var pointAnnotation: UserPointAnnotation?
-//    fileprivate var pinAnnotationView: MapTrackingAnnotationView?
-
     //MARK:
-    init(mapTracks: [MapTrackPoint]) {
+    init(mapTracks: [MapTrackPointService]) {
         self.mapTrackPoints = mapTracks
         self.userCurrentPositionPoint = mapTrackPoints.first
     }
@@ -112,13 +108,3 @@ extension MapPath {
         static let pinCellId = "pinCellId"
     }
 }
-
-
-public class UserPointAnnotation: MKPointAnnotation {
-    public var identifier: String          =   ""
-    public var color: UIColor              = .red //CurrentTheme.darkBackgroundColor
-    public var mapTrack: MapTrackPoint?
-    public var imageIconUrl: String?
-}
-
-

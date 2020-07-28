@@ -24,7 +24,7 @@ public enum TileType: String {
     
 }
 
-public class Tile {
+public class TileService {
     
     public var type: TileType          = .unknown
     public var timestamp: Date?
@@ -61,7 +61,7 @@ public class Tile {
 //        imageHash               <- map[TileConstant.imageHash]
 //    }
     
-    public func loadImageHashesFor(_ panel: TilePanel, _ completion: @escaping CompletionBlock) {
+    public func loadImageHashesFor(_ panel: TilePanelService, _ completion: @escaping CompletionBlock) {
 
 
         guard !imageHash.isEmpty else {
