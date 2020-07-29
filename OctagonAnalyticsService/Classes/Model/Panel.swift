@@ -23,8 +23,8 @@ public class PanelService {
 
     init(_ responseModel: PanelBase) {
         self.panelIndex =   responseModel.panelIndex
-        self.row        =   responseModel.gridData.x
-        self.column     =   responseModel.gridData.y
+        self.row        =   responseModel.gridData.y
+        self.column     =   responseModel.gridData.x
         self.width      =   responseModel.gridData.w
         self.height     =   responseModel.gridData.h
         self.visState   =   responseModel.visState?.asUIModel()
