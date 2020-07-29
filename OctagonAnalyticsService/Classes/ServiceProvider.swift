@@ -71,6 +71,27 @@ public class ServiceProvider {
             }
         }
     }
+    
+    //MARK: Video Data
+    public func loadIndexPatterns(_ pageNumber: Int, pageSize: Int, completion: CompletionBlock?) {
+        let request = VideoServiceBuilder.loadIndexPatterns(pageNumber: pageNumber, pageSize: pageSize)
+
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                completion?(nil, serviceError)
+            case .success(let value):
+                do {
+                    let indexPatternListModel = try JSONDecoder().decode(ServiceConfiguration.version.indexPatternListModel.self, from: value)
+                    completion?(indexPatternListModel.asUIModel(), nil)
+                } catch let error {
+                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                    completion?(nil, serviceError)
+                }
+            }
+        }
+    }
 }
 
 //MARK: Private Functions

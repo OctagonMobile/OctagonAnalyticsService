@@ -65,8 +65,11 @@
                                 </connections>
                             </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Q3h-xM-UwE">
-                                <rect key="frame" x="0.0" y="74" width="375" height="593"/>
+                                <rect key="frame" x="0.0" y="74" width="375" height="250"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="250" id="RJL-2B-fvB"/>
+                                </constraints>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="MiP-Jl-RVq">
                                         <rect key="frame" x="0.0" y="28" width="375" height="43.5"/>
@@ -78,14 +81,22 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jrJ-8P-zPu">
+                                <rect key="frame" x="20" y="344" width="125" height="30"/>
+                                <state key="normal" title="Load IndexPattern"/>
+                                <connections>
+                                    <action selector="loadIndexPatternsListAction:" destination="s44-5d-197" eventType="touchUpInside" id="eTB-OP-KUG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="Q3h-xM-UwE" firstAttribute="top" secondItem="Vax-Gd-r4d" secondAttribute="bottom" id="CFw-jK-uab"/>
                             <constraint firstItem="Q3h-xM-UwE" firstAttribute="leading" secondItem="Fer-wb-24D" secondAttribute="leading" id="FpU-xg-3nO"/>
                             <constraint firstItem="Vax-Gd-r4d" firstAttribute="top" secondItem="ReV-9z-P3g" secondAttribute="bottom" id="LCh-kR-G0R"/>
-                            <constraint firstItem="pXl-EI-gNf" firstAttribute="top" secondItem="Q3h-xM-UwE" secondAttribute="bottom" id="Q9M-gK-Rdf"/>
+                            <constraint firstItem="jrJ-8P-zPu" firstAttribute="leading" secondItem="Fer-wb-24D" secondAttribute="leading" constant="20" id="NUS-Jm-EdM"/>
                             <constraint firstAttribute="trailing" secondItem="Q3h-xM-UwE" secondAttribute="trailing" id="jzC-5C-7KP"/>
+                            <constraint firstItem="jrJ-8P-zPu" firstAttribute="top" secondItem="Q3h-xM-UwE" secondAttribute="bottom" constant="20" id="kA8-Ba-PjC"/>
                             <constraint firstAttribute="trailing" secondItem="Vax-Gd-r4d" secondAttribute="trailing" constant="15" id="xc8-WS-Lrw"/>
                         </constraints>
                     </view>

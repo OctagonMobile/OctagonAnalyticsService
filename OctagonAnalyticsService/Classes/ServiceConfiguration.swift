@@ -55,4 +55,22 @@ public enum VersionType: String {
         }
     }
     
+    var indexPatternListModel: IndexPatternsListResponseBase.Type {
+        switch self {
+        case .v654, .v732: return IndexPatternsListResponseBase.self
+        }
+    }
+
+    var indexPatternResponseModel: IndexPatternResponseBase.Type {
+        switch self {
+        case .v654, .v732: return IndexPatternResponseBase.self
+        }
+    }
+
+    var ipFieldResponseModel: IPFieldResponseBase.Type {
+        switch self {
+        case .v654, .v732: return IPFieldResponseBase.self
+        }
+    }
+
 }

@@ -19,7 +19,6 @@ public class PanelService {
     public var height: Int
     public var visState: VisStateService?
     public var searchQuery: String =   ""
-    public weak var dashboardItem: DashboardItemService?
 
     init(_ responseModel: PanelBase) {
         self.panelIndex =   responseModel.panelIndex
@@ -28,7 +27,6 @@ public class PanelService {
         self.width      =   responseModel.gridData.w
         self.height     =   responseModel.gridData.h
         self.visState   =   responseModel.visState?.asUIModel()
-//        self.dashboardItem = responseModel.dashboardItemBase?.asUIModel()
     }
     
     public func loadChartData(_ completion: CompletionBlock?) {

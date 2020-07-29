@@ -63,6 +63,20 @@ class DashboardsViewController: UIViewController {
     private func loadVizDataForDashboard(_ dashboard: DashboardItemService) {
         
     }
+    
+    //MARK: Button Actions
+    @IBAction func loadIndexPatternsListAction(_ sender: UIButton) {
+        ServiceProvider.shared.loadIndexPatterns(1, pageSize: 20) { (res, error) in
+            guard error == nil else {
+                print("\(error!.localizedDescription)")
+                return
+            }
+            
+            if let indexPatternList = res as? IndexPatternsListResponse {
+                print(indexPatternList.indexPatterns.count)
+            }
+        }
+    }
 }
 
 extension DashboardsViewController: UITableViewDelegate, UITableViewDataSource {

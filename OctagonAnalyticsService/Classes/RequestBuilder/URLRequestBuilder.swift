@@ -77,6 +77,9 @@ public enum ServerPaths {
     
     case dashboardList
     case visStateContent
+    
+    case indexPatternList
+    case videoData
 
     var path: String {
         switch self {
@@ -84,6 +87,8 @@ public enum ServerPaths {
         case .logout: return "api/v1/auth/logout"
         case .dashboardList: return "api/saved_objects/_find"
         case .visStateContent: return "api/saved_objects/_bulk_get"
+        case .indexPatternList: return "api/saved_objects/_find"
+        case .videoData: return "api/console/proxy"
         }
     }
 }
