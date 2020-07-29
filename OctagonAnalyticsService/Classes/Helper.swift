@@ -18,7 +18,12 @@ extension ParseJsonArrayProtocol {
         
         let list = jsonArray.compactMap { (dict) -> T? in
             if let dataString = dict.jsonStringRepresentation, let data = dataString.data(using: .utf8)  {
-                return try? JSONDecoder().decode(type.self, from: data)
+                do {
+                    return try JSONDecoder().decode(type.self, from: data)
+                } catch let err {
+                    print(err.localizedDescription)
+                }
+//                return try? JSONDecoder().decode(type.self, from: data)
             }
             return nil
         }

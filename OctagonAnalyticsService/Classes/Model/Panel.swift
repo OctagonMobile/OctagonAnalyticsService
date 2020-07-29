@@ -101,7 +101,7 @@ class PanelBase: Decodable {
         case .mapTracking:  return MapTrackingPanelService(self)
         case .faceTile:     return FaceTilePanelService(self)
         case .neo4jGraph:   return GraphPanelService(self)
-        case .gauge:        return GaugePanelService(self)
+        case .gauge, .goal:        return GaugePanelService(self)
         case .inputControls:    return ControlsPanelService(self)
         default:
             return PanelService(self)

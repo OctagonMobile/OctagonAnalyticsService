@@ -14,7 +14,7 @@ public class WebContentVisStateService: VisStateService {
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
         
-        self.htmlString =   responseModel.params.html ?? ""
+        self.htmlString =   responseModel.params?.html ?? ""
     }
 }
 
@@ -27,8 +27,8 @@ public class TagCloudVisStateService: VisStateService {
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
         
-        self.minFontSize =   responseModel.params.minFontSize ?? 14
-        self.maxFontSize =   responseModel.params.maxFontSize ?? 60
+        self.minFontSize =   responseModel.params?.minFontSize ?? 14
+        self.maxFontSize =   responseModel.params?.maxFontSize ?? 60
     }
 }
 
@@ -39,8 +39,8 @@ public class MarkDownVisStateService: VisStateService {
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
-        self.markdownText   =   responseModel.params.markdownText ?? ""
-        self.fontSize       =   responseModel.params.fontSize ?? 12.0
+        self.markdownText   =   responseModel.params?.markdownText ?? ""
+        self.fontSize       =   responseModel.params?.fontSize ?? 12.0
     }
 }
 
@@ -50,7 +50,7 @@ public class PieChartVisStateService: VisStateService {
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
-        self.isDonut    =   responseModel.params.isDonut ?? false
+        self.isDonut    =   responseModel.params?.isDonut ?? false
     }
 }
 
@@ -62,9 +62,9 @@ public class TileVisStateService: VisStateService {
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
-        self.imageHashField =   responseModel.params.imageHashField ?? ""
-        self.maxDistance    =   responseModel.params.maxDistance ?? 15
-        self.containerId    =   responseModel.params.containerId ?? 1
+        self.imageHashField =   responseModel.params?.imageHashField ?? ""
+        self.maxDistance    =   responseModel.params?.maxDistance ?? 15
+        self.containerId    =   responseModel.params?.containerId ?? 1
     }
 }
 
@@ -76,9 +76,9 @@ public class GraphVisStateService: VisStateService {
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
-        self.query              =   responseModel.params.query ?? ""
-        self.nodeImageBaseUrl   =   responseModel.params.nodeImageBaseUrl ?? ""
-        self.nodeImageProperty  =   responseModel.params.nodeImageProperty ?? ""
+        self.query              =   responseModel.params?.query ?? ""
+        self.nodeImageBaseUrl   =   responseModel.params?.nodeImageBaseUrl ?? ""
+        self.nodeImageProperty  =   responseModel.params?.nodeImageProperty ?? ""
     }
 }
 
@@ -89,6 +89,6 @@ public class MetricVisStateService: VisStateService {
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
         
-        self.fontSize   =   responseModel.params.fontSize ?? 10.0
+        self.fontSize   =   responseModel.params?.fontSize ?? 10.0
     }
 }

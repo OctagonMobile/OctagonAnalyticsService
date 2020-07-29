@@ -19,8 +19,8 @@ public class GaugeVisStateService: VisStateService {
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
         
-        self.gaugeType  =   responseModel.params.gaugeType ?? .gauge
-        self.gauge      =   responseModel.params.gauge?.asUIModel()
+        self.gaugeType  =   responseModel.params?.gaugeType ?? .gauge
+        self.gauge      =   responseModel.params?.gauge?.asUIModel()
     }
 }
 

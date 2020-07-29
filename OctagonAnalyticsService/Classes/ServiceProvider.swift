@@ -78,8 +78,8 @@ extension ServiceProvider {
     
     func UpdateVisStateFor(_ dashboardListModel: DashboardListReponseBase, completion: CompletionBlock?) {
 
-        let idsList = dashboardListModel.dashboards.compactMap({ $0.allPanelsIdList })
-        let panelsIdList: [String] = idsList.reduce([], +)
+        let idsList = dashboardListModel.dashboards.compactMap({ $0.allPanelsInfoList })
+        let panelsIdList: [PanelInfo] = idsList.reduce([], +)
         guard panelsIdList.count > 0 else {
             completion?(nil, nil)
             return
@@ -123,9 +123,9 @@ extension ServiceProvider {
 
     }
         
-    func loadVisStateDataFor(_ ids: [String], completion: CompletionBlock?) {
+    func loadVisStateDataFor(_ panelInfo: [PanelInfo], completion: CompletionBlock?) {
         
-        let request = DashboardServiceBuilder.loadVisStateData(ids: ids)
+        let request = DashboardServiceBuilder.loadVisStateData(panelInfo: panelInfo)
         
         AF.request(request).responseData { (response) in
             switch response.result {
@@ -134,7 +134,7 @@ extension ServiceProvider {
                 completion?(nil, serviceError)
             case .success(let value):
                 do {
-                    
+
                     let content = try JSONDecoder().decode(VisStateContainer.self, from: value)
                     completion?(content, nil)
 

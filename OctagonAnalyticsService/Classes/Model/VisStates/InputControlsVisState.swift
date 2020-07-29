@@ -13,7 +13,7 @@ public class InputControlsVisStateService: VisStateService {
     
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
-        self.controls   =   responseModel.params.controls?.compactMap({ $0.asUIModel() }) ?? []
+        self.controls   =   responseModel.params?.controls?.compactMap({ $0.asUIModel() }) ?? []
     }
 }
 

@@ -42,7 +42,7 @@ class DashboardItemResponseBase: Decodable {
     var attributes: DashboardAttributesResponseBase
 
     // Used to load the VisState Content
-    var allPanelsIdList: [String]   =   []
+    var allPanelsInfoList: [PanelInfo]   =   []
 
     private enum CodingKeys: String, CodingKey {
         case id         =   "id"
@@ -62,6 +62,16 @@ class DashboardItemResponseBase: Decodable {
 
     func asUIModel() -> DashboardItemService {
         return DashboardItemService(self)
+    }
+}
+
+class PanelInfo {
+    var id: String?
+    var type: String?
+    
+    init(_ id: String?, type: String?) {
+        self.id = id
+        self.type = type
     }
 }
 
@@ -102,7 +112,11 @@ class DashboardItemResponse654: DashboardItemResponseBase {
     required init(from decoder: Decoder) throws {
         try super.init(from: decoder)
 
-        self.allPanelsIdList = self.attributes.panelsJsonList.compactMap({ $0["id"] as? String })
+        self.allPanelsInfoList = self.attributes.panelsJsonList.compactMap({ (dict) -> PanelInfo? in
+            let id = dict["id"] as? String
+            let type = dict["type"] as? String
+            return PanelInfo(id, type: type)
+        })
     }
 }
 
@@ -120,7 +134,9 @@ class DashboardItemResponse732: DashboardItemResponseBase {
         
         self.references = try container.decode([References].self, forKey: .panelRefName)
         
-        self.allPanelsIdList = self.references.compactMap({ $0.id })
+        self.allPanelsInfoList = self.references.compactMap({ (reference) -> PanelInfo? in
+            return PanelInfo(reference.id, type: reference.type)
+        })
         
         for row in self.attributes.panelsJsonList.indices {
             guard let panelRefName = self.attributes.panelsJsonList[row]["panelRefName"] as? String else { continue }

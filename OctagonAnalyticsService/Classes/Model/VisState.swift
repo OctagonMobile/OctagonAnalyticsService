@@ -22,8 +22,8 @@ public class VisStateService {
     init(_ responseModel: VisStateBase) {
         self.title  =   responseModel.title
         self.type   =   responseModel.type
-        self.xAxisPosition  =   responseModel.params.categoryAxes?.first?.position ?? .bottom
-        self.seriesMode     =   responseModel.params.seriesParams?.first?.mode ?? .stacked
+        self.xAxisPosition  =   responseModel.params?.categoryAxes?.first?.position ?? .bottom
+        self.seriesMode     =   responseModel.params?.seriesParams?.first?.mode ?? .stacked
         
         self.aggregationsArray  =   responseModel.aggregationsArray.compactMap({ $0.asUIModel() })
         
@@ -66,26 +66,39 @@ class VisStateContainer: Decodable, ParseJsonArrayProtocol {
 class VisStateHolderBase: Decodable {
     
     var id:String
+    var type: String
     
     var visStateBase: VisStateBase?
     
     private enum CodingKeys: String, CodingKey {
-        case id, attributes
+        case id, type, attributes
         enum AttributesCodingKeys: String, CodingKey {
-            case visState
+            case visState, title
         }
     }
 
     required init(from decoder: Decoder) throws {
         let container   = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.id     =   try container.decode(String.self, forKey: .id)
         let attributesContainer = try container.nestedContainer(keyedBy: CodingKeys.AttributesCodingKeys.self, forKey: .attributes)
-       
-        let json = try attributesContainer.decode(String.self, forKey: .visState)
-        if let data = json.data(using: .utf8) {
-            self.visStateBase = try JSONDecoder().decode(VisStateBase.self, from: data)
+
+        self.id     =   try container.decode(String.self, forKey: .id)
+        self.type   =   try container.decode(String.self, forKey: .type)
+        
+        if type == "search" {
+            let title = try? attributesContainer.decode(String.self, forKey: .title)
+            let customVisStateDict: [String: Any] = ["type": self.type, "title": title ?? ""]
+            if let data = try? JSONSerialization.data(withJSONObject: customVisStateDict as Any, options: .prettyPrinted) {
+                self.visStateBase = try JSONDecoder().decode(VisStateBase.self, from: data)
+            }
+            
+        } else {
+            let json = try attributesContainer.decode(String.self, forKey: .visState)
+            if let data = json.data(using: .utf8) {
+                self.visStateBase = try JSONDecoder().decode(VisStateBase.self, from: data)
+            }
         }
+
     }
     
     func asUIModel() -> VisStateService? {
@@ -109,8 +122,8 @@ class VisStateHolderBase: Decodable {
 
 class VisStateBase: Decodable {
     var title: String
-    var type: PanelType
-    var params: VisStateParams
+    var type: PanelType =   .unKnown
+    var params: VisStateParams?
     var aggregationsArray: [AggregationResponse] = []
 
     private enum CodingKeys: String, CodingKey {
@@ -121,11 +134,12 @@ class VisStateBase: Decodable {
         let container   =   try decoder.container(keyedBy: CodingKeys.self)
         self.title      =   try container.decode(String.self, forKey: .title)
         
-        let panelType = try container.decode(String.self, forKey: .type)
-        self.type   =   PanelType(rawValue: panelType) ?? .unKnown
+        if let panelType = try? container.decode(String.self, forKey: .type) {
+            self.type   =   PanelType(rawValue: panelType) ?? .unKnown
+        }
 
-        self.params      =   try container.decode(VisStateParams.self, forKey: .params)
-        self.aggregationsArray  =   try container.decode([AggregationResponse].self, forKey: .aggs)
+        self.params      =   try? container.decode(VisStateParams.self, forKey: .params)
+        self.aggregationsArray  =   (try? container.decode([AggregationResponse].self, forKey: .aggs)) ?? []
     }
     
     func asUIModel() -> VisStateService? {

@@ -8,12 +8,12 @@
 import Foundation
 import Alamofire
 
-public enum DashboardServiceBuilder: URLRequestBuilder {
+enum DashboardServiceBuilder: URLRequestBuilder {
     
     case loadDashboards(pageNumber: Int, pageSize: Int)
-    case loadVisStateData(ids: [String])
+    case loadVisStateData(panelInfo: [PanelInfo])
 
-    public var serverPath: ServerPaths {
+    var serverPath: ServerPaths {
         switch self {
         case .loadDashboards:
             return ServerPaths.dashboardList
@@ -22,7 +22,7 @@ public enum DashboardServiceBuilder: URLRequestBuilder {
         }
     }
     
-    public var parameters: Parameters? {
+    var parameters: Parameters? {
         switch self {
         case .loadDashboards(pageNumber: let pageNo, pageSize: let pageSize):
             return ["type": "dashboard", "page": pageNo, "per_page": pageSize]
@@ -31,7 +31,7 @@ public enum DashboardServiceBuilder: URLRequestBuilder {
         }
     }
     
-    public var method: HTTPMethod {
+    var method: HTTPMethod {
         switch self {
         case .loadVisStateData:
             return HTTPMethod.post
@@ -40,7 +40,7 @@ public enum DashboardServiceBuilder: URLRequestBuilder {
         }
     }
     
-    public var headers: HTTPHeaders {
+    var headers: HTTPHeaders {
         var header = HTTPHeaders()
         header["kbn-xsrf"] = "reporting"
 
@@ -60,10 +60,10 @@ public enum DashboardServiceBuilder: URLRequestBuilder {
         headers.forEach { request.addValue($0.value, forHTTPHeaderField: $0.name) }
         
         switch self {
-        case .loadVisStateData(ids: let idsList):
-            var computedParams: [[String: Any]] = []
-            for id in idsList {
-                computedParams.append(["type" : "visualization", "id" : id])
+        case .loadVisStateData(panelInfo: let panelInfoList):
+            var computedParams: [[String: Any?]] = []
+            for info in panelInfoList {
+                computedParams.append(["type" : info.type, "id" : info.id])
             }
             request.httpBody = try? JSONSerialization.data(withJSONObject: computedParams, options: .prettyPrinted)
         default: break

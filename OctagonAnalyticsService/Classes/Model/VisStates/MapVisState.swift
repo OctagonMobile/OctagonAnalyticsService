@@ -35,15 +35,15 @@ public class MapVisStateService: VisStateService {
     //MARK: Functions
     override init(_ responseModel: VisStateBase) {
         super.init(responseModel)
-        self.mapUrl_l       =   responseModel.params.wms?.url ?? ""
-        self.version        =   responseModel.params.wms?.options?.version ?? ""
-        self.transparent    =   responseModel.params.wms?.options?.transparent ?? true
-        self.styles         =   responseModel.params.wms?.options?.styles ?? ""
-        self.format         =   responseModel.params.wms?.options?.format ?? ""
-        self.defaultLayerName    =   responseModel.params.wms?.options?.defaultLayerName ?? ""
-        self.userField      =   responseModel.params.userField ?? ""
-        self.mapType        =   responseModel.params.mapType ?? .unknown
-        self.mapLayers      =   responseModel.params.mapLayers?.compactMap({ $0.asUIModel() }) ?? []
+        self.mapUrl_l       =   responseModel.params?.wms?.url ?? ""
+        self.version        =   responseModel.params?.wms?.options?.version ?? ""
+        self.transparent    =   responseModel.params?.wms?.options?.transparent ?? true
+        self.styles         =   responseModel.params?.wms?.options?.styles ?? ""
+        self.format         =   responseModel.params?.wms?.options?.format ?? ""
+        self.defaultLayerName    =   responseModel.params?.wms?.options?.defaultLayerName ?? ""
+        self.userField      =   responseModel.params?.userField ?? ""
+        self.mapType        =   responseModel.params?.mapType ?? .unknown
+        self.mapLayers      =   responseModel.params?.mapLayers?.compactMap({ $0.asUIModel() }) ?? []
     }
 }
 
