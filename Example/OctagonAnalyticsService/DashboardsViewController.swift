@@ -73,10 +73,53 @@ class DashboardsViewController: UIViewController {
             }
             
             if let indexPatternList = res as? IndexPatternsListResponse {
-                print(indexPatternList.indexPatterns.count)
+                print("Total Index Patterns = \(indexPatternList.indexPatterns.count)\n----------")
+
             }
         }
     }
+    
+    @IBAction func loadVideoContentAction(_ sender: UIButton) {
+        
+        let query = generatedQuery()
+        ServiceProvider.shared.loadVideoContent("covid19-stats", query: query) { (res, error) in
+            guard error == nil else {
+                print("\(error!.localizedDescription)")
+                return
+            }
+            
+            if let videoContentList = res as? VideoContentListResponse {
+                print("Total Video Contents = \(videoContentList.buckets.count)\n----------")
+
+            }
+        }
+    }
+    
+    private func generatedQuery() -> [String: Any] {
+        
+        let timeFieldName = "date"
+        let fieldName = "country.keyword"
+        let valueToDisplayFieldName = "total"
+        
+        let fromDateStr = "2020-04-01"
+        let toDateStr = "2020-04-30"
+
+        let query = [ "range":
+            ["\(timeFieldName)": [ "gte": fromDateStr,"lte": toDateStr]]]
+
+        
+        let datHistogram = ["field":"\(timeFieldName)", "interval": "1d"]
+        
+        let maxAggs = ["sum": ["field": valueToDisplayFieldName]]
+        let sortAggs = ["bucket_sort": ["sort": [["max_field": ["order": "desc"]]], "size": 10]]
+        
+        let innerMostAggs = ["max_field": maxAggs, "count_bucket_sort": sortAggs]
+        let middleLevelAggs: [String : Any] = ["terms": ["field": fieldName, "size": 500], "aggs": innerMostAggs]
+        let topMostAggs: [String : Any] = ["date_histogram": datHistogram, "aggs": ["aggs_Fields": middleLevelAggs]]
+                
+        return ["query": query, "size": 0, "aggs": ["dateHistogramName" : topMostAggs]]
+    }
+
 }
 
 extension DashboardsViewController: UITableViewDelegate, UITableViewDataSource {

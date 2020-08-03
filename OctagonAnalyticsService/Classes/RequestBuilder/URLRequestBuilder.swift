@@ -26,6 +26,7 @@ public protocol URLRequestBuilder: URLRequestConvertible {
 
     var urlRequest: URLRequest { get }
     
+    var httpBodyContent: Data? { get }
 }
 
 public extension URLRequestBuilder {
@@ -55,11 +56,16 @@ public extension URLRequestBuilder {
             return JSONEncoding.default
         }
     }
-
+    
+    var httpBodyContent: Data? {
+        return nil
+    }
+    
     var urlRequest: URLRequest {
         var request = URLRequest(url: requestURL)
         request.httpMethod = method.rawValue
         headers.forEach { request.addValue($0.value, forHTTPHeaderField: $0.name) }
+        request.httpBody = httpBodyContent
         return request
     }
 

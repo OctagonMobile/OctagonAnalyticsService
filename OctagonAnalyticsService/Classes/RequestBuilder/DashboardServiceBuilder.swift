@@ -53,22 +53,17 @@ enum DashboardServiceBuilder: URLRequestBuilder {
         return header
     }
     
-    public var urlRequest: URLRequest {
-        
-        var request = URLRequest(url: requestURL)
-        request.httpMethod = method.rawValue
-        headers.forEach { request.addValue($0.value, forHTTPHeaderField: $0.name) }
-        
+    var httpBodyContent: Data? {
         switch self {
         case .loadVisStateData(panelInfo: let panelInfoList):
             var computedParams: [[String: Any?]] = []
             for info in panelInfoList {
                 computedParams.append(["type" : info.type, "id" : info.id])
             }
-            request.httpBody = try? JSONSerialization.data(withJSONObject: computedParams, options: .prettyPrinted)
-        default: break
+            return try? JSONSerialization.data(withJSONObject: computedParams, options: .prettyPrinted)
+        default:
+            return nil
         }
-        return request
     }
     
     public var encoding: ParameterEncoding {

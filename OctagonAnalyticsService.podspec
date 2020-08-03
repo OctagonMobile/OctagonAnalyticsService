@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'OctagonAnalyticsService'
-  s.version          = '0.2.3'
+  s.version          = '0.2.4'
   s.summary          = 'OctagonAnalyticsService - API provider for iOS.'
 
 # This description is used to generate tags and improve search results.

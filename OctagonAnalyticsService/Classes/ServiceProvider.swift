@@ -92,6 +92,26 @@ public class ServiceProvider {
             }
         }
     }
+    
+    public func loadVideoContent(_ indexPatternName: String, query: [String: Any], completion: CompletionBlock?) {
+        let request = VideoServiceBuilder.loadVideoData(indexPatternName: indexPatternName, query: query)
+
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                completion?(nil, serviceError)
+            case .success(let value):
+                do {
+                    let videoResponseModel = try JSONDecoder().decode(VideoContentListResponseBase.self, from: value)
+                    completion?(videoResponseModel.asUIModel(), nil)
+                } catch let error {
+                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                    completion?(nil, serviceError)
+                }
+            }
+        }
+    }
 }
 
 //MARK: Private Functions

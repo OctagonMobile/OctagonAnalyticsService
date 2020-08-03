@@ -11,7 +11,7 @@ import Alamofire
 enum VideoServiceBuilder: URLRequestBuilder {
     
     case loadIndexPatterns(pageNumber: Int, pageSize: Int)
-    case loadVideoData(path: String)
+    case loadVideoData(indexPatternName: String, query: [String: Any])
 
     var serverPath: ServerPaths {
         switch self {
@@ -26,8 +26,17 @@ enum VideoServiceBuilder: URLRequestBuilder {
         switch self {
         case .loadIndexPatterns(pageNumber: let pageNo, pageSize: let pageSize):
             return ["type": "index-pattern", "page": pageNo, "per_page": pageSize]
+        case .loadVideoData(indexPatternName: let name, query: _):
+            return ["path": (name + "/_search"), "method": "POST"]
+        }
+    }
+    
+    var encoding: ParameterEncoding {
+        switch self {
+        case .loadIndexPatterns:
+            return URLEncoding.default
         case .loadVideoData:
-            return nil
+            return URLEncoding.queryString
         }
     }
     
@@ -38,6 +47,28 @@ enum VideoServiceBuilder: URLRequestBuilder {
         default:
             return HTTPMethod.post
         }
+    }
+    
+    var headers: HTTPHeaders {
+        var header = HTTPHeaders()
+        header["kbn-xsrf"] = "reporting"
+
+        switch self {
+        case .loadVideoData:
+            header["Content-Type"]  =   "application/json"
+        default: break
+        }
+        return header
+    }
+    
+    var httpBodyContent: Data? {
+        switch self {
+        case .loadVideoData(indexPatternName: _, query: let queryJson):
+            return try? JSONSerialization.data(withJSONObject: queryJson, options: .prettyPrinted)
+        default:
+            return nil
+        }
+
     }
 
 }
