@@ -136,7 +136,7 @@ extension UnkeyedDecodingContainer {
 extension Dictionary {
     var jsonStringRepresentation: String? {
         guard let theJSONData = try? JSONSerialization.data(withJSONObject: self,
-                                                            options: [.prettyPrinted]) else {
+                                                            options: [.fragmentsAllowed]) else {
             return nil
         }
 
@@ -168,4 +168,7 @@ extension Date {
         return dateformat.string(from: self)
     }
 
+    var millisecondsSince1970:Int64 {
+        return Int64((self.timeIntervalSince1970 * 1000.0).rounded())
+    }
 }

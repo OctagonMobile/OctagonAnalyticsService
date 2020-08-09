@@ -84,6 +84,8 @@ public enum ServerPaths {
     case dashboardList
     case visStateContent
     
+    case visualizationData
+
     case indexPatternList
     case videoData
 
@@ -93,6 +95,7 @@ public enum ServerPaths {
         case .logout: return "api/v1/auth/logout"
         case .dashboardList: return "api/saved_objects/_find"
         case .visStateContent: return "api/saved_objects/_bulk_get"
+        case .visualizationData: return "elasticsearch/_msearch"
         case .indexPatternList: return "api/saved_objects/_find"
         case .videoData: return "api/console/proxy"
         }

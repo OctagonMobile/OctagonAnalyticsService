@@ -16,11 +16,12 @@ public class GaugeVisStateService: VisStateService {
     public var gaugeType: GaugeType    =   .gauge
     public var gauge: GaugeService?
     
-    override init(_ responseModel: VisStateBase) {
+    override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
         
-        self.gaugeType  =   responseModel.params?.gaugeType ?? .gauge
-        self.gauge      =   responseModel.params?.gauge?.asUIModel()
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        self.gaugeType  =   visstateBaseModel.params?.gaugeType ?? .gauge
+        self.gauge      =   visstateBaseModel.params?.gauge?.asUIModel()
     }
 }
 

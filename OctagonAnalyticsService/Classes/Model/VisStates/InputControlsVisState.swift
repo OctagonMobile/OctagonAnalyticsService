@@ -11,9 +11,11 @@ public class InputControlsVisStateService: VisStateService {
     
     public var controls: [ControlService]  =  []
     
-    override init(_ responseModel: VisStateBase) {
+    override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
-        self.controls   =   responseModel.params?.controls?.compactMap({ $0.asUIModel() }) ?? []
+        
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        self.controls   =   visstateBaseModel.params?.controls?.compactMap({ $0.asUIModel() }) ?? []
     }
 }
 

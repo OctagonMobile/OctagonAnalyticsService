@@ -14,6 +14,8 @@ public class ServiceProvider {
     
     public static var shared   = ServiceProvider()
     
+    var indexPatternsList: [IndexPatternService]    =   []
+    
     //MARK: Authentication
     public func loginWith(_ userName: String, password: String, completion: CompletionBlock?) {
         
@@ -53,6 +55,10 @@ public class ServiceProvider {
     
     //MARK: Dashboards
     public func loadDashboards(_ pageNumber: Int, pageSize: Int, completion: CompletionBlock?) {
+        
+        //Update Indexpatterns List which is used for Visualization Data Service
+        loadIndexPatterns(1, pageSize: 1000, completion: nil)
+        
         let request = DashboardServiceBuilder.loadDashboards(pageNumber: pageNumber, pageSize: pageSize)
         
         AF.request(request).responseData {[weak self] (response) in
@@ -72,11 +78,35 @@ public class ServiceProvider {
         }
     }
     
+    //MARK: Visualization Data
+    public func loadVisualizationData(_ params: VizDataParams, completion: CompletionBlock?) {
+        
+        guard let indexPattern = indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
+                let err = OAServiceError(description: "Visualization Not found", code: 1000)
+                completion?(nil, err)
+                return
+        }
+                
+        let request = DashboardServiceBuilder.loadVisualizationData(indexPatternName: indexPattern.title, vizDataParams: params)
+        
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                completion?(nil, serviceError)
+            case .success(let value):
+                
+                completion?(value, nil)
+            }
+        }
+
+    }
+    
     //MARK: Video Data
     public func loadIndexPatterns(_ pageNumber: Int, pageSize: Int, completion: CompletionBlock?) {
         let request = VideoServiceBuilder.loadIndexPatterns(pageNumber: pageNumber, pageSize: pageSize)
 
-        AF.request(request).responseData { (response) in
+        AF.request(request).responseData {[weak self] (response) in
             switch response.result {
             case .failure(let error):
                 let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
@@ -84,7 +114,10 @@ public class ServiceProvider {
             case .success(let value):
                 do {
                     let indexPatternListModel = try JSONDecoder().decode(ServiceConfiguration.version.indexPatternListModel.self, from: value)
-                    completion?(indexPatternListModel.asUIModel(), nil)
+                    let ipListModel = indexPatternListModel.asUIModel()
+                    self?.indexPatternsList = ipListModel.indexPatterns
+                    completion?(ipListModel, nil)
+
                 } catch let error {
                     let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
                     completion?(nil, serviceError)
@@ -147,7 +180,7 @@ extension ServiceProvider {
                     do {
                         let data = try JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
                         let panel = try JSONDecoder().decode(ServiceConfiguration.version.panelModel.self, from: data)
-                        panel.visState  =   visState.visStateBase
+                        panel.visState  =   visState
                         panels.append(panel)
                     }
                     catch let error {

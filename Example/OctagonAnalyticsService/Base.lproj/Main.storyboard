@@ -95,17 +95,26 @@
                                     <action selector="loadVideoContentAction:" destination="s44-5d-197" eventType="touchUpInside" id="wkn-zQ-Cyo"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a0Y-QS-50w">
+                                <rect key="frame" x="20" y="444" width="95" height="30"/>
+                                <state key="normal" title="Load Viz Data"/>
+                                <connections>
+                                    <action selector="loadVizDataAction:" destination="s44-5d-197" eventType="touchUpInside" id="tQx-ba-PQP"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="Q3h-xM-UwE" firstAttribute="top" secondItem="Vax-Gd-r4d" secondAttribute="bottom" id="CFw-jK-uab"/>
                             <constraint firstItem="Q3h-xM-UwE" firstAttribute="leading" secondItem="Fer-wb-24D" secondAttribute="leading" id="FpU-xg-3nO"/>
                             <constraint firstItem="Vax-Gd-r4d" firstAttribute="top" secondItem="ReV-9z-P3g" secondAttribute="bottom" id="LCh-kR-G0R"/>
+                            <constraint firstItem="a0Y-QS-50w" firstAttribute="top" secondItem="W2h-pA-CDW" secondAttribute="bottom" constant="20" id="MXJ-OW-x5h"/>
                             <constraint firstItem="jrJ-8P-zPu" firstAttribute="leading" secondItem="Fer-wb-24D" secondAttribute="leading" constant="20" id="NUS-Jm-EdM"/>
                             <constraint firstItem="W2h-pA-CDW" firstAttribute="leading" secondItem="Fer-wb-24D" secondAttribute="leading" constant="20" id="aUE-Hs-NVD"/>
                             <constraint firstItem="W2h-pA-CDW" firstAttribute="top" secondItem="jrJ-8P-zPu" secondAttribute="bottom" constant="20" id="dEg-vO-eJ9"/>
                             <constraint firstAttribute="trailing" secondItem="Q3h-xM-UwE" secondAttribute="trailing" id="jzC-5C-7KP"/>
                             <constraint firstItem="jrJ-8P-zPu" firstAttribute="top" secondItem="Q3h-xM-UwE" secondAttribute="bottom" constant="20" id="kA8-Ba-PjC"/>
+                            <constraint firstItem="a0Y-QS-50w" firstAttribute="leading" secondItem="Fer-wb-24D" secondAttribute="leading" constant="20" id="w6n-QJ-ScP"/>
                             <constraint firstAttribute="trailing" secondItem="Vax-Gd-r4d" secondAttribute="trailing" constant="15" id="xc8-WS-Lrw"/>
                         </constraints>
                     </view>

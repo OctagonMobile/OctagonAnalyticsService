@@ -95,6 +95,24 @@ class DashboardsViewController: UIViewController {
         }
     }
     
+    // Load Visualization Data
+    @IBAction func loadVizDataAction(_ sender: UIButton) {
+        
+        guard let indexPatternId = dashboards.first?.panels.first?.visState?.indexPatternId else { return }
+        
+        let params = VizDataParams(indexPatternId)
+        params.panelType = .pieChart
+        params.timeFrom = "2015-02-01T00:00:00.000Z"
+        params.timeTo = "2020-02-01T00:00:00.000Z"
+        
+        ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
+            guard error == nil else {
+                print(error!.localizedDescription)
+                return
+            }
+        }
+    }
+        
     private func generatedQuery() -> [String: Any] {
         
         let timeFieldName = "date"

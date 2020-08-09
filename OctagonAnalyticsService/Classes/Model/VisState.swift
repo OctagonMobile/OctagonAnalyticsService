@@ -18,14 +18,24 @@ public class VisStateService {
 
     public var xAxisPosition: AxisPosition  =   .bottom
     public var seriesMode: SeriesMode       =   .stacked
+    
+    /// ID of the IndexPattern to which the VisState/panel belong to
+    public var indexPatternId: String?
 
-    init(_ responseModel: VisStateBase) {
-        self.title  =   responseModel.title
-        self.type   =   responseModel.type
-        self.xAxisPosition  =   responseModel.params?.categoryAxes?.first?.position ?? .bottom
-        self.seriesMode     =   responseModel.params?.seriesParams?.first?.mode ?? .stacked
+    init(_ responseModel: VisStateHolderBase) {
         
-        self.aggregationsArray  =   responseModel.aggregationsArray.compactMap({ $0.asUIModel() })
+        guard let visstateBaseModel = responseModel.visStateBase else {
+            title   =   ""
+            type    =   .unKnown
+            return
+        }
+        
+        self.title  =   visstateBaseModel.title
+        self.type   =   visstateBaseModel.type
+        self.xAxisPosition  =   visstateBaseModel.params?.categoryAxes?.first?.position ?? .bottom
+        self.seriesMode     =   visstateBaseModel.params?.seriesParams?.first?.mode ?? .stacked
+        
+        self.aggregationsArray  =   visstateBaseModel.aggregationsArray.compactMap({ $0.asUIModel() })
         
         self.metricAggregationsArray    = aggregationsArray.filter({ $0.schema == "metric"})
         self.otherAggregationsArray     = aggregationsArray.filter({ $0.schema != "metric"})
@@ -63,6 +73,7 @@ class VisStateContainer: Decodable, ParseJsonArrayProtocol {
     }
 }
 
+//MARK: VisState Holder
 class VisStateHolderBase: Decodable {
     
     var id:String
@@ -70,10 +81,16 @@ class VisStateHolderBase: Decodable {
     
     var visStateBase: VisStateBase?
     
+    var searchSourceJSON: String?
+    var indexPatternId: String?
+    
     private enum CodingKeys: String, CodingKey {
         case id, type, attributes
         enum AttributesCodingKeys: String, CodingKey {
-            case visState, title
+            case visState, title, kibanaSavedObjectMeta
+            enum MetaDataCodingKeys: String, CodingKey {
+                case searchSourceJSON
+            }
         }
     }
 
@@ -81,9 +98,11 @@ class VisStateHolderBase: Decodable {
         let container   = try decoder.container(keyedBy: CodingKeys.self)
         
         let attributesContainer = try container.nestedContainer(keyedBy: CodingKeys.AttributesCodingKeys.self, forKey: .attributes)
+        let metaDataContainer = try attributesContainer.nestedContainer(keyedBy: CodingKeys.AttributesCodingKeys.MetaDataCodingKeys.self, forKey: .kibanaSavedObjectMeta)
 
         self.id     =   try container.decode(String.self, forKey: .id)
         self.type   =   try container.decode(String.self, forKey: .type)
+        self.searchSourceJSON   =   try metaDataContainer.decode(String.self, forKey: .searchSourceJSON)
         
         if type == "search" {
             let title = try? attributesContainer.decode(String.self, forKey: .title)
@@ -104,22 +123,63 @@ class VisStateHolderBase: Decodable {
     func asUIModel() -> VisStateService? {
         guard let content = self.visStateBase else { return nil }
         switch content.type {
-        case .pieChart:                 return PieChartVisStateService(content)
-        case .tagCloud, .t4pTagcloud:   return TagCloudVisStateService(content)
-        case .tile:                     return TileVisStateService(content)
-        case .metric:                   return MetricVisStateService(content)
-        case .heatMap, .mapTracking:    return MapVisStateService(content)
-        case .neo4jGraph:               return GraphVisStateService(content)
-        case .html:                     return WebContentVisStateService(content)
-        case .markdown:                 return MarkDownVisStateService(content)
-        case .gauge, .goal:             return GaugeVisStateService(content)
-        case .inputControls:            return InputControlsVisStateService(content)
+        case .pieChart:                 return PieChartVisStateService(self)
+        case .tagCloud, .t4pTagcloud:   return TagCloudVisStateService(self)
+        case .tile:                     return TileVisStateService(self)
+        case .metric:                   return MetricVisStateService(self)
+        case .heatMap, .mapTracking:    return MapVisStateService(self)
+        case .neo4jGraph:               return GraphVisStateService(self)
+        case .html:                     return WebContentVisStateService(self)
+        case .markdown:                 return MarkDownVisStateService(self)
+        case .gauge, .goal:             return GaugeVisStateService(self)
+        case .inputControls:            return InputControlsVisStateService(self)
         default:
-            return VisStateService(content)
+            return VisStateService(self)
         }
     }
 }
 
+class VisStateHolderBase654: VisStateHolderBase {
+    
+    override func asUIModel() -> VisStateService? {
+        let visStateService = super.asUIModel()
+        
+        if let searchSourceJSON = searchSourceJSON,
+            let data = searchSourceJSON.data(using: .utf8) {
+            let dict = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any]
+            visStateService?.indexPatternId = dict?["index"] as? String
+        }
+        return visStateService
+    }
+}
+
+class VisStateHolderBase732: VisStateHolderBase {
+    
+    var references: [References]    =   []
+    private enum CodingKeys: String, CodingKey {
+        case references
+    }
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        let container   = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.references = try container.decode([References].self, forKey: .references)
+    }
+    
+    override func asUIModel() -> VisStateService? {
+        let visStateService = super.asUIModel()
+        
+        if let searchSourceJSON = searchSourceJSON,
+            let data = searchSourceJSON.data(using: .utf8) {
+            let dict = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any]
+            let keyName = dict?["indexRefName"] as? String ?? ""
+            visStateService?.indexPatternId = references.filter({$0.name == keyName}).first?.id
+        }
+        return visStateService
+    }
+}
+
+//MARK: VisState Baase
 class VisStateBase: Decodable {
     var title: String
     var type: PanelType =   .unKnown
@@ -142,9 +202,9 @@ class VisStateBase: Decodable {
         self.aggregationsArray  =   (try? container.decode([AggregationResponse].self, forKey: .aggs)) ?? []
     }
     
-    func asUIModel() -> VisStateService? {
-        return VisStateService(self)
-    }
+//    func asUIModel() -> VisStateService? {
+//        return VisStateService(self)
+//    }
 }
 
 class VisStateParams: Decodable {

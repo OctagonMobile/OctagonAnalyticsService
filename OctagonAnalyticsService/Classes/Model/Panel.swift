@@ -74,7 +74,7 @@ class PanelBase: Decodable {
     var panelIndex: String
     var version: String
     var gridData: GridData
-    var visState: VisStateBase?
+    var visState: VisStateHolderBase?
     
     private enum CodingKeys: String, CodingKey {
         case version    =   "version"
@@ -91,7 +91,8 @@ class PanelBase: Decodable {
     }
     
     func asUIModel() -> PanelService {
-        switch self.visState?.type {
+        
+        switch self.visState?.visStateBase?.type {
         case .metric:       return MetricPanelService(self)
         case .tile:         return TilePanelService(self)
         case .search:       return SavedSearchPanelService(self)

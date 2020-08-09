@@ -11,10 +11,11 @@ public class WebContentVisStateService: VisStateService {
     
     public var htmlString: String      = ""
     
-    override init(_ responseModel: VisStateBase) {
+    override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
         
-        self.htmlString =   responseModel.params?.html ?? ""
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        self.htmlString =   visstateBaseModel.params?.html ?? ""
     }
 }
 
@@ -24,11 +25,12 @@ public class TagCloudVisStateService: VisStateService {
     
     public var maxFontSize: NSInteger    = 60
     
-    override init(_ responseModel: VisStateBase) {
+    override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
         
-        self.minFontSize =   responseModel.params?.minFontSize ?? 14
-        self.maxFontSize =   responseModel.params?.maxFontSize ?? 60
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        self.minFontSize =   visstateBaseModel.params?.minFontSize ?? 14
+        self.maxFontSize =   visstateBaseModel.params?.maxFontSize ?? 60
     }
 }
 
@@ -37,10 +39,11 @@ public class MarkDownVisStateService: VisStateService {
     public var markdownText: String    =   ""
     public var fontSize: CGFloat       =   12.0
     
-    override init(_ responseModel: VisStateBase) {
+    override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
-        self.markdownText   =   responseModel.params?.markdownText ?? ""
-        self.fontSize       =   responseModel.params?.fontSize ?? 12.0
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        self.markdownText   =   visstateBaseModel.params?.markdownText ?? ""
+        self.fontSize       =   visstateBaseModel.params?.fontSize ?? 12.0
     }
 }
 
@@ -48,9 +51,10 @@ public class PieChartVisStateService: VisStateService {
     
     public var isDonut: Bool   = false
     
-    override init(_ responseModel: VisStateBase) {
+    override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
-        self.isDonut    =   responseModel.params?.isDonut ?? false
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        self.isDonut    =   visstateBaseModel.params?.isDonut ?? false
     }
 }
 
@@ -60,11 +64,12 @@ public class TileVisStateService: VisStateService {
     public var maxDistance: Int            = 15
     public var containerId: Int            = 1
     
-    override init(_ responseModel: VisStateBase) {
+    override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
-        self.imageHashField =   responseModel.params?.imageHashField ?? ""
-        self.maxDistance    =   responseModel.params?.maxDistance ?? 15
-        self.containerId    =   responseModel.params?.containerId ?? 1
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        self.imageHashField =   visstateBaseModel.params?.imageHashField ?? ""
+        self.maxDistance    =   visstateBaseModel.params?.maxDistance ?? 15
+        self.containerId    =   visstateBaseModel.params?.containerId ?? 1
     }
 }
 
@@ -74,11 +79,12 @@ public class GraphVisStateService: VisStateService {
     public var nodeImageBaseUrl: String    =   ""
     public var nodeImageProperty: String   =   ""
     
-    override init(_ responseModel: VisStateBase) {
+    override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
-        self.query              =   responseModel.params?.query ?? ""
-        self.nodeImageBaseUrl   =   responseModel.params?.nodeImageBaseUrl ?? ""
-        self.nodeImageProperty  =   responseModel.params?.nodeImageProperty ?? ""
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        self.query              =   visstateBaseModel.params?.query ?? ""
+        self.nodeImageBaseUrl   =   visstateBaseModel.params?.nodeImageBaseUrl ?? ""
+        self.nodeImageProperty  =   visstateBaseModel.params?.nodeImageProperty ?? ""
     }
 }
 
@@ -86,9 +92,10 @@ public class MetricVisStateService: VisStateService {
     
     public var fontSize: CGFloat?            = 10.0
     
-    override init(_ responseModel: VisStateBase) {
+    override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
         
-        self.fontSize   =   responseModel.params?.fontSize ?? 10.0
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        self.fontSize   =   visstateBaseModel.params?.fontSize ?? 10.0
     }
 }

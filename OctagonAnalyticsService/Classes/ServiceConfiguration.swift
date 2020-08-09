@@ -51,7 +51,8 @@ public enum VersionType: String {
     
     var visStateModel: VisStateHolderBase.Type {
         switch self {
-        case .v654, .v732: return VisStateHolderBase.self
+        case .v654: return VisStateHolderBase654.self
+        case .v732: return VisStateHolderBase732.self
         }
     }
     
@@ -69,7 +70,8 @@ public enum VersionType: String {
 
     var ipFieldResponseModel: IPFieldResponseBase.Type {
         switch self {
-        case .v654, .v732: return IPFieldResponseBase.self
+        case .v654: return IPFieldResponseBase654.self
+        case .v732: return IPFieldResponseBase732.self
         }
     }
 
