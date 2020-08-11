@@ -14,7 +14,12 @@ public class VizDataParams {
     public var timeFrom: String?
     public var timeTo: String?
     public var filters: [[String: Any]] =   []
-    
+    public var aggregationsArray: [AggregationService]         = []
+
+    private var segmentAggregationList: [AggregationService] {
+        return aggregationsArray.filter({ $0.schema == "segment" })
+    }
+
     //MARK: Functions
     public init(_ indexPatternId: String) {
         self.indexPatternId     =   indexPatternId
@@ -80,5 +85,39 @@ public class VizDataParams {
         }
 
         return dict
+    }
+        
+    func createAggsDictForAggregationAtIndex(_ index: Int = 0) -> [String: Any] {
+        
+        let aggregation = segmentAggregationList[index]
+        var idAggs: [String: Any] = [:]
+        switch aggregation.bucketType {
+        case .terms:
+            let size = aggregation.params?.size ?? 0
+            var internalDict: [String: Any] =
+                ["field": "\(aggregation.field)",
+                "size": size]
+            
+            if let order = aggregation.params?.order {
+                internalDict["order"] = ["_count":"\(order)"]
+            }
+
+            idAggs = ["\(aggregation.id)": ["terms": internalDict]]
+            break
+        default:
+            break
+        }
+        
+        let aggIndex = index + 1
+        
+        if segmentAggregationList.count != 1,
+            aggIndex <= segmentAggregationList.count - 1 {
+            let previousAggregation = segmentAggregationList[index]
+            if var dict = idAggs[previousAggregation.id] as? [String: Any] {
+                dict["aggs"] = createAggsDictForAggregationAtIndex(aggIndex)
+                idAggs[previousAggregation.id] = dict
+            }
+        }
+        return idAggs
     }
 }

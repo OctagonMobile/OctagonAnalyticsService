@@ -96,6 +96,13 @@ public class ServiceProvider {
                 completion?(nil, serviceError)
             case .success(let value):
                 
+                do {
+                    let result = try JSONSerialization.jsonObject(with: value, options: .allowFragments)
+                    completion?(result, nil)
+                } catch let error {
+                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                    completion?(nil, serviceError)
+                }
                 completion?(value, nil)
             }
         }

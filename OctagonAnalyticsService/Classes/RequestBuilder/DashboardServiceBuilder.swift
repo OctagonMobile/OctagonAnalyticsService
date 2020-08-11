@@ -125,8 +125,7 @@ extension DashboardServiceBuilder {
              "_source": [
                "excludes": []
              ],
-//             "aggs": aggsDsl || {}
-//                ,
+             "aggs": params?.createAggsDictForAggregationAtIndex() ?? [:],
              "script_fields": scriptedFieldObj
         ]
         

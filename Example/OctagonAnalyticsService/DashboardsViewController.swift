@@ -98,12 +98,15 @@ class DashboardsViewController: UIViewController {
     // Load Visualization Data
     @IBAction func loadVizDataAction(_ sender: UIButton) {
         
-        guard let indexPatternId = dashboards.first?.panels.first?.visState?.indexPatternId else { return }
+        let booksDashboard = dashboards.filter({ $0.id == "ad10cfa0-41a9-11ea-a91b-094ccf177e67"}).first
+        
+        guard let indexPatternId = booksDashboard?.panels.first?.visState?.indexPatternId else { return }
         
         let params = VizDataParams(indexPatternId)
         params.panelType = .pieChart
         params.timeFrom = "2015-02-01T00:00:00.000Z"
         params.timeTo = "2020-02-01T00:00:00.000Z"
+        params.aggregationsArray = booksDashboard?.panels.filter({ $0.id == "4156fdc0-41a9-11ea-a91b-094ccf177e67"}).first?.visState?.aggregationsArray ?? []
         
         ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
             guard error == nil else {

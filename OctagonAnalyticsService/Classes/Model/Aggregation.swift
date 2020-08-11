@@ -108,6 +108,8 @@ public class AggregationParamsService {
     public var customInterval: String          = ""
     public var intervalInt: Int                = 0
     public var aggregate: AggregateFunction    = .unknown
+    public var size: Int                        = 0
+    public var order: String?
 
     init(_ responseModel: AggregationResponseParams) {
         self.precision      =   responseModel.precision ?? 5
@@ -115,6 +117,8 @@ public class AggregationParamsService {
         self.customInterval =   responseModel.customInterval ?? ""
         self.intervalInt    =   responseModel.intervalInt ?? 0
         self.aggregate      =   responseModel.aggregate
+        self.size           =   responseModel.size ?? 0
+        self.order          =   responseModel.order
     }
 }
 
@@ -165,9 +169,11 @@ class AggregationResponseParams: Decodable {
     var customInterval: String?
     var intervalInt:Int?
     var aggregate: AggregateFunction    = .unknown
+    var size: Int?
+    var order: String?
     
     private enum CodingKeys: String, CodingKey {
-        case field, precision, interval, customInterval, aggregate
+        case field, precision, interval, customInterval, aggregate, size, order
     }
 
     required init(from decoder: Decoder) throws {
@@ -176,6 +182,8 @@ class AggregationResponseParams: Decodable {
         self.precision      =   try? container.decode(Int.self, forKey: .precision)
         self.customInterval =   try? container.decode(String.self, forKey: .customInterval)
         self.intervalInt    =   try? container.decode(Int.self, forKey: .interval)
+        self.size           =   try? container.decode(Int.self, forKey: .size)
+        self.order          =   try? container.decode(String.self, forKey: .order)
 
         if let intrvlType  = try? container.decode(String.self, forKey: .interval) {
             self.interval = AggregationParamsService.IntervalType(rawValue: intrvlType) ?? .unKnown
