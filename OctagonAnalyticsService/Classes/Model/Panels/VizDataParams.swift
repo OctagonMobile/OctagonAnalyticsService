@@ -116,7 +116,18 @@ public class VizDataParams {
                 ranges.append(["from": range.from, "to": range.to])
             }
             internalDict["ranges"] = ranges
-            idAggs = ["\(aggregation.id)": ["range": internalDict]]
+            
+            var dict = ["range": internalDict]
+            if aggregation.bucketType == .range &&
+                index == otherAggregationList.count - 1 {
+
+                if let metricAggs = aggregationsArray.filter({ $0.schema == "metric" && $0.metricType != .count }).first {
+                    let metricAggDict = createMetricAggregationFor(metricAggs)
+                    dict["aggs"] = metricAggDict
+                }
+            }
+
+            idAggs = ["\(aggregation.id)": dict]
             break
             
         default:
@@ -134,5 +145,10 @@ public class VizDataParams {
             }
         }
         return idAggs
+    }
+    
+    func createMetricAggregationFor(_ aggregation: AggregationService) -> [String: Any] {
+        let dict = ["\(aggregation.metricType.rawValue)": ["field": "\(aggregation.field)"]]
+        return ["\(aggregation.id)": dict]
     }
 }
