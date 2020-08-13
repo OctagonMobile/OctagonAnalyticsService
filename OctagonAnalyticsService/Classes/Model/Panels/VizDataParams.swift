@@ -17,7 +17,7 @@ public class VizDataParams {
     public var aggregationsArray: [AggregationService]         = []
 
     private var otherAggregationList: [AggregationService] {
-        return aggregationsArray.filter({ $0.schema != "segment" })
+        return aggregationsArray.filter({ $0.schema != "metric" })
     }
 
     //MARK: Functions
@@ -104,6 +104,21 @@ public class VizDataParams {
 
             idAggs = ["\(aggregation.id)": ["terms": internalDict]]
             break
+            
+        case .range:
+            
+            var internalDict: [String: Any] =
+                ["field": "\(aggregation.field)",
+                    "keyed": true]
+
+            var ranges: [[String: Any]] = []
+            for range in aggregation.params?.ranges ?? [] {
+                ranges.append(["from": range.from, "to": range.to])
+            }
+            internalDict["ranges"] = ranges
+            idAggs = ["\(aggregation.id)": ["range": internalDict]]
+            break
+            
         default:
             break
         }

@@ -98,7 +98,7 @@ class DashboardsViewController: UIViewController {
     // Load Visualization Data
     @IBAction func loadVizDataAction(_ sender: UIButton) {
         
-        let booksDashboard = dashboards.filter({ $0.id == "ad10cfa0-41a9-11ea-a91b-094ccf177e67"}).first
+        let booksDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
         
         guard let indexPatternId = booksDashboard?.panels.first?.visState?.indexPatternId else { return }
         
@@ -106,7 +106,7 @@ class DashboardsViewController: UIViewController {
         params.panelType = .pieChart
         params.timeFrom = "2015-02-01T00:00:00.000Z"
         params.timeTo = "2020-02-01T00:00:00.000Z"
-        params.aggregationsArray = booksDashboard?.panels.filter({ $0.id == "4156fdc0-41a9-11ea-a91b-094ccf177e67"}).first?.visState?.aggregationsArray ?? []
+        params.aggregationsArray = booksDashboard?.panels.filter({ $0.id == "3c22b390-dd2f-11ea-a80d-47c665684b26"}).first?.visState?.aggregationsArray ?? []
         
         ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
             guard error == nil else {

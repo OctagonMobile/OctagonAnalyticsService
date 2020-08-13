@@ -110,6 +110,7 @@ public class AggregationParamsService {
     public var aggregate: AggregateFunction    = .unknown
     public var size: Int                        = 0
     public var order: String?
+    public var ranges: [BucketRange]            =   []
 
     init(_ responseModel: AggregationResponseParams) {
         self.precision      =   responseModel.precision ?? 5
@@ -119,6 +120,17 @@ public class AggregationParamsService {
         self.aggregate      =   responseModel.aggregate
         self.size           =   responseModel.size ?? 0
         self.order          =   responseModel.order
+        self.ranges         =   responseModel.rangeList.compactMap({ $0.asUIModel()})
+    }
+}
+
+public class BucketRange {
+    public var from: CGFloat    =   0.0
+    public var to: CGFloat      =   0.0
+    
+    init(_ responseModel: BucketRangeResponse) {
+        self.from   =   responseModel.from
+        self.to     =   responseModel.to
     }
 }
 
@@ -153,6 +165,10 @@ class AggregationResponse : Decodable {
                 bucketType = BucketType(rawValue: type) ?? .unKnown
             }
         }
+        
+        if bucketType == .range {
+            
+        }
     }
     
     func asUIModel() -> AggregationService? {
@@ -172,8 +188,12 @@ class AggregationResponseParams: Decodable {
     var size: Int?
     var order: String?
     
+    // This is used only in Range Bucket type
+    var rangeList: [BucketRangeResponse] =   []
+    
     private enum CodingKeys: String, CodingKey {
-        case field, precision, interval, customInterval, aggregate, size, order
+        case field, precision, interval, customInterval, aggregate, size, order,
+        ranges
     }
 
     required init(from decoder: Decoder) throws {
@@ -192,9 +212,32 @@ class AggregationResponseParams: Decodable {
         if let aggregateFunc = try? container.decode(String.self, forKey: .aggregate) {
             self.aggregate = AggregateFunction(rawValue: aggregateFunc) ?? .unknown
         }
+        
+        self.rangeList  =   (try? container.decode([BucketRangeResponse].self, forKey: .ranges)) ?? []
     }
     
     func asUIModel() -> AggregationParamsService? {
         return AggregationParamsService(self)
+    }
+}
+
+class BucketRangeResponse: Decodable {
+ 
+    var from : CGFloat  =   0.0
+    var to: CGFloat     =   0.0
+    
+    private enum CodingKeys: String, CodingKey {
+        case from, to
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container   = try decoder.container(keyedBy: CodingKeys.self)
+        
+        from    =   try container.decode(CGFloat.self, forKey: .from)
+        to      =   try container.decode(CGFloat.self, forKey: .to)
+    }
+    
+    func asUIModel() -> BucketRange {
+        return BucketRange(self)
     }
 }
