@@ -16,8 +16,8 @@ public class VizDataParams {
     public var filters: [[String: Any]] =   []
     public var aggregationsArray: [AggregationService]         = []
 
-    private var segmentAggregationList: [AggregationService] {
-        return aggregationsArray.filter({ $0.schema == "segment" })
+    private var otherAggregationList: [AggregationService] {
+        return aggregationsArray.filter({ $0.schema != "segment" })
     }
 
     //MARK: Functions
@@ -89,7 +89,7 @@ public class VizDataParams {
         
     func createAggsDictForAggregationAtIndex(_ index: Int = 0) -> [String: Any] {
         
-        let aggregation = segmentAggregationList[index]
+        let aggregation = otherAggregationList[index]
         var idAggs: [String: Any] = [:]
         switch aggregation.bucketType {
         case .terms:
@@ -110,9 +110,9 @@ public class VizDataParams {
         
         let aggIndex = index + 1
         
-        if segmentAggregationList.count != 1,
-            aggIndex <= segmentAggregationList.count - 1 {
-            let previousAggregation = segmentAggregationList[index]
+        if otherAggregationList.count != 1,
+            aggIndex <= otherAggregationList.count - 1 {
+            let previousAggregation = otherAggregationList[index]
             if var dict = idAggs[previousAggregation.id] as? [String: Any] {
                 dict["aggs"] = createAggsDictForAggregationAtIndex(aggIndex)
                 idAggs[previousAggregation.id] = dict
