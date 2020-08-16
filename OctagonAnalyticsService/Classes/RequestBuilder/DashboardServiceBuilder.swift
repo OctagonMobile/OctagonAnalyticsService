@@ -143,18 +143,25 @@ extension DashboardServiceBuilder {
     
     func getRangeFilter(_ visStateContent: VizDataParams?, timeStampProp: String?) -> [String: Any]? {
         var fromDateValue: Int64    =   0
-        if let fromDateStr = visStateContent?.timeFrom,
-            let fromDate = fromDateStr.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ") {
-            fromDateValue = fromDate.millisecondsSince1970
+        if let fromDateStr = visStateContent?.timeFrom {
+            if let fromDate = fromDateStr.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ") {
+                fromDateValue = fromDate.millisecondsSince1970
+            } else if let fromDate = DateParser.shared.parse(fromDateStr) {
+                fromDateValue = fromDate.millisecondsSince1970
+            }
         }
         
         var toDateValue: Int64    =   0
-        if let toDateStr  = visStateContent?.timeTo,
-            let toDate = toDateStr.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ") {
-            toDateValue = toDate.millisecondsSince1970
+        if let toDateStr  = visStateContent?.timeTo  {
+            if let toDate = toDateStr.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ") {
+                toDateValue = toDate.millisecondsSince1970
+            } else if let toDate = DateParser.shared.parse(toDateStr) {
+                toDateValue = toDate.millisecondsSince1970
+            }
         }
 
-        if let timeFieldName = timeStampProp, !timeFieldName.isEmpty {
+        if let timeFieldName = timeStampProp, !timeFieldName.isEmpty,
+            fromDateValue != 0, toDateValue != 0 {
             let timeRangeFilter = [timeFieldName : ["gte": fromDateValue, "lte": toDateValue, "format": "epoch_millis"]]
             return ["range": timeRangeFilter]
         }

@@ -104,9 +104,9 @@ class DashboardsViewController: UIViewController {
         
         let params = VizDataParams(indexPatternId)
         params.panelType = .area
-        params.timeFrom = "2015-08-16T00:00:00.000Z"
-        params.timeTo = "2020-08-16T00:00:00.000Z"
-        params.aggregationsArray = booksDashboard?.panels.filter({ $0.id == "4ff76530-41b9-11ea-a91b-094ccf177e67"}).first?.visState?.aggregationsArray ?? []
+        params.timeFrom = "now"//"2015-08-16T00:00:00.000Z"
+        params.timeTo = "now-5y"//"2020-08-16T00:00:00.000Z"
+        params.aggregationsArray = booksDashboard?.panels.filter({ $0.id == "7652db20-dfce-11ea-a80d-47c665684b26"}).first?.visState?.aggregationsArray ?? []
         params.interval = "1M"
         ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
             guard error == nil else {
