@@ -98,6 +98,7 @@ public class VizDataParams {
 
     func createAggsDictForAggregationAtIndex(_ index: Int = 0) -> [String: Any] {
         
+        guard index < otherAggregationList.count else { return [:] }
         let aggregation = otherAggregationList[index]
         var idAggs: [String: Any] = [:]
         switch aggregation.bucketType {

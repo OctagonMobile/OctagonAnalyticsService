@@ -20,7 +20,7 @@ public class GaugeVisStateService: VisStateService {
         super.init(responseModel)
         
         guard let visstateBaseModel = responseModel.visStateBase else { return }
-        self.gaugeType  =   visstateBaseModel.params?.gaugeType ?? .gauge
+        self.gaugeType  =   GaugeType(rawValue: visstateBaseModel.type.rawValue) ?? .gauge
         self.gauge      =   visstateBaseModel.params?.gauge?.asUIModel()
     }
 }
