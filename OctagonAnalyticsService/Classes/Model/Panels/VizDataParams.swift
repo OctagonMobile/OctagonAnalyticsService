@@ -86,7 +86,16 @@ public class VizDataParams {
 
         return dict
     }
+     
+    func generatedAggregationJson() -> [String: Any] {
         
+        if panelType == .gauge {
+            guard let metricAggregation = aggregationsArray.filter({ $0.schema == "metric"}).first else { return [:] }
+            return createMetricAggregationFor(metricAggregation)
+        }
+        return createAggsDictForAggregationAtIndex()
+    }
+
     func createAggsDictForAggregationAtIndex(_ index: Int = 0) -> [String: Any] {
         
         let aggregation = otherAggregationList[index]
