@@ -95,9 +95,13 @@ extension DashboardServiceBuilder {
         
         
         var mustFilters: [[String: Any]] = []
-        if let rangeFilter = getRangeFilter(params) {
-            mustFilters.append(rangeFilter)
+        if let indexPattern = ServiceProvider.shared.indexPatternsList.filter({ $0.id == params?.indexPatternId}).first,
+            !indexPattern.timeFieldName.isEmpty {
+            if let rangeFilter = getRangeFilter(params, timeStampProp: indexPattern.timeFieldName) {
+                mustFilters.append(rangeFilter)
+            }
         }
+
         
         var mustNotFilters: [[String: Any]] = []
         
@@ -137,7 +141,7 @@ extension DashboardServiceBuilder {
 
     }
     
-    func getRangeFilter(_ visStateContent: VizDataParams?) -> [String: Any]? {
+    func getRangeFilter(_ visStateContent: VizDataParams?, timeStampProp: String?) -> [String: Any]? {
         var fromDateValue: Int64    =   0
         if let fromDateStr = visStateContent?.timeFrom,
             let fromDate = fromDateStr.formattedDate("yyyy-MM-dd'T'HH:mm:ss.SSSZ") {
@@ -150,7 +154,7 @@ extension DashboardServiceBuilder {
             toDateValue = toDate.millisecondsSince1970
         }
 
-        if let timeFieldName = visStateContent?.timeFieldName, !timeFieldName.isEmpty {
+        if let timeFieldName = timeStampProp, !timeFieldName.isEmpty {
             let timeRangeFilter = [timeFieldName : ["gte": fromDateValue, "lte": toDateValue, "format": "epoch_millis"]]
             return ["range": timeRangeFilter]
         }
