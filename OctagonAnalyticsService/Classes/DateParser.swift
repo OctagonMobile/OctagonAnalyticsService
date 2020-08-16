@@ -55,7 +55,7 @@ class DateParser {
         case "M": return .month
         case "w": return .weekOfMonth
         case "d": return .day
-        case "h": return .hour
+        case "H": return .hour
         case "m": return .minute
         case "s": return .second
         default:
