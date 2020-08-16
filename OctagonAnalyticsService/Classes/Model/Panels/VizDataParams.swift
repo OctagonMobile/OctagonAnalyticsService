@@ -20,6 +20,10 @@ public class VizDataParams {
         return aggregationsArray.filter({ $0.schema != "metric" })
     }
 
+    private var metricAggregation: AggregationService? {
+        return aggregationsArray.filter({ $0.schema == "metric"}).first
+    }
+    
     //MARK: Functions
     public init(_ indexPatternId: String) {
         self.indexPatternId     =   indexPatternId
@@ -89,8 +93,8 @@ public class VizDataParams {
      
     func generatedAggregationJson() -> [String: Any] {
         
-        if panelType == .gauge {
-            guard let metricAggregation = aggregationsArray.filter({ $0.schema == "metric"}).first else { return [:] }
+        if panelType == .gauge || panelType == .goal {
+            guard let metricAggregation = metricAggregation else { return [:] }
             return createMetricAggregationFor(metricAggregation)
         }
         return createAggsDictForAggregationAtIndex()
