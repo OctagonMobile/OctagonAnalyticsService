@@ -13,6 +13,8 @@ public class VizDataParams {
     public var panelType: PanelType    =   .unKnown
     public var timeFrom: String?
     public var timeTo: String?
+    /// Interval is used only for Date Histogram
+    public var interval: String?
     public var filters: [[String: Any]] =   []
     public var aggregationsArray: [AggregationService]         = []
 
@@ -141,6 +143,16 @@ public class VizDataParams {
                 }
             }
 
+            idAggs = ["\(aggregation.id)": dict]
+            break
+            
+        case .dateHistogram:
+            
+            var internalDict: [String: Any] = ["field": "\(aggregation.field)"]
+            if let intervl = interval {
+                internalDict["interval"] = intervl
+            }
+            let dict = ["\(aggregation.bucketType.rawValue)": internalDict]
             idAggs = ["\(aggregation.id)": dict]
             break
             
