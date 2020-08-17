@@ -150,8 +150,8 @@ public class ServiceProvider {
                     do {
                         let result = try JSONSerialization.jsonObject(with: value, options: .allowFragments)
                         
-                        let columns = visStateContent.visStateHolder?.first?.columns ?? []
-                        let resp = params.postResponseProcedure(result, columns: columns)
+                        let visStateHolder = visStateContent.visStateHolder?.first
+                        let resp = params.postResponseProcedure(result, visStateHolder: visStateHolder)
                         completion?(resp, nil)
                     } catch let error {
                         let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
