@@ -15,13 +15,15 @@ enum DashboardServiceBuilder: URLRequestBuilder {
     
     case loadVisualizationData(indexPatternName: String, vizDataParams:VizDataParams?)
 
+    case loadSavedSearchData(indexPatternName: String, sort: [String], searchDataParams:SavedSearchDataParams?)
+
     var serverPath: ServerPaths {
         switch self {
         case .loadDashboards:
             return ServerPaths.dashboardList
         case .loadVisStateData:
             return ServerPaths.visStateContent
-        case .loadVisualizationData:
+        case .loadVisualizationData, .loadSavedSearchData:
             return ServerPaths.visualizationData
         }
     }
@@ -32,6 +34,8 @@ enum DashboardServiceBuilder: URLRequestBuilder {
             return ["type": "dashboard", "page": pageNo, "per_page": pageSize]
         case .loadVisualizationData(indexPatternName: let ipName, vizDataParams: _):
             return ["index": ipName]
+        case .loadSavedSearchData(indexPatternName: let ipName, sort: _, searchDataParams: _):
+            return ["index": ipName]
         default:
             return nil
         }
@@ -39,7 +43,7 @@ enum DashboardServiceBuilder: URLRequestBuilder {
     
     var method: HTTPMethod {
         switch self {
-        case .loadVisStateData, .loadVisualizationData:
+        case .loadVisStateData, .loadVisualizationData, .loadSavedSearchData:
             return HTTPMethod.post
         default:
             return HTTPMethod.get
@@ -51,7 +55,7 @@ enum DashboardServiceBuilder: URLRequestBuilder {
         header["kbn-xsrf"] = "reporting"
 
         switch self {
-        case .loadVisStateData, .loadVisualizationData:
+        case .loadVisStateData, .loadVisualizationData, .loadSavedSearchData:
             header["Content-Type"]  =   "application/json"
         default:
             break
@@ -70,6 +74,8 @@ enum DashboardServiceBuilder: URLRequestBuilder {
             
         case .loadVisualizationData(indexPatternName: let ipName, vizDataParams: let params):
             return generatedQueryDataForVisualization(ipName, params: params)
+        case .loadSavedSearchData(indexPatternName: let ipName, sort: let sortList, searchDataParams: let params):
+            return generatedQueryDataForSavedSearch(ipName, sort: sortList, params: params)
         default:
             return nil
         }
@@ -79,7 +85,7 @@ enum DashboardServiceBuilder: URLRequestBuilder {
         switch self {
         case .loadVisStateData:
             return JSONEncoding.default
-        case .loadVisualizationData:
+        case .loadVisualizationData, .loadSavedSearchData:
             return URLEncoding.queryString
         default:
             return URLEncoding.default
@@ -140,6 +146,66 @@ extension DashboardServiceBuilder {
         return finalContent.data(using: .utf8)!
 
     }
+    
+    func generatedQueryDataForSavedSearch(_ indexPatternName: String, sort: [String], params: SavedSearchDataParams?) -> Data? {
+        
+        let indexJson: [String: Any] = ["index": indexPatternName,
+                                        "ignore_unavailable": true]
+        
+        
+        var mustFilters: [[String: Any]] = []
+        if let indexPattern = ServiceProvider.shared.indexPatternsList.filter({ $0.id == params?.indexPatternId}).first,
+            !indexPattern.timeFieldName.isEmpty {
+            if let rangeFilter = getRangeFilter(params, timeStampProp: indexPattern.timeFieldName) {
+                mustFilters.append(rangeFilter)
+            }
+        }
+
+        
+        var mustNotFilters: [[String: Any]] = []
+        
+        params?.filters.forEach({ (dict) in
+            if let filter = params?.prepareVisualizationFilter(dict) {
+                let isInverted = filter["isFilterInverted"] as? Bool ?? false
+                
+                isInverted ? mustNotFilters.append(dict) : mustFilters.append(dict)
+            }
+        })
+        
+//        let scriptedFieldsArray = params?.checkForScriptedFields() ?? []
+//        let scriptedFieldObj = params?.prepareScriptedFieldsObj(scriptedFieldsArray) ?? [:]
+        
+        let pageSize = params?.pageSize ?? 10
+        let fromPageNumber = (params?.pageNum ?? 0) * pageSize
+        
+        
+        var sortDict: [String: Any] = [:]
+        if sort.count > 1 {
+            sortDict["\(sort[0])"] = ["order": "\(sort[1])"]
+        }
+        
+        let queryJSON: [String: Any]  =
+            ["query":
+                ["bool":
+                    [
+                        "must": mustFilters,
+                        "must_not": mustNotFilters,
+                        "filter": []
+                    ]
+                ],
+             "from": fromPageNumber,
+             "size": pageSize,
+             "sort": sortDict
+        ]
+        
+        let indexJsonString = indexJson.jsonStringRepresentation ?? ""
+        let queryJSONString = queryJSON.jsonStringRepresentation ?? ""
+
+        let finalContent = indexJsonString + "\n" + queryJSONString + "\n"
+        return finalContent.data(using: .utf8)!
+
+    }
+
     
     func getRangeFilter(_ visStateContent: VizDataParams?, timeStampProp: String?) -> [String: Any]? {
         var fromDateValue: Int64    =   0

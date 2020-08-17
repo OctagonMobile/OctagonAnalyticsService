@@ -109,6 +109,63 @@ public class ServiceProvider {
 
     }
     
+    //MARK: SavedSearch
+    public func loadSavedSearchData(_ params: SavedSearchDataParams, completion: CompletionBlock?) {
+                
+        guard let savedSearchId = params.savedSearchId else {
+            let serviceError = OAServiceError(description: "Missing SavedSearch ID", code: 1000)
+            completion?(nil, serviceError)
+            return
+        }
+        let info = PanelInfo(savedSearchId, type: "search")
+        
+        loadVisStateDataFor([info]) { [weak self] (res, err) in
+            
+            guard err == nil else {
+                completion?(nil, err)
+                return
+            }
+
+            guard let visStateContent = res as? VisStateContainer else {
+                let serviceError = OAServiceError(description: "Something went wrong, please retry", code: 1000)
+                completion?(nil, serviceError)
+                return
+            }
+
+            guard let indexPattern = self?.indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
+                    let err = OAServiceError(description: "SavedSearch Not found", code: 1000)
+                    completion?(nil, err)
+                    return
+            }
+                    
+            let sort = visStateContent.visStateHolder?.first?.sortList ?? []
+            let request = DashboardServiceBuilder.loadSavedSearchData(indexPatternName: indexPattern.title, sort: sort, searchDataParams: params)
+            
+            AF.request(request).responseData { (response) in
+                switch response.result {
+                case .failure(let error):
+                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                    completion?(nil, serviceError)
+                case .success(let value):
+                    
+                    do {
+                        let result = try JSONSerialization.jsonObject(with: value, options: .allowFragments)
+                        
+                        let columns = visStateContent.visStateHolder?.first?.columns ?? []
+                        let resp = params.postResponseProcedure(result, columns: columns)
+                        completion?(resp, nil)
+                    } catch let error {
+                        let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                        completion?(nil, serviceError)
+                    }
+                    completion?(value, nil)
+                }
+            }
+
+        }
+    }
+
+    
     //MARK: Video Data
     public func loadIndexPatterns(_ pageNumber: Int, pageSize: Int, completion: CompletionBlock?) {
         let request = VideoServiceBuilder.loadIndexPatterns(pageNumber: pageNumber, pageSize: pageSize)

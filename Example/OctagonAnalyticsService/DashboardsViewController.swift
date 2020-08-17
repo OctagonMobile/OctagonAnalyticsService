@@ -120,6 +120,30 @@ class DashboardsViewController: UIViewController {
             }
         }
     }
+    
+    @IBAction func loadSavedSearchDataAction(_ sender: UIButton) {
+        
+        let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
+        guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
+
+        let params = SavedSearchDataParams(indexPatternId)
+        params.panelType = .search
+        params.savedSearchId = "26201260-41ba-11ea-a91b-094ccf177e67"
+        params.timeFrom = "now-5y"
+        params.timeTo = "now"
+        params.aggregationsArray = testDashboard?.panels.filter({ $0.id == "26201260-41ba-11ea-a91b-094ccf177e67"}).first?.visState?.aggregationsArray ?? []
+
+        ServiceProvider.shared.loadSavedSearchData(params) { (res, error) in
+            guard error == nil else {
+                print(error!.localizedDescription)
+                return
+            }
+            
+            if let result = res as? [[String: Any]] {
+                print("\(String(describing: result))")
+            }
+        }
+    }
         
     private func generatedQuery() -> [String: Any] {
         

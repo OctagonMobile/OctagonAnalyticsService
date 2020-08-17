@@ -84,10 +84,14 @@ class VisStateHolderBase: Decodable {
     var searchSourceJSON: String?
     var indexPatternId: String?
     
+    // Followinf properties only for Saved Search
+    var sortList: [String]  =   []
+    var columns: [String]   =   []
+
     private enum CodingKeys: String, CodingKey {
         case id, type, attributes
         enum AttributesCodingKeys: String, CodingKey {
-            case visState, title, kibanaSavedObjectMeta
+            case visState, title, kibanaSavedObjectMeta, sort, columns
             enum MetaDataCodingKeys: String, CodingKey {
                 case searchSourceJSON
             }
@@ -110,7 +114,9 @@ class VisStateHolderBase: Decodable {
             if let data = try? JSONSerialization.data(withJSONObject: customVisStateDict as Any, options: .prettyPrinted) {
                 self.visStateBase = try JSONDecoder().decode(VisStateBase.self, from: data)
             }
-            
+            self.sortList = (try? attributesContainer.decode([String].self, forKey: .sort)) ?? []
+            self.columns  = (try? attributesContainer.decode([String].self, forKey: .columns)) ?? []
+
         } else {
             let json = try attributesContainer.decode(String.self, forKey: .visState)
             if let data = json.data(using: .utf8) {
