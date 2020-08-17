@@ -103,7 +103,6 @@ public class ServiceProvider {
                     let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
                     completion?(nil, serviceError)
                 }
-                completion?(value, nil)
             }
         }
 
@@ -158,7 +157,6 @@ public class ServiceProvider {
                         let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
                         completion?(nil, serviceError)
                     }
-                    completion?(value, nil)
                 }
             }
 
