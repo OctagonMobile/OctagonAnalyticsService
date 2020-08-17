@@ -110,6 +110,7 @@ public class AggregationParamsService {
     public var aggregate: AggregateFunction    = .unknown
     public var size: Int                        = 0
     public var order: String?
+    public var orderBy: String?
     public var ranges: [BucketRange]            =   []
 
     init(_ responseModel: AggregationResponseParams) {
@@ -120,6 +121,7 @@ public class AggregationParamsService {
         self.aggregate      =   responseModel.aggregate
         self.size           =   responseModel.size ?? 0
         self.order          =   responseModel.order
+        self.orderBy        =   responseModel.orderBy
         self.ranges         =   responseModel.rangeList.compactMap({ $0.asUIModel()})
     }
 }
@@ -187,12 +189,13 @@ class AggregationResponseParams: Decodable {
     var aggregate: AggregateFunction    = .unknown
     var size: Int?
     var order: String?
-    
+    var orderBy: String?
+
     // This is used only in Range Bucket type
     var rangeList: [BucketRangeResponse] =   []
     
     private enum CodingKeys: String, CodingKey {
-        case field, precision, interval, customInterval, aggregate, size, order,
+        case field, precision, interval, customInterval, aggregate, size, order, orderBy,
         ranges
     }
 
@@ -204,6 +207,7 @@ class AggregationResponseParams: Decodable {
         self.intervalInt    =   try? container.decode(Int.self, forKey: .interval)
         self.size           =   try? container.decode(Int.self, forKey: .size)
         self.order          =   try? container.decode(String.self, forKey: .order)
+        self.orderBy        =   try? container.decode(String.self, forKey: .orderBy)
 
         if let intrvlType  = try? container.decode(String.self, forKey: .interval) {
             self.interval = AggregationParamsService.IntervalType(rawValue: intrvlType) ?? .unKnown

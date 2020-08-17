@@ -115,10 +115,21 @@ public class VizDataParams {
                 "size": size]
             
             if let order = aggregation.params?.order {
-                internalDict["order"] = ["_count":"\(order)"]
+                if metricAggregation?.metricType == .count {
+                    internalDict["order"] = ["_count":"\(order)"]
+                } else {
+                    if let orderBy = aggregation.params?.orderBy {
+                        internalDict["order"] = ["\(orderBy)":"\(order)"]
+                    }
+                }
             }
 
-            idAggs = ["\(aggregation.id)": ["terms": internalDict]]
+            var dict = ["terms": internalDict]
+            if let metricAggs = addMetricAggsIfRequired(index) {
+                dict["aggs"] = metricAggs
+            }
+
+            idAggs = ["\(aggregation.id)": dict]
             break
             
         case .range:
@@ -134,15 +145,10 @@ public class VizDataParams {
             internalDict["ranges"] = ranges
             
             var dict = ["range": internalDict]
-            if aggregation.bucketType == .range &&
-                index == otherAggregationList.count - 1 {
-
-                if let metricAggs = aggregationsArray.filter({ $0.schema == "metric" && $0.metricType != .count }).first {
-                    let metricAggDict = createMetricAggregationFor(metricAggs)
-                    dict["aggs"] = metricAggDict
-                }
+            
+            if let metricAggs = addMetricAggsIfRequired(index) {
+                dict["aggs"] = metricAggs
             }
-
             idAggs = ["\(aggregation.id)": dict]
             break
             
@@ -152,7 +158,12 @@ public class VizDataParams {
             if let intervl = interval {
                 internalDict["interval"] = intervl
             }
-            let dict = ["\(aggregation.bucketType.rawValue)": internalDict]
+            var dict = ["\(aggregation.bucketType.rawValue)": internalDict]
+            
+            if let metricAggs = addMetricAggsIfRequired(index) {
+                dict["aggs"] = metricAggs
+            }
+
             idAggs = ["\(aggregation.id)": dict]
             break
             
@@ -171,6 +182,14 @@ public class VizDataParams {
             }
         }
         return idAggs
+    }
+    
+    func addMetricAggsIfRequired(_ index: Int) -> [String: Any]? {
+        guard index == otherAggregationList.count - 1,
+        let metricAggs = aggregationsArray.filter({ $0.schema == "metric" && $0.metricType != .count }).first else {
+            return nil
+        }
+        return createMetricAggregationFor(metricAggs)
     }
     
     func createMetricAggregationFor(_ aggregation: AggregationService) -> [String: Any] {
