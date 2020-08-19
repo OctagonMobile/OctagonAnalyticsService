@@ -152,6 +152,23 @@ public class VizDataParams {
             idAggs = ["\(aggregation.id)": dict]
             break
             
+        case .histogram:
+            
+            var internalDict: [String: Any] = ["field": "\(aggregation.field)"]
+            
+            if let intervl = aggregation.params?.intervalInt {
+                internalDict["interval"] = intervl
+            }
+            var dict = ["\(aggregation.bucketType.rawValue)": internalDict]
+            
+            if let metricAggs = addMetricAggsIfRequired(index) {
+                dict["aggs"] = metricAggs
+            }
+            
+            idAggs = ["\(aggregation.id)": dict]
+            
+            break
+
         case .dateHistogram:
             
             var internalDict: [String: Any] = ["field": "\(aggregation.field)"]
