@@ -13,6 +13,9 @@ public class VizDataParams {
     public var panelType: PanelType    =   .unKnown
     public var timeFrom: String?
     public var timeTo: String?
+    public var searchQueryPanel: String  =   ""
+    public var searchQueryDashboard: String  =   ""
+
     /// Interval is used only for Date Histogram
     public var interval: String?
     public var filters: [[String: Any]] =   []
@@ -91,6 +94,13 @@ public class VizDataParams {
         }
 
         return dict
+    }
+    
+    func prepareSearchContent(_ searchTerm: String?) -> [String: Any]? {
+        if let searchTerm = searchTerm, !searchTerm.isEmpty {
+            return ["query_string": ["analyze_wildcard": true, "query": searchTerm]]
+        }
+        return nil
     }
      
     func generatedAggregationJson() -> [String: Any] {

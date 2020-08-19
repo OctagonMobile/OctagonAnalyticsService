@@ -119,6 +119,14 @@ extension DashboardServiceBuilder {
             }
         })
         
+        if let searchQueryPanelObj = params?.prepareSearchContent(params?.searchQueryPanel) {
+            mustFilters.append(searchQueryPanelObj)
+        }
+        
+        if let searchQueryDashboardObj = params?.prepareSearchContent(params?.searchQueryDashboard) {
+            mustFilters.append(searchQueryDashboardObj)
+        }
+        
         let scriptedFieldsArray = params?.checkForScriptedFields() ?? []
         let scriptedFieldObj = params?.prepareScriptedFieldsObj(scriptedFieldsArray) ?? [:]
         
