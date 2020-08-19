@@ -27,6 +27,7 @@ public class PanelService {
         self.width      =   responseModel.gridData.w
         self.height     =   responseModel.gridData.h
         self.visState   =   responseModel.visState?.asUIModel()
+        self.searchQuery =  responseModel.visState?.searchQuery ?? ""
     }
     
     public func loadChartData(_ completion: CompletionBlock?) {

@@ -84,6 +84,8 @@ class VisStateHolderBase: Decodable {
     var searchSourceJSON: String?
     var indexPatternId: String?
     
+    public var searchQuery: String?
+
     // Followinf properties only for Saved Search
     var sortList: [String]  =   []
     var columns: [String]   =   []
@@ -154,6 +156,9 @@ class VisStateHolderBase654: VisStateHolderBase {
             let data = searchSourceJSON.data(using: .utf8) {
             let dict = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any]
             visStateService?.indexPatternId = dict?["index"] as? String
+            
+            let queryDict = dict?["query"] as? [String: Any]
+            self.searchQuery = queryDict?["query"] as? String
         }
         return visStateService
     }
@@ -180,6 +185,9 @@ class VisStateHolderBase732: VisStateHolderBase {
             let dict = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any]
             let keyName = dict?["indexRefName"] as? String ?? ""
             visStateService?.indexPatternId = references.filter({$0.name == keyName}).first?.id
+            
+            let queryDict = dict?["query"] as? [String: Any]
+            self.searchQuery = queryDict?["query"] as? String
         }
         return visStateService
     }

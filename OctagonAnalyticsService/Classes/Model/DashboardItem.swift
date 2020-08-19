@@ -21,7 +21,6 @@ public class DashboardItemService {
     
     var panelsJsonList: [[String: Any]] =   []
 
-    //YET to update the following keys
     public var searchQuery: String  =   ""
 
     init(_ responseModel: DashboardItemResponseBase) {
@@ -32,6 +31,7 @@ public class DashboardItemService {
         self.panels     =   responseModel.attributes.panels.compactMap({ $0.asUIModel() })
         self.fromTime   =   responseModel.attributes.timeFrom
         self.toTime     =   responseModel.attributes.timeTo
+        self.searchQuery    =   responseModel.attributes.searchQuery ?? ""
     }
 }
 
@@ -84,16 +84,25 @@ class DashboardAttributesResponseBase: Decodable, ParseJsonArrayProtocol {
     
     var panelsJsonList: [[String: Any]] =   []
     
+    var searchSourceJSON: String?
+    var searchQuery: String?
+    
     private enum CodingKeys: String, CodingKey {
         case title      =   "title"
         case timeFrom   =   "timeFrom"
         case timeTo     =   "timeTo"
         case desc       =   "description"
         case panels     =   "panelsJSON"
+        case kibanaSavedObjectMeta
+        enum MetaDataCodingKeys: String, CodingKey {
+            case searchSourceJSON
+        }
     }
     
     required init(from decoder: Decoder) throws {
         let container   = try decoder.container(keyedBy: CodingKeys.self)
+        
+        let metaDataContainer = try container.nestedContainer(keyedBy: CodingKeys.MetaDataCodingKeys.self, forKey: .kibanaSavedObjectMeta)
 
         self.title      = try container.decode(String.self, forKey: .title)
         self.desc       = try container.decode(String.self, forKey: .desc)
@@ -104,6 +113,15 @@ class DashboardAttributesResponseBase: Decodable, ParseJsonArrayProtocol {
         if let data = json.data(using: .utf8),
             let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [[String: Any]] {
             self.panelsJsonList = jsonArray
+        }
+        
+        self.searchSourceJSON    =   try? metaDataContainer.decode(String.self, forKey: .searchSourceJSON)
+        if let searchSourceJSON = searchSourceJSON,
+            let data = searchSourceJSON.data(using: .utf8) {
+            let dict = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any]
+            
+            let queryDict = dict?["query"] as? [String: Any]
+            self.searchQuery = queryDict?["query"] as? String
         }
     }
 }
