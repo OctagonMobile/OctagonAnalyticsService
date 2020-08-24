@@ -79,15 +79,21 @@ public class ServiceProvider {
     }
     
     //MARK: Visualization Data
-    public func loadVisualizationData(_ params: VizDataParams, completion: CompletionBlock?) {
+    public func loadVisualizationData(_ params: VizDataParamsBase, completion: CompletionBlock?) {
         
-        guard let indexPattern = indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
-                let err = OAServiceError(description: "Visualization Not found", code: 1000)
-                completion?(nil, err)
-                return
+        
+        var indexPatternName = ""
+        
+        if !(params is ControlsVizDataParams) {
+            guard let indexPattern = indexPatternsList.filter({ $0.id == params.indexPatternIdList.first }).first else {
+                    let err = OAServiceError(description: "Visualization Not found", code: 1000)
+                    completion?(nil, err)
+                    return
+            }
+            indexPatternName = indexPattern.title
         }
-                
-        let request = DashboardServiceBuilder.loadVisualizationData(indexPatternName: indexPattern.title, vizDataParams: params)
+                        
+        let request = DashboardServiceBuilder.loadVisualizationData(indexPatternName: indexPatternName, vizDataParams: params)
         
         AF.request(request).responseData { (response) in
             switch response.result {
@@ -131,7 +137,7 @@ public class ServiceProvider {
                 return
             }
 
-            guard let indexPattern = self?.indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
+            guard let indexPattern = self?.indexPatternsList.filter({ $0.id == params.indexPatternIdList.first }).first else {
                     let err = OAServiceError(description: "SavedSearch Not found", code: 1000)
                     completion?(nil, err)
                     return
