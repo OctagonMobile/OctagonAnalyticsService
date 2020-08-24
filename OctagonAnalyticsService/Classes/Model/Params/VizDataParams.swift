@@ -20,12 +20,7 @@ public class VizDataParams: VizDataParamsBase {
         return aggregationsArray.filter({ $0.schema == "metric"}).first
     }
     
-    //MARK: Functions
-    
-    public override init(_ indexPatternIds: [String]) {
-        super.init(indexPatternIds)
-    }
-    
+    //MARK: Functions    
     override func generatedQueryDataForVisualization(_ indexPatternName: String, params: VizDataParamsBase?) -> Data? {
         
         let indexJson: [String: Any] = ["index": indexPatternName,
