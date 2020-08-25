@@ -98,15 +98,58 @@ class DashboardsViewController: UIViewController {
     // Load Visualization Data
     @IBAction func loadVizDataAction(_ sender: UIButton) {
         
-        let booksDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
+        let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
         
-        guard let indexPatternId = booksDashboard?.panels.first?.visState?.indexPatternId else { return }
+        guard testDashboard?.panels.first?.visState?.type != .inputControls else {
+            loadControlsVizData()
+            return
+        }
         
-        let params = VizDataParams(indexPatternId)
-        params.panelType = .area
-        params.timeFrom = "now"//"2015-08-16T00:00:00.000Z"
-        params.timeTo = "now-5y"//"2020-08-16T00:00:00.000Z"
-        params.aggregationsArray = booksDashboard?.panels.filter({ $0.id == "a691aa30-e1f6-11ea-a80d-47c665684b26"}).first?.visState?.aggregationsArray ?? []
+        guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
+
+        let panel = testDashboard?.panels.first
+        
+        let indexPatternIds: [String] = [indexPatternId]
+        
+        let params = VizDataParams(indexPatternIds)
+        params.panelType = panel?.visState?.type ?? .unKnown
+        if panel?.visState?.otherAggregationsArray.first?.bucketType == BucketType.dateHistogram {
+            params.interval = "1d"
+        }
+        params.timeFrom = "now-5y"//"2015-08-16T00:00:00.000Z"
+        params.timeTo = "now"//"2020-08-16T00:00:00.000Z"
+        params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel?.id }).first?.visState?.aggregationsArray ?? []
+
+        ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
+            guard error == nil else {
+                print(error!.localizedDescription)
+                return
+            }
+            
+            if let result = res as? [String: Any],
+                let finalResult = result["responses"] as? [[String: Any]] {
+                print("\(String(describing: finalResult.first))")
+            }
+        }
+    }
+
+    func loadControlsVizData() {
+        
+        let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
+                
+        guard let panel = testDashboard?.panels.first else { return }
+        
+        var controlsList: [ControlsParams]  =   []
+        for control in (panel.visState as? InputControlsVisStateService)?.controls ?? [] {
+            let params = ControlsParams(control.type, indexPatternId: control.indexPattern, fieldName: control.fieldName)
+            controlsList.append(params)
+        }
+
+        let params = ControlsVizDataParams(controlsList)
+        params.panelType = panel.visState?.type ?? .unKnown
+        params.timeFrom = "now-5y"//"2015-08-16T00:00:00.000Z"
+        params.timeTo = "now"//"2020-08-16T00:00:00.000Z"
+        params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel.id}).first?.visState?.aggregationsArray ?? []
 
         ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
             guard error == nil else {
@@ -121,17 +164,20 @@ class DashboardsViewController: UIViewController {
         }
     }
     
+
     @IBAction func loadSavedSearchDataAction(_ sender: UIButton) {
         
         let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
         guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
 
-        let params = SavedSearchDataParams(indexPatternId)
+        let panel = testDashboard?.panels.first
+
+        let params = SavedSearchDataParams([indexPatternId])
         params.panelType = .search
-        params.savedSearchId = "26201260-41ba-11ea-a91b-094ccf177e67"
+        params.savedSearchId = panel?.id
         params.timeFrom = "now-5y"
         params.timeTo = "now"
-        params.aggregationsArray = testDashboard?.panels.filter({ $0.id == "26201260-41ba-11ea-a91b-094ccf177e67"}).first?.visState?.aggregationsArray ?? []
+        params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel?.id}).first?.visState?.aggregationsArray ?? []
 
         ServiceProvider.shared.loadSavedSearchData(params) { (res, error) in
             guard error == nil else {

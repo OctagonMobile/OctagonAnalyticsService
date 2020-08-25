@@ -82,7 +82,6 @@ class VisStateHolderBase: Decodable {
     var visStateBase: VisStateBase?
     
     var searchSourceJSON: String?
-    var indexPatternId: String?
     
     public var searchQuery: String?
 
