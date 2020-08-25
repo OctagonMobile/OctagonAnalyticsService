@@ -59,11 +59,7 @@ class DashboardsViewController: UIViewController {
     @IBAction func logoutButtonAction(_ sender: UIButton) {
         logout()
     }
-    
-    private func loadVizDataForDashboard(_ dashboard: DashboardItemService) {
         
-    }
-    
     //MARK: Button Actions
     @IBAction func loadIndexPatternsListAction(_ sender: UIButton) {
         ServiceProvider.shared.loadIndexPatterns(1, pageSize: 20) { (res, error) in
