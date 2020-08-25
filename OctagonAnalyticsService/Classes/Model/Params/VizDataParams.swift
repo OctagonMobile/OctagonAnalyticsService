@@ -32,7 +32,7 @@ public class VizDataParams: VizDataParamsBase {
         
         
         var mustFilters: [[String: Any]] = []
-        if let indexPattern = ServiceProvider.shared.indexPatternsList.filter({ $0.id == params?.indexPatternIdList.first}).first,
+        if let indexPattern = ServiceProvider.shared.indexPatternsList.filter({ $0.id == params?.indexPatternId}).first,
             !indexPattern.timeFieldName.isEmpty {
             if let rangeFilter = getRangeFilter(params, timeStampProp: indexPattern.timeFieldName) {
                 mustFilters.append(rangeFilter)

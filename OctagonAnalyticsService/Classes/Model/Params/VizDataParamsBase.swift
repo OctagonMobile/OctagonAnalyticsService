@@ -17,10 +17,10 @@ public class VizDataParamsBase {
     public var filters: [[String: Any]] =   []
     public var aggregationsArray: [AggregationService]         = []
 
-    public var indexPatternIdList: [String] =   []
+    public var indexPatternId: String
     
-    public init(_ indexPatternIds: [String]) {
-        self.indexPatternIdList     =   indexPatternIds
+    public init(_ indexPatternId: String) {
+        self.indexPatternId     =   indexPatternId
     }
     
     func generatedQueryDataForVisualization(_ indexPatternName: String, params: VizDataParamsBase?) -> Data? {
@@ -79,7 +79,7 @@ public class VizDataParamsBase {
     }
 
     func checkForScriptedFields() -> [IPFieldService] {
-        guard let indexPattern = ServiceProvider.shared.indexPatternsList.filter({ $0.id == indexPatternIdList.first }).first else {
+        guard let indexPattern = ServiceProvider.shared.indexPatternsList.filter({ $0.id == indexPatternId }).first else {
             return []
         }
         return indexPattern.fields.filter({ $0.scripted })

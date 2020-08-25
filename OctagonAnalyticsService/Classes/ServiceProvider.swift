@@ -81,11 +81,10 @@ public class ServiceProvider {
     //MARK: Visualization Data
     public func loadVisualizationData(_ params: VizDataParamsBase, completion: CompletionBlock?) {
         
-        
         var indexPatternName = ""
         
         if !(params is ControlsVizDataParams) {
-            guard let indexPattern = indexPatternsList.filter({ $0.id == params.indexPatternIdList.first }).first else {
+            guard let indexPattern = indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
                     let err = OAServiceError(description: "Visualization Not found", code: 1000)
                     completion?(nil, err)
                     return
@@ -139,7 +138,7 @@ public class ServiceProvider {
                 return
             }
 
-            guard let indexPattern = self?.indexPatternsList.filter({ $0.id == params.indexPatternIdList.first }).first else {
+            guard let indexPattern = self?.indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
                     let err = OAServiceError(description: "SavedSearch Not found", code: 1000)
                     completion?(nil, err)
                     return

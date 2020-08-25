@@ -108,10 +108,8 @@ class DashboardsViewController: UIViewController {
         guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
 
         let panel = testDashboard?.panels.first
-        
-        let indexPatternIds: [String] = [indexPatternId]
-        
-        let params = VizDataParams(indexPatternIds)
+                
+        let params = VizDataParams(indexPatternId)
         params.panelType = panel?.visState?.type ?? .unKnown
         if panel?.visState?.otherAggregationsArray.first?.bucketType == BucketType.dateHistogram {
             params.interval = "1d"
@@ -172,7 +170,7 @@ class DashboardsViewController: UIViewController {
 
         let panel = testDashboard?.panels.first
 
-        let params = SavedSearchDataParams([indexPatternId])
+        let params = SavedSearchDataParams(indexPatternId)
         params.panelType = .search
         params.savedSearchId = panel?.id
         params.timeFrom = "now-5y"
