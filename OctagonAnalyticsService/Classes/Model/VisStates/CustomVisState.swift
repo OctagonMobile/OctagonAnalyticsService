@@ -96,6 +96,6 @@ public class MetricVisStateService: VisStateService {
         super.init(responseModel)
         
         guard let visstateBaseModel = responseModel.visStateBase else { return }
-        self.fontSize   =   visstateBaseModel.params?.fontSize ?? 10.0
+        self.fontSize   =   visstateBaseModel.params?.metric?.fontSize ?? 10.0
     }
 }
