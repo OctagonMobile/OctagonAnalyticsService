@@ -7,14 +7,14 @@
 
 import UIKit
 
-struct MapParamLocation {
-    let lat: Double
-    let lon: Double
+public struct MapParamLocation {
+    public let lat: Double
+    public let lon: Double
 }
 
-class MapVizParams: VizDataParams {
-    var topLeftLocation: MapParamLocation = MapParamLocation(lat: 90, lon: -180)
-    var bottomRightLocation: MapParamLocation = MapParamLocation(lat: -90, lon: 180)
+public class MapVizParams: VizDataParams {
+    public var topLeftLocation: MapParamLocation = MapParamLocation(lat: 90, lon: -180)
+    public var bottomRightLocation: MapParamLocation = MapParamLocation(lat: -90, lon: 180)
     
     override func createAggsDictForAggregationAtIndex(_ index: Int = 0) -> [String : Any] {
         guard index < otherAggregationList.count else { return [:] }
