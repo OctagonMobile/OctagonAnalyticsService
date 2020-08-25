@@ -98,7 +98,7 @@ class DashboardsViewController: UIViewController {
     // Load Visualization Data
     @IBAction func loadVizDataAction(_ sender: UIButton) {
         
-        let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
+        let testDashboard = dashboards.filter({ $0.id == "ba513e20-e69a-11ea-a80d-47c665684b26"}).first
         
         guard testDashboard?.panels.first?.visState?.type != .inputControls else {
             loadControlsVizData()
@@ -135,7 +135,7 @@ class DashboardsViewController: UIViewController {
 
     func loadControlsVizData() {
         
-        let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
+        let testDashboard = dashboards.filter({ $0.id == "ba513e20-e69a-11ea-a80d-47c665684b26"}).first
                 
         guard let panel = testDashboard?.panels.first else { return }
         
@@ -167,7 +167,7 @@ class DashboardsViewController: UIViewController {
 
     @IBAction func loadSavedSearchDataAction(_ sender: UIButton) {
         
-        let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
+        let testDashboard = dashboards.filter({ $0.id == "ba513e20-e69a-11ea-a80d-47c665684b26"}).first
         guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
 
         let panel = testDashboard?.panels.first

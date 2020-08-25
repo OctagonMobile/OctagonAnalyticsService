@@ -126,4 +126,8 @@ public class VizDataParamsBase {
         }
         return nil
     }
+    
+    func postResponseProcedure(_ response: Any) -> Any? {
+        return [:]
+    }
 }

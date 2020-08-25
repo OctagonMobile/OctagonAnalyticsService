@@ -16,8 +16,12 @@ public class VizDataParams: VizDataParamsBase {
         return aggregationsArray.filter({ $0.schema != "metric" })
     }
 
+    private var metricAggregationsList: [AggregationService] {
+        return aggregationsArray.filter({ $0.schema == "metric"})
+    }
+
     private var metricAggregation: AggregationService? {
-        return aggregationsArray.filter({ $0.schema == "metric"}).first
+        return metricAggregationsList.first
     }
     
     //MARK: Functions    
@@ -87,6 +91,22 @@ public class VizDataParams: VizDataParamsBase {
             guard let metricAggregation = metricAggregation else { return [:] }
             return createMetricAggregationFor(metricAggregation)
         }
+        
+        if panelType == .metric {
+            var dict: [String: Any] = [:]
+            
+            if let _ = aggregationsArray.filter({ $0.schema == "group" }).first {
+                dict = createAggsDictForAggregationAtIndex()
+            } else {
+                for metricAggs in metricAggregationsList {
+                    guard metricAggs.metricType != .count else { continue }
+                    let metricDict = createMetricAggregationFor(metricAggs)
+                    dict[metricAggs.id] = metricDict[metricAggs.id]
+                }
+            }
+            return dict
+        }
+
         return createAggsDictForAggregationAtIndex()
     }
 
@@ -200,5 +220,59 @@ public class VizDataParams: VizDataParamsBase {
     func createMetricAggregationFor(_ aggregation: AggregationService) -> [String: Any] {
         let dict = ["\(aggregation.metricType.rawValue)": ["field": "\(aggregation.field)"]]
         return ["\(aggregation.id)": dict]
+    }
+    
+    override func postResponseProcedure(_ response: Any) -> Any? {
+        if panelType == .metric {
+            
+            guard let result = response as? [String: Any] else { return response }
+            var responseContent = (result["responses"] as? [[String: Any]])?.first
+            
+            var aggregationsList: [[String: Any]] = []
+
+            if let groupAggs = aggregationsArray.filter({ $0.schema == "group" }).first {
+                let aggregationsDict = responseContent?["aggregations"] as? [String: Any]
+                let buckets = (aggregationsDict?[groupAggs.id] as? [String: Any])?["buckets"] as? [[String: Any]]
+                for bucket in buckets ?? [] {
+                    
+                    for metricAggs in metricAggregationsList {
+                        var metricDict: [String: Any] = [:]
+
+                        if metricAggs.metricType == .count {
+                            metricDict["value"] = bucket["doc_count"] as? Double
+                        } else {
+                            metricDict["value"] = (bucket["\(metricAggs.id)"] as? [String: Any])?["value"] as? Double
+                        }
+                        
+                        metricDict["type"] = metricAggs.metricType.rawValue
+                        metricDict["id"] = metricAggs.id
+                        metricDict["label"] = bucket["key"] as? String
+                        aggregationsList.append(metricDict)
+                    }
+                }
+            } else {
+                for metricAggs in metricAggregationsList {
+                    
+                    var metricDict: [String: Any] = [:]
+                    if metricAggs.metricType == .count {
+                        metricDict["value"] = (responseContent?["hits"] as? [String: Any])?["total"] ?? 0.0
+                    } else {
+                        let content = (responseContent?["aggregations"] as? [String: Any])?["\(metricAggs.id)"] as? [String: Any]
+                        metricDict["value"] = content?["value"] as? Double ?? 0.0
+                    }
+                    
+                    metricDict["type"] = metricAggs.metricType.rawValue
+                    metricDict["id"] = metricAggs.id
+                    metricDict["label"] = metricAggs.metricType.displayValue
+
+                    aggregationsList.append(metricDict)
+                }
+            }
+            
+            responseContent?["aggregations"] = ["metrics": aggregationsList]
+            return ["responses": [responseContent]]
+
+        }
+        return response
     }
 }

@@ -104,7 +104,9 @@ public class ServiceProvider {
                 
                 do {
                     let result = try JSONSerialization.jsonObject(with: value, options: .allowFragments)
-                    completion?(result, nil)
+                    let resp = params.postResponseProcedure(result)
+                    completion?(resp, nil)
+
                 } catch let error {
                     let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
                     completion?(nil, serviceError)
