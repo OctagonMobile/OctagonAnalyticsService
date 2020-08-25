@@ -12,11 +12,22 @@ public class CanvasItemService {
     public var name: String
     public var id: String
     public var type: String
+    public var pages: [CanvasPageService] = []
 
     init(_ responseModel: CanvasItemResponseBase) {
         self.name   =   responseModel.attributes.name
         self.id     =   responseModel.id
         self.type   =   responseModel.type
+        self.pages  =   responseModel.attributes.pages.compactMap({ CanvasPageService($0) })
+    }
+}
+
+public class CanvasPageService {
+    
+    public var id: String
+
+    init(_ responseModel: CanvasPages) {
+        self.id   =   responseModel.id
     }
 }
 
