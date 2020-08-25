@@ -12,7 +12,7 @@ public class VizDataParams: VizDataParamsBase {
     /// Interval is used only for Date Histogram
     public var interval: String?
 
-    private var otherAggregationList: [AggregationService] {
+    var otherAggregationList: [AggregationService] {
         return aggregationsArray.filter({ $0.schema != "metric" })
     }
 
@@ -170,28 +170,6 @@ public class VizDataParams: VizDataParamsBase {
             }
 
             idAggs = ["\(aggregation.id)": dict]
-            break
-        case .geohashGrid:
-            var idDict = [String: Any]()
-            let geoHashGridDict: [String: Any] = ["field": aggregation.field,
-                                                  "precision": aggregation.params?.precision ?? 0]
-            
-           
-            let geoCentroidDict: [String: Any] = ["geo_centroid": ["field": aggregation.field]]
-            let geoCentroidId = String(((Int(aggregation.id) ?? 0) + 1))
-            idDict["geohash_grid"] = geoHashGridDict
-            idDict["aggs"] = [geoCentroidId: geoCentroidDict]
-            
-            let aggsDict = [aggregation.id : idDict]
-            
-            var filterAggDict: [String: Any] = ["aggs": aggsDict]
-            var boundingBoxDict: [String: Any] = ["ignore_unmapped": true]
-            let locationDict:[String: Any] =  ["top_left": ["lat": 90, "lon": -180],
-                                       "bottom_right": ["lat": -90, "lon": 180]]
-            boundingBoxDict["location"] = locationDict
-            let filterDict = ["geo_bounding_box": boundingBoxDict]
-            filterAggDict["filter"] = filterDict
-            idAggs["filter_agg"] = filterAggDict
             break
         default:
             break
