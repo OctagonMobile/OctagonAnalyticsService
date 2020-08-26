@@ -32,10 +32,6 @@ enum DashboardServiceBuilder: URLRequestBuilder {
         switch self {
         case .loadDashboards(pageNumber: let pageNo, pageSize: let pageSize):
             return ["type": "dashboard", "page": pageNo, "per_page": pageSize]
-//        case .loadVisualizationData(indexPatternName: let ipName, vizDataParams: _):
-//            return ["index": ipName]
-//        case .loadSavedSearchData(indexPatternName: let ipName, sort: _, searchDataParams: _):
-//            return ["index": ipName]
         default:
             return nil
         }

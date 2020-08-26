@@ -89,6 +89,8 @@ public enum ServerPaths {
     case indexPatternList
     case videoData
 
+    case canvasList
+
     var path: String {
         switch self {
         case .login: return "api/v1/auth/login"
@@ -98,6 +100,7 @@ public enum ServerPaths {
         case .visualizationData: return "elasticsearch/_msearch"
         case .indexPatternList: return "api/saved_objects/_find"
         case .videoData: return "api/console/proxy"
+        case .canvasList: return "api/saved_objects/_find"
         }
     }
 }

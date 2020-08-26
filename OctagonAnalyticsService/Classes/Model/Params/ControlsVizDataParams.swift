@@ -28,7 +28,7 @@ public class ControlsVizDataParams: VizDataParamsBase {
     public var controlsParams: [ControlsParams] =   []
     
     public init(_ controlsParams: [ControlsParams]) {
-        super.init([])
+        super.init("")
         self.controlsParams =   controlsParams
     }
     

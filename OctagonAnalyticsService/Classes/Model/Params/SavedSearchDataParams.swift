@@ -25,7 +25,7 @@ public class SavedSearchDataParams: VizDataParamsBase {
         
         
         var mustFilters: [[String: Any]] = []
-        if let indexPattern = ServiceProvider.shared.indexPatternsList.filter({ $0.id == params?.indexPatternIdList.first }).first,
+        if let indexPattern = ServiceProvider.shared.indexPatternsList.filter({ $0.id == params?.indexPatternId }).first,
             !indexPattern.timeFieldName.isEmpty {
             if let rangeFilter = getRangeFilter(params, timeStampProp: indexPattern.timeFieldName) {
                 mustFilters.append(rangeFilter)
@@ -42,6 +42,14 @@ public class SavedSearchDataParams: VizDataParamsBase {
                 isInverted ? mustNotFilters.append(dict) : mustFilters.append(dict)
             }
         })
+        
+        if let searchQueryPanelObj = params?.prepareSearchContent(params?.searchQueryPanel) {
+            mustFilters.append(searchQueryPanelObj)
+        }
+        
+        if let searchQueryDashboardObj = params?.prepareSearchContent(params?.searchQueryDashboard) {
+            mustFilters.append(searchQueryDashboardObj)
+        }
                 
         let pageSize = params?.pageSize ?? 10
         let fromPageNumber = (params?.pageNum ?? 0) * pageSize

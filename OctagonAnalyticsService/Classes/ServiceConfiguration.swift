@@ -75,4 +75,17 @@ public enum VersionType: String {
         }
     }
 
+    var canvasListModel: CanvasListReponseBase.Type {
+        switch self {
+        case .v654, .v732: return CanvasListReponseBase.self
+        }
+    }
+
+    var canvasItemResponseModel: CanvasItemResponseBase.Type {
+        switch self {
+        case .v654: return CanvasItemResponseBase.self
+        case .v732: return CanvasItemResponseBase.self
+        }
+    }
+
 }

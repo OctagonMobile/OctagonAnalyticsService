@@ -262,6 +262,9 @@ class VisStateParams: Decodable {
     //InputControlsVisState
     var controls: [ControlsResponse]?
     
+    //Metrics
+    var metric: Metric?
+    
     private enum CodingKeys: String, CodingKey {
         case seriesParams, categoryAxes,
         html,
@@ -272,7 +275,8 @@ class VisStateParams: Decodable {
         query, node_image_base_url, node_image_property,
         wms, user_field, mapType, quickButtons,
         type, gauge,
-        controls
+        controls,
+        metric
     }
     
     required init(from decoder: Decoder) throws {
@@ -312,6 +316,8 @@ class VisStateParams: Decodable {
         }
         
         self.controls   =   try? container.decode([ControlsResponse].self, forKey: .controls)
+        
+        self.metric     =   try? container.decode(Metric.self, forKey: .metric)
     }
     
 }
@@ -527,5 +533,31 @@ class ControlsResponse: Decodable {
             self.decimalPlaces  =   try? container.decode(Int.self, forKey: .decimalPlaces)
             self.step           =   try? container.decode(Int.self, forKey: .step)
         }
+    }
+}
+
+//MARK: Metric VisState
+class Metric: Decodable {
+    var percentageMode: Bool?
+    var useRanges: Bool?
+    var fontSize: CGFloat?
+    var subText: CGFloat?
+    
+    private enum CodingKeys: String, CodingKey {
+        case percentageMode, useRanges, style
+        enum StyleCodingKeys: String, CodingKey {
+            case subText, fontSize
+        }
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container   =   try decoder.container(keyedBy: CodingKeys.self)
+        let styleDataContainer = try container.nestedContainer(keyedBy: CodingKeys.StyleCodingKeys.self, forKey: .style)
+
+        self.percentageMode =   try? container.decode(Bool.self, forKey: .percentageMode)
+        self.useRanges      =   try? container.decode(Bool.self, forKey: .useRanges)
+
+        self.fontSize       =   try? styleDataContainer.decode(CGFloat.self, forKey: .fontSize)
+        self.subText        =   try? styleDataContainer.decode(CGFloat.self, forKey: .subText)
     }
 }

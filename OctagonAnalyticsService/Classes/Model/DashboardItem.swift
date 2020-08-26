@@ -16,8 +16,8 @@ public class DashboardItemService {
     public var type: String
     public var desc: String
     public var panels: [PanelService]  =   []
-    public var fromTime: String
-    public var toTime: String
+    public var fromTime: String?
+    public var toTime: String?
     
     var panelsJsonList: [[String: Any]] =   []
 
@@ -77,8 +77,8 @@ class PanelInfo {
 
 class DashboardAttributesResponseBase: Decodable, ParseJsonArrayProtocol {
     var title: String
-    var timeFrom: String
-    var timeTo: String
+    var timeFrom: String?
+    var timeTo: String?
     var desc: String
     var panels: [PanelBase] =   []
     
@@ -106,8 +106,8 @@ class DashboardAttributesResponseBase: Decodable, ParseJsonArrayProtocol {
 
         self.title      = try container.decode(String.self, forKey: .title)
         self.desc       = try container.decode(String.self, forKey: .desc)
-        self.timeFrom   = try container.decode(String.self, forKey: .timeFrom)
-        self.timeTo     = try container.decode(String.self, forKey: .timeTo)
+        self.timeFrom   = try? container.decode(String.self, forKey: .timeFrom)
+        self.timeTo     = try? container.decode(String.self, forKey: .timeTo)
         
         let json = try container.decode(String.self, forKey: .panels)
         if let data = json.data(using: .utf8),

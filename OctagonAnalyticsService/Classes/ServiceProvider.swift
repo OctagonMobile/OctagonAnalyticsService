@@ -81,11 +81,10 @@ public class ServiceProvider {
     //MARK: Visualization Data
     public func loadVisualizationData(_ params: VizDataParamsBase, completion: CompletionBlock?) {
         
-        
         var indexPatternName = ""
         
-        if !(params is ControlsVizDataParams) {
-            guard let indexPattern = indexPatternsList.filter({ $0.id == params.indexPatternIdList.first }).first else {
+        if !(params is ControlsVizDataParams) && !(params is TilesVizDataParams) {
+            guard let indexPattern = indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
                     let err = OAServiceError(description: "Visualization Not found", code: 1000)
                     completion?(nil, err)
                     return
@@ -104,7 +103,9 @@ public class ServiceProvider {
                 
                 do {
                     let result = try JSONSerialization.jsonObject(with: value, options: .allowFragments)
-                    completion?(result, nil)
+                    let resp = params.postResponseProcedure(result)
+                    completion?(resp, nil)
+
                 } catch let error {
                     let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
                     completion?(nil, serviceError)
@@ -137,7 +138,7 @@ public class ServiceProvider {
                 return
             }
 
-            guard let indexPattern = self?.indexPatternsList.filter({ $0.id == params.indexPatternIdList.first }).first else {
+            guard let indexPattern = self?.indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
                     let err = OAServiceError(description: "SavedSearch Not found", code: 1000)
                     completion?(nil, err)
                     return
@@ -166,6 +167,28 @@ public class ServiceProvider {
                 }
             }
 
+        }
+    }
+
+    //MARK: Canvas
+    public func loadCanvasList(_ pageNumber: Int, pageSize: Int, completion: CompletionBlock?) {
+                
+        let request = CanvasServiceBuilder.loadCanvasList(pageNumber: pageNumber, pageSize: pageSize)
+        
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                completion?(nil, serviceError)
+            case .success(let value):
+                do {
+                    let canvasListModel = try JSONDecoder().decode(ServiceConfiguration.version.canvasListModel.self, from: value)
+                    completion?(canvasListModel.asUIModel(), nil)
+                } catch let error {
+                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                    completion?(nil, serviceError)
+                }
+            }
         }
     }
 

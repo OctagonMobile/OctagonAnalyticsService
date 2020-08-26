@@ -1,35 +1,34 @@
 //
-//  DashboardListReponseBase.swift
+//  CanvasListResponse.swift
 //  OctagonAnalyticsService
 //
-//  Created by Rameez on 20/07/2020.
+//  Created by Rameez on 25/08/2020.
 //
 
 import Foundation
 
-//MARK: Public
-public class DashboardListResponse {
+public class CanvasListResponse {
     
     public var page: Int
     public var pageSize: Int
     public var total: Int
-    public var dashboards: [DashboardItemService]
+    public var canvasList: [CanvasItemService]
 
-    init(_ responseModel: DashboardListReponseBase) {
+    init(_ responseModel: CanvasListReponseBase) {
         self.page       =   responseModel.page
-        self.pageSize   =   responseModel.pageSize
+        self.pageSize   =   responseModel.page
         self.total      =   responseModel.total
-        self.dashboards =   responseModel.dashboards.compactMap({ $0.asUIModel() })
+        self.canvasList =   responseModel.canvasList.compactMap({ $0.asUIModel() })
     }
 }
 
 //MARK: Private
-class DashboardListReponseBase: Decodable, ParseJsonArrayProtocol {
+class CanvasListReponseBase: Decodable, ParseJsonArrayProtocol {
     
     var page: Int
     var pageSize: Int
     var total: Int
-    var dashboards: [DashboardItemResponseBase] = []
+    var canvasList: [CanvasItemResponseBase] = []
 
     private enum CodingKeys: String, CodingKey {
         case page       =   "page"
@@ -46,11 +45,11 @@ class DashboardListReponseBase: Decodable, ParseJsonArrayProtocol {
         self.total      = try container.decode(Int.self, forKey: .total)
         
         if let jsonArray: [[String: Any]] = try container.decode(Array<Any>.self, forKey: .savedObjects) as? [[String: Any]] {
-            self.dashboards = try parse(jsonArray, type: ServiceConfiguration.version.dashboardItemResponseModel.self)
+            self.canvasList = try parse(jsonArray, type: ServiceConfiguration.version.canvasItemResponseModel.self)
         }
     }
 
-    func asUIModel() -> DashboardListResponse {
-        return DashboardListResponse(self)
+    func asUIModel() -> CanvasListResponse {
+        return CanvasListResponse(self)
     }
 }

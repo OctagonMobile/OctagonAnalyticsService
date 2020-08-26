@@ -26,7 +26,7 @@ class DashboardsViewController: UIViewController {
     }
     
     private func loadDashboards() {
-        ServiceProvider.shared.loadDashboards(1, pageSize: 20) { (res, error) in
+        ServiceProvider.shared.loadDashboards(1, pageSize: 100) { (res, error) in
             guard error == nil else {
                 print("\(error!.localizedDescription)")
                 return
@@ -59,11 +59,7 @@ class DashboardsViewController: UIViewController {
     @IBAction func logoutButtonAction(_ sender: UIButton) {
         logout()
     }
-    
-    private func loadVizDataForDashboard(_ dashboard: DashboardItemService) {
         
-    }
-    
     //MARK: Button Actions
     @IBAction func loadIndexPatternsListAction(_ sender: UIButton) {
         ServiceProvider.shared.loadIndexPatterns(1, pageSize: 20) { (res, error) in
@@ -98,20 +94,21 @@ class DashboardsViewController: UIViewController {
     // Load Visualization Data
     @IBAction func loadVizDataAction(_ sender: UIButton) {
         
-        let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
+        let testDashboard = dashboards.filter({ $0.id == "3ab21730-6c1e-11ea-9bcf-c9547acb85c3"}).first
         
-        guard testDashboard?.panels.first?.visState?.type != .inputControls else {
+        if testDashboard?.panels.first?.visState?.type == .inputControls {
             loadControlsVizData()
+            return
+        } else if testDashboard?.panels.first?.visState?.type == .tile {
+            loadTilesViewVizData()
             return
         }
         
         guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
 
         let panel = testDashboard?.panels.first
-        
-        let indexPatternIds: [String] = [indexPatternId]
-        
-        let params = VizDataParams(indexPatternIds)
+                
+        let params = VizDataParams(indexPatternId)
         params.panelType = panel?.visState?.type ?? .unKnown
         if panel?.visState?.otherAggregationsArray.first?.bucketType == BucketType.dateHistogram {
             params.interval = "1d"
@@ -135,7 +132,7 @@ class DashboardsViewController: UIViewController {
 
     func loadControlsVizData() {
         
-        let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
+        let testDashboard = dashboards.filter({ $0.id == "ba513e20-e69a-11ea-a80d-47c665684b26"}).first
                 
         guard let panel = testDashboard?.panels.first else { return }
         
@@ -164,15 +161,40 @@ class DashboardsViewController: UIViewController {
         }
     }
     
+    func loadTilesViewVizData() {
+        
+        let testDashboard = dashboards.filter({ $0.id == "3ab21730-6c1e-11ea-9bcf-c9547acb85c3"}).first
+                
+        guard let panel = testDashboard?.panels.first else { return }
+        
+        let params = TilesVizDataParams(.images)
+        params.panelType = panel.visState?.type ?? .unKnown
+        params.timeFrom = "now-5y"//"2015-08-16T00:00:00.000Z"
+        params.timeTo = "now"//"2020-08-16T00:00:00.000Z"
+        params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel.id }).first?.visState?.aggregationsArray ?? []
+
+        ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
+            guard error == nil else {
+                print(error!.localizedDescription)
+                return
+            }
+            
+            if let result = res as? [String: Any],
+                let finalResult = result["responses"] as? [[String: Any]] {
+                print("\(String(describing: finalResult.first))")
+            }
+        }
+    }
+
 
     @IBAction func loadSavedSearchDataAction(_ sender: UIButton) {
         
-        let testDashboard = dashboards.filter({ $0.id == "d76c33e0-dae5-11ea-a80d-47c665684b26"}).first
+        let testDashboard = dashboards.filter({ $0.id == "ba513e20-e69a-11ea-a80d-47c665684b26"}).first
         guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
 
         let panel = testDashboard?.panels.first
 
-        let params = SavedSearchDataParams([indexPatternId])
+        let params = SavedSearchDataParams(indexPatternId)
         params.panelType = .search
         params.savedSearchId = panel?.id
         params.timeFrom = "now-5y"
