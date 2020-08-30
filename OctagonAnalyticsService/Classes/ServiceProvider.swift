@@ -281,6 +281,7 @@ extension ServiceProvider {
                 }
 
                 dashboards.attributes.panels = panels
+                dashboards.attributes.panels.forEach({ $0.dashboardItemBase = dashboards })
             }
 
             completion?(dashboardListModel.asUIModel(), nil)

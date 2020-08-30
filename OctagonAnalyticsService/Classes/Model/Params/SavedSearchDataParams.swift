@@ -120,6 +120,11 @@ public class SavedSearchDataParams: VizDataParamsBase {
             hitsDict["columns"] = columns
         }
         
+        //Temporary handling for Total
+        if ServiceConfiguration.version == .v732 {
+            hitsDict["total"] =  (hitsDict["total"] as? [String: Any])?["value"]
+        }
+        
         resp["hits"] = hitsDict
         return [resp]
     }
