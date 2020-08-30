@@ -238,7 +238,14 @@ public class VizDataParams: VizDataParamsBase {
     }
     
     func createMetricAggregationFor(_ aggregation: AggregationService) -> [String: Any] {
-        let dict = ["\(aggregation.metricType.rawValue)": ["field": "\(aggregation.field)"]]
+        var dict = [String: Any]()
+        if aggregation.metricType == .topHit {
+            dict = ["\(aggregation.metricType.rawValue)": ["docvalue_fields" : [["field": "\(aggregation.field)"]]]]
+        } else if aggregation.metricType == .median {
+            dict = ["percentiles": ["field": "\(aggregation.field)", "percents": [50]]]
+        } else {
+            dict = ["\(aggregation.metricType.rawValue)": ["field": "\(aggregation.field)"]]
+        }
         return ["\(aggregation.id)": dict]
     }
     
