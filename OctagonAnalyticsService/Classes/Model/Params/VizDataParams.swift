@@ -194,6 +194,20 @@ public class VizDataParams: VizDataParamsBase {
 
             idAggs = ["\(aggregation.id)": dict]
             break
+        case .dateRange:
+            
+            var internalDict: [String: Any] = ["field": "\(aggregation.field)"]
+            
+            var list: [[String: Any]] = []
+            for dateRangeList in aggregation.params?.dateRangesList ?? [] {
+                let rangeListDict = ["from": dateRangeList.from, "to": dateRangeList.to]
+                list.append(rangeListDict)
+            }
+            internalDict["ranges"] = list
+
+            let dict = ["\(aggregation.bucketType.rawValue)": internalDict]
+            idAggs = ["\(aggregation.id)": dict]
+            break
         default:
             break
         }

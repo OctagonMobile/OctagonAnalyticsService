@@ -112,6 +112,7 @@ public class AggregationParamsService {
     public var order: String?
     public var orderBy: String?
     public var ranges: [BucketRange]            =   []
+    public var dateRangesList: [BucketDateRange]    =   []
 
     init(_ responseModel: AggregationResponseParams) {
         self.precision      =   responseModel.precision ?? 5
@@ -123,6 +124,7 @@ public class AggregationParamsService {
         self.order          =   responseModel.order
         self.orderBy        =   responseModel.orderBy
         self.ranges         =   responseModel.rangeList.compactMap({ $0.asUIModel()})
+        self.dateRangesList         =   responseModel.dateRangeList.compactMap({ $0.asUIModel()})
     }
 }
 
@@ -131,6 +133,16 @@ public class BucketRange {
     public var to: CGFloat      =   0.0
     
     init(_ responseModel: BucketRangeResponse) {
+        self.from   =   responseModel.from
+        self.to     =   responseModel.to
+    }
+}
+
+public class BucketDateRange {
+    public var from: String     =   ""
+    public var to: String       =   ""
+    
+    init(_ responseModel: BucketDateRangeResponse) {
         self.from   =   responseModel.from
         self.to     =   responseModel.to
     }
@@ -194,6 +206,9 @@ class AggregationResponseParams: Decodable {
     // This is used only in Range Bucket type
     var rangeList: [BucketRangeResponse] =   []
     
+    // This is used only in Date Range Bucket type
+    var dateRangeList: [BucketDateRangeResponse] =   []
+    
     private enum CodingKeys: String, CodingKey {
         case field, precision, interval, customInterval, aggregate, size, order, orderBy,
         ranges
@@ -218,6 +233,8 @@ class AggregationResponseParams: Decodable {
         }
         
         self.rangeList  =   (try? container.decode([BucketRangeResponse].self, forKey: .ranges)) ?? []
+        
+        self.dateRangeList  =   (try? container.decode([BucketDateRangeResponse].self, forKey: .ranges)) ?? []
     }
     
     func asUIModel() -> AggregationParamsService? {
@@ -243,5 +260,26 @@ class BucketRangeResponse: Decodable {
     
     func asUIModel() -> BucketRange {
         return BucketRange(self)
+    }
+}
+
+class BucketDateRangeResponse: Decodable {
+ 
+    var from : String  =   ""
+    var to: String     =   ""
+    
+    private enum CodingKeys: String, CodingKey {
+        case from, to
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container   = try decoder.container(keyedBy: CodingKeys.self)
+        
+        from    =   try container.decode(String.self, forKey: .from)
+        to      =   try container.decode(String.self, forKey: .to)
+    }
+    
+    func asUIModel() -> BucketDateRange {
+        return BucketDateRange(self)
     }
 }
