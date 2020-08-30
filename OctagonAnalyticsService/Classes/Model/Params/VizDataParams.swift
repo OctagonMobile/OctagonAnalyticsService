@@ -205,7 +205,11 @@ public class VizDataParams: VizDataParamsBase {
             }
             internalDict["ranges"] = list
 
-            let dict = ["\(aggregation.bucketType.rawValue)": internalDict]
+            var dict = ["\(aggregation.bucketType.rawValue)": internalDict]
+            
+            if let metricAggs = addMetricAggsIfRequired(index) {
+                dict["aggs"] = metricAggs
+            }
             idAggs = ["\(aggregation.id)": dict]
             break
         default:
