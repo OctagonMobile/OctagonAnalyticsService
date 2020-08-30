@@ -89,6 +89,9 @@ public class VizDataParams: VizDataParamsBase {
         
         if panelType == .gauge || panelType == .goal {
             guard let metricAggregation = metricAggregation else { return [:] }
+            if metricAggregation.metricType == .count {
+                return [:]
+            }
             return createMetricAggregationFor(metricAggregation)
         }
         
