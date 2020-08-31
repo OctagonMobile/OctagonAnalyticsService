@@ -40,14 +40,14 @@ public class VizDataParamsBase {
             } else if let filterValue = filterObj["filterValue"] as? [String: Any] {
                 return [ "\(filterWord)" : [filterField : filterValue]]
             }
-            return nil
             
         case "range":
             
             if let filterField = filterObj["filterField"] as? String,
                 let from = filterObj["filterRangeFrom"] as? String,
                 let to = filterObj["filterRangeTo"] as? String {
-                return [ "\(filterField)" : ["gte" : from, "lt": to]]
+                let filterDict = [ "\(filterField)" : ["gte" : from, "lt": to]]
+                return ["range": filterDict]
             }
 
         case "date_histogram":
@@ -55,13 +55,14 @@ public class VizDataParamsBase {
                 let filterValue = filterObj["filterRangeFrom"] as? String,
                 let filterValInt = Int(filterValue) {
                 
-                return [ "\(filterField)" : ["gte" : filterValInt, "lt": filterValInt + 20000]]
+                let filterDict = [ "\(filterField)" : ["gte" : filterValInt, "lt": filterValInt + 20000]]
+                return ["range": filterDict]
+
             }
 
         case "geohash_grid":
             if let filterField = filterObj["filterField"] as? String,
                 let filterValue = filterObj["filterValue"] as? [String: Any] {
-                
                 return ["geo_bounding_box": [ "\(filterField)" : filterValue]]
             }
             
