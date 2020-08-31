@@ -24,7 +24,7 @@ public class VizDataParams: VizDataParamsBase {
         return metricAggregationsList.first
     }
     
-    //MARK: Functions    
+    //MARK: Functions
     override func generatedQueryDataForVisualization(_ indexPatternName: String, params: VizDataParamsBase?) -> Data? {
         
         let indexJson: [String: Any] = ["index": indexPatternName,
@@ -222,7 +222,20 @@ public class VizDataParams: VizDataParamsBase {
             aggIndex <= otherAggregationList.count - 1 {
             let previousAggregation = otherAggregationList[index]
             if var dict = idAggs[previousAggregation.id] as? [String: Any] {
-                dict["aggs"] = createAggsDictForAggregationAtIndex(aggIndex)
+                if panelType == .pieChart {
+                    var currentAggsDict: [String: Any]? = [:]
+                    if let metricDict = dict["aggs"] as? [String: Any] {
+                        currentAggsDict = metricDict
+                    }
+                    
+                    let aggDict = createAggsDictForAggregationAtIndex(aggIndex)
+                    for (key, value) in aggDict {
+                        currentAggsDict?[key] = value
+                    }
+                    dict["aggs"] = currentAggsDict
+                } else {
+                    dict["aggs"] = createAggsDictForAggregationAtIndex(aggIndex)
+                }
                 idAggs[previousAggregation.id] = dict
             }
         }
@@ -230,7 +243,7 @@ public class VizDataParams: VizDataParamsBase {
     }
     
     func addMetricAggsIfRequired(_ index: Int) -> [String: Any]? {
-        guard index == otherAggregationList.count - 1,
+        guard (index == otherAggregationList.count - 1 || panelType == .pieChart),
         let metricAggs = aggregationsArray.filter({ $0.schema == "metric" && $0.metricType != .count }).first else {
             return nil
         }
