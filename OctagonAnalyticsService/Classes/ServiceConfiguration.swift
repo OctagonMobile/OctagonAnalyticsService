@@ -88,4 +88,10 @@ public enum VersionType: String {
         }
     }
 
+    var vizDataQueryParams: [String: String]? {
+        switch self {
+        case .v654: return nil
+        case .v732: return ["rest_total_hits_as_int": "true"]
+        }
+    }
 }

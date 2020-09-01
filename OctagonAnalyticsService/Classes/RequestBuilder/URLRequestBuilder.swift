@@ -19,6 +19,7 @@ public protocol URLRequestBuilder: URLRequestConvertible {
     // MARK: - Parameters
     var parameters: Parameters? { get }
 
+    var queryParameters: [String: String]? { get }
     // MARK: - Methods
     var method: HTTPMethod { get }
 
@@ -35,7 +36,11 @@ public extension URLRequestBuilder {
     }
 
     var requestURL: URL {
-        return mainURL.appendingPathComponent(serverPath.path)
+        let url = mainURL.appendingPathComponent(serverPath.path)
+        if let queryParams = queryParameters {
+            return url.URLByAppendingQueryParameters(queryParams) ?? url
+        }
+        return url
     }
 
     var headers: HTTPHeaders {
@@ -48,6 +53,10 @@ public extension URLRequestBuilder {
         return Parameters()
     }
 
+    var queryParameters: [String: String]? {
+        return nil
+    }
+    
     var encoding: ParameterEncoding {
         switch method {
         case .get:

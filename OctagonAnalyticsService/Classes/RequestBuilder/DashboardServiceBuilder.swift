@@ -37,6 +37,15 @@ enum DashboardServiceBuilder: URLRequestBuilder {
         }
     }
     
+    var queryParameters: [String : String]? {
+        switch self {
+        case .loadVisualizationData, .loadSavedSearchData:
+            return ServiceConfiguration.version.vizDataQueryParams
+        default:
+            return nil
+        }
+    }
+    
     var method: HTTPMethod {
         switch self {
         case .loadVisStateData, .loadVisualizationData, .loadSavedSearchData:

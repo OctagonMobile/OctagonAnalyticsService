@@ -172,3 +172,19 @@ extension Date {
         return Int64((self.timeIntervalSince1970 * 1000.0).rounded())
     }
 }
+
+extension URL {
+
+    func URLByAppendingQueryParameters(_ params: [String: String]?) -> URL? {
+        guard let parameters = params,
+          var urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: true) else {
+            return self
+        }
+
+        var mutableQueryItems: [URLQueryItem] = urlComponents.queryItems ?? []
+        mutableQueryItems.append(contentsOf: parameters.compactMap({ URLQueryItem(name: $0, value: $1)}))
+
+        urlComponents.queryItems = mutableQueryItems
+        return urlComponents.url
+    }
+}
