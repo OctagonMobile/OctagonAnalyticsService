@@ -255,7 +255,7 @@ public class VizDataParams: VizDataParamsBase {
         if aggregation.metricType == .topHit {
             dict = ["\(aggregation.metricType.rawValue)": ["docvalue_fields" : [["field": "\(aggregation.field)"]]]]
         } else if aggregation.metricType == .median {
-            dict = ["percentiles": ["field": "\(aggregation.field)", "percents": [50]]]
+            dict = ["percentiles": ["field": "\(aggregation.field)", "percents": [50], "keyed": false]]
         } else {
             dict = ["\(aggregation.metricType.rawValue)": ["field": "\(aggregation.field)"]]
         }
