@@ -37,6 +37,8 @@ public class VizDataParamsBase {
             let filterWord = (filterObj["filterValue"] as? String) == nil ? "terms" : "match_phrase"
             if let filterValue = filterObj["filterValue"] as? String {
                 return [ "\(filterWord)" : [filterField : filterValue]]
+            } else if let filterValue = filterObj["filterValue"] as? [String] {
+                    return [ "\(filterWord)" : [filterField : filterValue]]
             } else if let filterValue = filterObj["filterValue"] as? [String: Any] {
                 return [ "\(filterWord)" : [filterField : filterValue]]
             }
