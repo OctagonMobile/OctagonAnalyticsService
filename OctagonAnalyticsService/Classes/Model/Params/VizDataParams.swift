@@ -292,7 +292,8 @@ public class VizDataParams: VizDataParamsBase {
                                 metricDict["label"] = Date(milliseconds: milliSec).toFormat(format)
                             }
                         } else {
-                            metricDict["label"] = bucket["key"] as? String
+                            let labelText = bucket["key"] as? String
+                            metricDict["label"] = labelText != nil ? labelText : "\(bucket["key"] ?? "")"
                         }
                         aggregationsList.append(metricDict)
                     }
