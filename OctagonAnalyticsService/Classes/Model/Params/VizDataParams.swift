@@ -286,7 +286,14 @@ public class VizDataParams: VizDataParamsBase {
                         
                         metricDict["type"] = metricAggs.metricType.rawValue
                         metricDict["id"] = metricAggs.id
-                        metricDict["label"] = bucket["key"] as? String
+                        if groupAggs.bucketType == .dateHistogram {
+                            if let milliSec = bucket["key"] as? Int {
+                                let format = groupAggs.params?.interval == .yearly ? "yyyy" : "yyyy-MM-dd"
+                                metricDict["label"] = Date(milliseconds: milliSec).toFormat(format)
+                            }
+                        } else {
+                            metricDict["label"] = bucket["key"] as? String
+                        }
                         aggregationsList.append(metricDict)
                     }
                 }
