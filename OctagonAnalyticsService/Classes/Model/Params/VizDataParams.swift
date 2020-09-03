@@ -75,7 +75,8 @@ public class VizDataParams: VizDataParamsBase {
                "excludes": []
              ],
              "aggs": params?.generatedAggregationJson() ?? [:],
-             "script_fields": scriptedFieldObj
+             "script_fields": scriptedFieldObj,
+             "timeout": "\(ServiceConfiguration.timeout)ms"
         ]
         
         let indexJsonString = indexJson.jsonStringRepresentation ?? ""
@@ -222,7 +223,7 @@ public class VizDataParams: VizDataParamsBase {
             aggIndex <= otherAggregationList.count - 1 {
             let previousAggregation = otherAggregationList[index]
             if var dict = idAggs[previousAggregation.id] as? [String: Any] {
-                if panelType == .pieChart {
+                if panelType == .pieChart || panelType == .table {
                     var currentAggsDict: [String: Any]? = [:]
                     if let metricDict = dict["aggs"] as? [String: Any] {
                         currentAggsDict = metricDict
@@ -243,7 +244,7 @@ public class VizDataParams: VizDataParamsBase {
     }
     
     func addMetricAggsIfRequired(_ index: Int) -> [String: Any]? {
-        guard (index == otherAggregationList.count - 1 || panelType == .pieChart),
+        guard (index == otherAggregationList.count - 1 || panelType == .pieChart || panelType == .table),
         let metricAggs = aggregationsArray.filter({ $0.schema == "metric" && $0.metricType != .count }).first else {
             return nil
         }

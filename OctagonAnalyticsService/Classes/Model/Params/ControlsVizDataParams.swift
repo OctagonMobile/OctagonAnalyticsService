@@ -77,7 +77,8 @@ public class ControlsVizDataParams: VizDataParamsBase {
                "excludes": []
              ],
              "aggs": aggsDict,
-             "script_fields": [:]
+             "script_fields": [:],
+             "timeout": "\(ServiceConfiguration.timeout)ms"
         ]
 
         let indexJsonString = indexJson.jsonStringRepresentation ?? ""
@@ -109,7 +110,8 @@ public class ControlsVizDataParams: VizDataParamsBase {
                "excludes": []
              ],
              "aggs": aggsDict,
-             "script_fields": [:]
+             "script_fields": [:],
+             "timeout": "\(ServiceConfiguration.timeout)ms"
         ]
 
         let indexJsonString = indexJson.jsonStringRepresentation ?? ""

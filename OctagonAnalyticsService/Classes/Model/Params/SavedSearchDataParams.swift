@@ -71,7 +71,8 @@ public class SavedSearchDataParams: VizDataParamsBase {
                 ],
              "from": fromPageNumber,
              "size": pageSize,
-             "sort": sortDict
+             "sort": sortDict,
+             "timeout": "\(ServiceConfiguration.timeout)ms"
         ]
         
         let indexJsonString = indexJson.jsonStringRepresentation ?? ""
