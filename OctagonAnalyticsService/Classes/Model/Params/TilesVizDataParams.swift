@@ -38,7 +38,11 @@ public class TilesVizDataParams: VizDataParamsBase {
 
     //MARK:
     override func postResponseProcedure(_ response: Any) -> Any? {
-        
+        let content = super.postResponseProcedure(response)
+        guard !(content is OAServiceError) else {
+            return content
+        }
+
         guard let result = response as? [String: Any] else { return response }
         let responseContent = (result["responses"] as? [[String: Any]])?.first
 

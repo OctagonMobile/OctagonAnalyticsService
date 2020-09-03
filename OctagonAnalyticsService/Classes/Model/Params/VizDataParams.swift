@@ -264,6 +264,11 @@ public class VizDataParams: VizDataParamsBase {
     }
     
     override func postResponseProcedure(_ response: Any) -> Any? {
+        let content = super.postResponseProcedure(response)
+        guard !(content is OAServiceError) else {
+            return content
+        }
+        
         if panelType == .metric {
             
             guard let result = response as? [String: Any] else { return response }
