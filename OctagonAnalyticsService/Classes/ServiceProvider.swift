@@ -219,21 +219,30 @@ public class ServiceProvider {
     
     private var dispatchGroup = DispatchGroup()
     private var videoContentListResponseArray: [VideoContentListResponse] = []
+    private var queryDateFormatter: DateFormatter {
+        let dateFormat = DateFormatter()
+        dateFormat.dateFormat = "yyyy-MM-dd'T'hh:mm:ss.SSSZ"
+        return dateFormat
+    }
+    
     public func loadVideoContent(_ indexPatternName: String, fromDate: Date, toDate: Date, timeField: String, query: [String: Any], completion: CompletionBlock?) {
         
-        var queryForHitCount = query
-        queryForHitCount.removeValue(forKey: "aggs")
+        // Reset response
+        videoContentListResponseArray.removeAll()
+        
+        let queryPart = videoDataQuery(fromDate, toDate: toDate, timeField: timeField)
+        let queryForHitCount: [String: Any] = ["query": queryPart, "size": 0]
+
         getNumberOfRecordsFor(indexPatternName, query: queryForHitCount) { [weak self] (res, error) in
-            guard error == nil else {
+            guard let strongSelf = self, error == nil else {
                 completion?(nil, error)
                 return
             }
             
-            guard let result = (res as? [String: Any])?["hits"] as? [String: Any],
-                let total = (result["total"] as? [String: Any])?["value"] as? CGFloat else {
-                    let err = OAServiceError(description: "Please try again", code: 1000)
-                    completion?(nil, err)
-                    return
+            guard let total = res as? CGFloat else {
+                let err = OAServiceError(description: "Please try again", code: 1000)
+                completion?(nil, err)
+                return
             }
             
             //Max allowed buckets = 10,000. We need to devide the request into multiple request
@@ -251,19 +260,11 @@ public class ServiceProvider {
 
                 for _ in 0 ..< Int(totalNumberOfRequests) {
 
-                    let dateFrmat = DateFormatter()
-                    dateFrmat.dateFormat = "yyyy-MM-dd'T'hh:mm:ss.SSSZ"
-                    
-                    let fromDateStr = dateFrmat.string(from: from)
-                    let toDateStr = dateFrmat.string(from: to)
-
-                    let queryPart = [ "range":
-                        ["\(timeField)": [ "gte": fromDateStr,"lte": toDateStr]]]
-
-                    
+                    let queryPart = strongSelf.videoDataQuery(from, toDate: to, timeField: timeField)
                     var finalQuery = query
                     finalQuery["query"] = queryPart
-                    
+                    finalQuery["size"] = 0
+
                     self?.dispatchGroup.enter()
                     self?.loadVideoData(indexPatternName, query: finalQuery) { (res, err) in
                         guard err == nil else {
@@ -400,13 +401,24 @@ extension ServiceProvider {
             case .success(let value):
                 do {
                     let json = try JSONSerialization.jsonObject(with: value, options: []) as? [String: Any]
-                    completion?(json, nil)
+                    let result = json?["hits"] as? [String: Any]
+                    let total = (result?["total"] as? [String: Any])?["value"] as? CGFloat
+                    completion?(total, nil)
                 } catch let error {
                     let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
                     completion?(nil, serviceError)
                 }
             }
         }
+    }
+    
+    func videoDataQuery(_ fromDate: Date, toDate: Date, timeField: String) -> [String: Any] {
+        let fromDateStr = queryDateFormatter.string(from: fromDate)
+        let toDateStr = queryDateFormatter.string(from: toDate)
 
+        let queryPart = [ "range":
+            ["\(timeField)": [ "gte": fromDateStr,"lte": toDateStr]]]
+
+        return queryPart
     }
 }
