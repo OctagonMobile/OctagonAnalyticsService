@@ -217,21 +217,75 @@ public class ServiceProvider {
         }
     }
     
-    public func loadVideoContent(_ indexPatternName: String, query: [String: Any], completion: CompletionBlock?) {
-        let request = VideoServiceBuilder.loadVideoData(indexPatternName: indexPatternName, query: query)
+    private var dispatchGroup = DispatchGroup()
+    private var videoContentListResponseArray: [VideoContentListResponse] = []
+    public func loadVideoContent(_ indexPatternName: String, fromDate: Date, toDate: Date, timeField: String, query: [String: Any], completion: CompletionBlock?) {
+        
+        var queryForHitCount = query
+        queryForHitCount.removeValue(forKey: "aggs")
+        getNumberOfRecordsFor(indexPatternName, query: queryForHitCount) { [weak self] (res, error) in
+            guard error == nil else {
+                completion?(nil, error)
+                return
+            }
+            
+            guard let result = (res as? [String: Any])?["hits"] as? [String: Any],
+                let total = (result["total"] as? [String: Any])?["value"] as? CGFloat else {
+                    let err = OAServiceError(description: "Please try again", code: 1000)
+                    completion?(nil, err)
+                    return
+            }
+            
+            //Max allowed buckets = 10,000. We need to devide the request into multiple request
+            let totalNumberOfRequests = (total / 10000).rounded(.up)
+            if totalNumberOfRequests == 0 {
+                let err = OAServiceError(description: "No data found", code: 1000)
+                completion?(nil, err)
+            } else {
+                
+                let dateDifference = toDate.timeIntervalSince(fromDate)
+                let dif = dateDifference / TimeInterval(totalNumberOfRequests)
+                      
+                var from = fromDate
+                var to = from.addingTimeInterval(dif)
 
-        AF.request(request).responseData { (response) in
-            switch response.result {
-            case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
-            case .success(let value):
-                do {
-                    let videoResponseModel = try JSONDecoder().decode(VideoContentListResponseBase.self, from: value)
-                    completion?(videoResponseModel.asUIModel(), nil)
-                } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
+                for _ in 0 ..< Int(totalNumberOfRequests) {
+
+                    let dateFrmat = DateFormatter()
+                    dateFrmat.dateFormat = "yyyy-MM-dd'T'hh:mm:ss.SSSZ"
+                    
+                    let fromDateStr = dateFrmat.string(from: from)
+                    let toDateStr = dateFrmat.string(from: to)
+
+                    let queryPart = [ "range":
+                        ["\(timeField)": [ "gte": fromDateStr,"lte": toDateStr]]]
+
+                    
+                    var finalQuery = query
+                    finalQuery["query"] = queryPart
+                    
+                    self?.dispatchGroup.enter()
+                    self?.loadVideoData(indexPatternName, query: finalQuery) { (res, err) in
+                        guard err == nil else {
+                            self?.dispatchGroup.leave()
+                            return
+                        }
+                        
+                        if let videoContentListObj = res as? VideoContentListResponse {
+                            self?.videoContentListResponseArray.append(videoContentListObj)
+                        }
+                        self?.dispatchGroup.leave()
+                    }
+                    
+                    from = to.addingTimeInterval(1)
+                    to = from.addingTimeInterval(dif)
+                }
+                
+                self?.dispatchGroup.notify(queue: .main) {
+                    let list = (self?.videoContentListResponseArray.reduce([], { (res, video) -> [VideoContentService] in
+                        return res + video.buckets
+                    }) ?? []).sorted(by: { $1.date != nil && $0.date?.compare($1.date!) == .orderedAscending })
+                    completion?(VideoContentListResponse(list), nil)
                 }
             }
         }
@@ -311,5 +365,48 @@ extension ServiceProvider {
             }
         }
         
+    }
+    
+    func loadVideoData(_ indexPatternName: String, query: [String: Any], completion: CompletionBlock?) {
+        let request = VideoServiceBuilder.loadVideoData(indexPatternName: indexPatternName, query: query)
+
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                completion?(nil, serviceError)
+            case .success(let value):
+                do {
+                    let videoResponseModel = try JSONDecoder().decode(VideoContentListResponseBase.self, from: value)
+                    completion?(videoResponseModel.asUIModel(), nil)
+                } catch let error {
+                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                    completion?(nil, serviceError)
+                }
+            }
+        }
+
+    }
+    
+    func getNumberOfRecordsFor(_ indexPatternName: String, query: [String: Any], completion: CompletionBlock?) {
+        
+        let request = VideoServiceBuilder.loadVideoDataTotalCount(indexPatternName: indexPatternName, query: query)
+
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                completion?(nil, serviceError)
+            case .success(let value):
+                do {
+                    let json = try JSONSerialization.jsonObject(with: value, options: []) as? [String: Any]
+                    completion?(json, nil)
+                } catch let error {
+                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
+                    completion?(nil, serviceError)
+                }
+            }
+        }
+
     }
 }
