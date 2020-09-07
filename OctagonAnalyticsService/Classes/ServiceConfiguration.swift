@@ -97,4 +97,13 @@ public enum VersionType: String {
         case .v732: return ["rest_total_hits_as_int": "true"]
         }
     }
+    
+    func getTotalFrom(_ result: [String: Any]?) -> CGFloat? {
+        switch self {
+        case .v654:
+            return result?["total"] as? CGFloat
+        case .v732:
+            return (result?["total"] as? [String: Any])?["value"] as? CGFloat
+        }
+    }
 }

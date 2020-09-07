@@ -402,7 +402,7 @@ extension ServiceProvider {
                 do {
                     let json = try JSONSerialization.jsonObject(with: value, options: []) as? [String: Any]
                     let result = json?["hits"] as? [String: Any]
-                    let total = (result?["total"] as? [String: Any])?["value"] as? CGFloat
+                    let total = ServiceConfiguration.version.getTotalFrom(result)
                     completion?(total, nil)
                 } catch let error {
                     let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
