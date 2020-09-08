@@ -128,7 +128,8 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
             
             if let order = aggregation.params?.order {
                 if metricAggregation?.metricType == .count {
-                    internalDict["order"] = ["_count":"\(order)"]
+                    let orderBy = aggregation.params?.orderBy == "_key" ? "_key": "_count"
+                    internalDict["order"] = ["\(orderBy)":"\(order)"]
                 } else {
                     if let orderBy = aggregation.params?.orderBy {
                         internalDict["order"] = ["\(orderBy)":"\(order)"]
