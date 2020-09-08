@@ -37,9 +37,9 @@ public class SavedSearchDataParams: VizDataParamsBase, OAErrorHandler {
         
         params?.filters.forEach({ (dict) in
             if let filter = params?.prepareVisualizationFilter(dict) {
-                let isInverted = filter["isFilterInverted"] as? Bool ?? false
+                let isInverted = dict["isFilterInverted"] as? Bool ?? false
                 
-                isInverted ? mustNotFilters.append(dict) : mustFilters.append(dict)
+                isInverted ? mustNotFilters.append(filter) : mustFilters.append(filter)
             }
         })
         
