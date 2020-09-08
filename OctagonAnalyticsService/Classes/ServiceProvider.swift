@@ -123,7 +123,9 @@ public class ServiceProvider: OAErrorHandler {
         loadVisStateDataFor([info]) { [weak self] (result) in
             switch result {
             case .failure(let error):
-                completion?(result)
+                if let self = self {
+                    completion?(.failure(self.parse(error: error)))
+                }
             case .success(let data):
                 guard let visStateContent = data as? VisStateContainer else {
                     completion?(.failure(OAError.unknown("Something went wrong, please retry")))
