@@ -131,14 +131,6 @@ public class VizDataParamsBase {
     }
     
     func postResponseProcedure(_ response: Any) -> Any? {
-        
-        let result = response as? [String: Any]
-        let responseContent = (result?["responses"] as? [[String: Any]])?.first
-
-        if let code = responseContent?["status"] as? Int, code != 200 {
-            let errorMessage = (responseContent?["error"] as? [String: Any])?["reason"] as? String ?? "Something went wrong!!!"
-            return OAServiceError(description: errorMessage, code: code)
-        }
         return response
     }
 }

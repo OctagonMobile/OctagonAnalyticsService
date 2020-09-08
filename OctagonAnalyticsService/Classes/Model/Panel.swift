@@ -32,7 +32,7 @@ public class PanelService {
     
     public func loadChartData(_ completion: CompletionBlock?) {
         
-        completion?(nil, nil)
+        completion?(.failure(OAError.unknown("")))
     }
     
     internal func resetDataSource() {

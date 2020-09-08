@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class TilesVizDataParams: VizDataParamsBase {
+public class TilesVizDataParams: VizDataParamsBase, OAErrorHandler {
     
     public var specifyType: TileType
     public var images: String?
@@ -38,9 +38,9 @@ public class TilesVizDataParams: VizDataParamsBase {
 
     //MARK:
     override func postResponseProcedure(_ response: Any) -> Any? {
-        let content = super.postResponseProcedure(response)
-        guard !(content is OAServiceError) else {
-            return content
+        let error = parseResponseForError(response as? [String: Any])
+        guard error == nil else {
+            return error
         }
 
         guard let result = response as? [String: Any] else { return response }

@@ -85,9 +85,9 @@ public class SavedSearchDataParams: VizDataParamsBase {
 
     func postResponseProcedure(_ response: Any, visStateHolder: VisStateHolderBase?) -> Any? {
         
-        let content = super.postResponseProcedure(response)
-        guard !(content is OAServiceError) else {
-            return content
+        let error = super.postResponseProcedure(response)
+        guard error == nil else {
+            return error
         }
 
         guard let result = response as? [String: Any], var resp = (result["responses"] as? [[String: Any]])?.first,

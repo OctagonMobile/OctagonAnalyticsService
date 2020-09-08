@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class VizDataParams: VizDataParamsBase {
+public class VizDataParams: VizDataParamsBase, OAErrorHandler {
 
     /// Interval is used only for Date Histogram
     public var interval: String?
@@ -264,9 +264,9 @@ public class VizDataParams: VizDataParamsBase {
     }
     
     override func postResponseProcedure(_ response: Any) -> Any? {
-        let content = super.postResponseProcedure(response)
-        guard !(content is OAServiceError) else {
-            return content
+        let error = parseResponseForError(response as? [String : Any])
+        guard error == nil else {
+            return error
         }
         
         if panelType == .metric {
