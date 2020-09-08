@@ -14,6 +14,10 @@ public class VideoContentListResponse {
     init(_ responseModel: VideoContentListResponseBase) {
         self.buckets    =   responseModel.videoDataAggregation?.bucketsList.compactMap({ $0.asUIModel() }) ?? []
     }
+    
+    init(_ buckets: [VideoContentService]) {
+        self.buckets    =   buckets
+    }
 }
 
 //MARK: Private

@@ -81,8 +81,12 @@ class DashboardsViewController: UIViewController {
     @IBAction func loadVideoContentAction(_ sender: UIButton) {
         
         let query = generatedQuery()
-        ServiceProvider.shared.loadVideoContent("covid19-stats", query: query) { (result) in
-            
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let fromDate = dateFormatter.date(from: "2020-01-01") ?? Date()
+        let toDate = dateFormatter.date(from: "2020-08-01") ?? Date()
+
+        ServiceProvider.shared.loadVideoContent("covid19-stats", fromDate: fromDate, toDate: toDate, timeField: "date", query: query) { (result) in
             switch result {
             case .failure(let error):
                 print("\(error.localizedDescription)")
@@ -98,7 +102,7 @@ class DashboardsViewController: UIViewController {
     // Load Visualization Data
     @IBAction func loadVizDataAction(_ sender: UIButton) {
         
-        let testDashboard = dashboards.filter({ $0.id == "3ab21730-6c1e-11ea-9bcf-c9547acb85c3"}).first
+        let testDashboard = dashboards.filter({ $0.id == "8e5cc1a0-ed33-11ea-a6cf-1f9c31f185da"}).first
         
         if testDashboard?.panels.first?.visState?.type == .inputControls {
             loadControlsVizData()
@@ -195,7 +199,7 @@ class DashboardsViewController: UIViewController {
 
     @IBAction func loadSavedSearchDataAction(_ sender: UIButton) {
         
-        let testDashboard = dashboards.filter({ $0.id == "ba513e20-e69a-11ea-a80d-47c665684b26"}).first
+        let testDashboard = dashboards.filter({ $0.id == "8e5cc1a0-ed33-11ea-a6cf-1f9c31f185da"}).first
         guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
 
         let panel = testDashboard?.panels.first
@@ -224,10 +228,10 @@ class DashboardsViewController: UIViewController {
         
         let timeFieldName = "date"
         let fieldName = "country.keyword"
-        let valueToDisplayFieldName = "total"
+        let valueToDisplayFieldName = "confirmed"
         
-        let fromDateStr = "2020-04-01"
-        let toDateStr = "2020-04-30"
+        let fromDateStr = "2020-01-01"
+        let toDateStr = "2020-07-30"
 
         let query = [ "range":
             ["\(timeFieldName)": [ "gte": fromDateStr,"lte": toDateStr]]]

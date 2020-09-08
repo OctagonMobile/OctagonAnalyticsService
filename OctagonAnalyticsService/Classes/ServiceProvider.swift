@@ -213,19 +213,79 @@ public class ServiceProvider: OAErrorHandler {
         }
     }
     
-    public func loadVideoContent(_ indexPatternName: String, query: [String: Any], completion: CompletionBlock?) {
-        let request = VideoServiceBuilder.loadVideoData(indexPatternName: indexPatternName, query: query)
+    private var dispatchGroup = DispatchGroup()
+    private var videoContentListResponseArray: [VideoContentListResponse] = []
+    private var queryDateFormatter: DateFormatter {
+        let dateFormat = DateFormatter()
+        dateFormat.dateFormat = "yyyy-MM-dd'T'hh:mm:ss.SSSZ"
+        return dateFormat
+    }
+    
+    public func loadVideoContent(_ indexPatternName: String, fromDate: Date, toDate: Date, timeField: String, query: [String: Any], completion: CompletionBlock?) {
+        
+        // Reset response
+        videoContentListResponseArray.removeAll()
+        
+        let queryPart = videoDataQuery(fromDate, toDate: toDate, timeField: timeField)
+        let queryForHitCount: [String: Any] = ["query": queryPart, "size": 0]
+        getNumberOfRecordsFor(indexPatternName, query: queryForHitCount) { [weak self] (result) in
+            
+            switch result {
+            case .failure(_):
+                completion?(result)
+            case .success(let res):
+                guard let strongSelf = self else {
+                    completion?(.failure(OAError.unknown("")))
+                    return
+                }
+                guard let total = res as? CGFloat else {
+                    completion?(.failure(OAError.unknown("Please try again")))
+                    return
+                }
+                
+                //Max allowed buckets = 10,000. We need to devide the request into multiple request
+                let totalNumberOfRequests = (total / 10000).rounded(.up)
+                if totalNumberOfRequests == 0 {
+                    completion?(.failure(OAError.unknown("No data found")))
+                } else {
+                    
+                    let dateDifference = toDate.timeIntervalSince(fromDate)
+                    let dif = dateDifference / TimeInterval(totalNumberOfRequests)
+                          
+                    var from = fromDate
+                    var to = from.addingTimeInterval(dif)
 
-        AF.request(request).responseData { (response) in
-            switch response.result {
-            case .failure(let error):
-                completion?(.failure(self.parse(error: error)))
-            case .success(let value):
-                do {
-                    let videoResponseModel = try JSONDecoder().decode(VideoContentListResponseBase.self, from: value)
-                    completion?(.success(videoResponseModel.asUIModel()))
-                } catch let error {
-                    completion?(.failure(self.parse(error: error)))
+                    for _ in 0 ..< Int(totalNumberOfRequests) {
+
+                        let queryPart = strongSelf.videoDataQuery(from, toDate: to, timeField: timeField)
+                        var finalQuery = query
+                        finalQuery["query"] = queryPart
+                        finalQuery["size"] = 0
+
+                        self?.dispatchGroup.enter()
+                        self?.loadVideoData(indexPatternName, query: finalQuery) { (result) in
+                            switch result {
+                            case .failure(let err):
+                                self?.dispatchGroup.leave()
+                                return
+                            case .success(let res):
+                                if let videoContentListObj = res as? VideoContentListResponse {
+                                    self?.videoContentListResponseArray.append(videoContentListObj)
+                                }
+                                self?.dispatchGroup.leave()
+                            }
+                        }
+                        
+                        from = to.addingTimeInterval(1)
+                        to = from.addingTimeInterval(dif)
+                    }
+                    
+                    self?.dispatchGroup.notify(queue: .main) {
+                        let list = (self?.videoContentListResponseArray.reduce([], { (res, video) -> [VideoContentService] in
+                            return res + video.buckets
+                        }) ?? []).sorted(by: { $1.date != nil && $0.date?.compare($1.date!) == .orderedAscending })
+                        completion?(.success(VideoContentListResponse(list)))
+                    }
                 }
             }
         }
@@ -301,5 +361,55 @@ extension ServiceProvider {
             }
         }
         
+    }
+    
+    func loadVideoData(_ indexPatternName: String, query: [String: Any], completion: CompletionBlock?) {
+        let request = VideoServiceBuilder.loadVideoData(indexPatternName: indexPatternName, query: query)
+
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                completion?(.failure(self.parse(error: error)))
+            case .success(let value):
+                do {
+                    let videoResponseModel = try JSONDecoder().decode(VideoContentListResponseBase.self, from: value)
+                    completion?(.success(videoResponseModel.asUIModel()))
+                } catch let error {
+                    completion?(.failure(self.parse(error: error)))
+                }
+            }
+        }
+
+    }
+    
+    func getNumberOfRecordsFor(_ indexPatternName: String, query: [String: Any], completion: CompletionBlock?) {
+        
+        let request = VideoServiceBuilder.loadVideoDataTotalCount(indexPatternName: indexPatternName, query: query)
+
+        AF.request(request).responseData { (response) in
+            switch response.result {
+            case .failure(let error):
+                completion?(.failure(self.parse(error: error)))
+            case .success(let value):
+                do {
+                    let json = try JSONSerialization.jsonObject(with: value, options: []) as? [String: Any]
+                    let result = json?["hits"] as? [String: Any]
+                    let total = ServiceConfiguration.version.getTotalFrom(result)
+                    completion?(.success(total))
+                } catch let error {
+                    completion?(.failure(self.parse(error: error)))
+                }
+            }
+        }
+    }
+    
+    func videoDataQuery(_ fromDate: Date, toDate: Date, timeField: String) -> [String: Any] {
+        let fromDateStr = queryDateFormatter.string(from: fromDate)
+        let toDateStr = queryDateFormatter.string(from: toDate)
+
+        let queryPart = [ "range":
+            ["\(timeField)": [ "gte": fromDateStr,"lte": toDateStr]]]
+
+        return queryPart
     }
 }
