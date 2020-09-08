@@ -37,7 +37,7 @@ public class MapVizParams: VizDataParams {
         var boundingBoxDict: [String: Any] = ["ignore_unmapped": true]
         let locationDict:[String: Any] =  ["top_left": ["lat": topLeftLocation.lat, "lon": topLeftLocation.lon],
                                            "bottom_right": ["lat": bottomRightLocation.lat, "lon": bottomRightLocation.lon]]
-        boundingBoxDict["location"] = locationDict
+        boundingBoxDict[aggregation.field] = locationDict
         let filterDict = ["geo_bounding_box": boundingBoxDict]
         filterAggDict["filter"] = filterDict
         idAggs["filter_agg"] = filterAggDict
