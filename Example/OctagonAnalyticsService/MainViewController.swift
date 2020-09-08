@@ -24,19 +24,20 @@ class MainViewController: UIViewController {
     
     //MARK: Services
     private func login() {
-        ServiceProvider.shared.loginWith("demouser", password: "demouser654321") { [weak self] (result, error) in
+        ServiceProvider.shared.loginWith("demouser", password: "demouser654321") { [weak self] (result) in
             
-            guard error == nil else {
-                print("\(error!.localizedDescription)")
-                return
-            }
-            
-            if let resp = result as? LoginResponse {
-                print("Name = \(resp.userName)\nIsDemoUser = \(resp.isDemoUser)\n-----------------")
-                let dashboards = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "DashboardsViewController")
-                self?.navigationController?.pushViewController(dashboards, animated: true)
+            switch result {
+                case .success(let data):
+                    if let resp = data as? LoginResponse {
+                        print("Name = \(resp.userName)\nIsDemoUser = \(resp.isDemoUser)\n-----------------")
+                        let dashboards = UIStoryboard(name: "Main", bundle: .main).instantiateViewController(identifier: "DashboardsViewController")
+                        self?.navigationController?.pushViewController(dashboards, animated: true)
 
+                    }
+            case .failure(let error):
+                print("\(error.localizedDescription)")
             }
+
         }
     }
     

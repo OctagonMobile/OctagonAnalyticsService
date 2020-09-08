@@ -26,32 +26,35 @@ class DashboardsViewController: UIViewController {
     }
     
     private func loadDashboards() {
-        ServiceProvider.shared.loadDashboards(1, pageSize: 100) { (res, error) in
-            guard error == nil else {
-                print("\(error!.localizedDescription)")
-                return
-            }
+        
+        ServiceProvider.shared.loadDashboards(1, pageSize: 100) { (result) in
             
-            if let list = res as? DashboardListResponse {
-                print("DashboardList")
-                print("Total Dashboards = \(list.total)\n----------")
-                
-                self.dashboards = list.dashboards
-                self.tableView.reloadData()
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let data):
+                if let list = data as? DashboardListResponse {
+                    print("DashboardList")
+                    print("Total Dashboards = \(list.total)\n----------")
+                    
+                    self.dashboards = list.dashboards
+                    self.tableView.reloadData()
+                }
             }
         }
     }
     
     private func logout() {
-        ServiceProvider.shared.logout {[weak self] (res, error) in
-            guard error == nil else {
-                print("\(error!.localizedDescription)")
-                return
-            }
+        ServiceProvider.shared.logout {[weak self] (result) in
             
-            if let _ = res as? Bool {
-                print("Logged Out\n----------")
-                self?.navigationController?.popViewController(animated: true)
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let data):
+                if let list = data as? Bool {
+                    print("Logged Out\n----------")
+                    self?.navigationController?.popViewController(animated: true)
+                }
             }
         }
     }
@@ -62,15 +65,15 @@ class DashboardsViewController: UIViewController {
         
     //MARK: Button Actions
     @IBAction func loadIndexPatternsListAction(_ sender: UIButton) {
-        ServiceProvider.shared.loadIndexPatterns(1, pageSize: 20) { (res, error) in
-            guard error == nil else {
-                print("\(error!.localizedDescription)")
-                return
-            }
-            
-            if let indexPatternList = res as? IndexPatternsListResponse {
-                print("Total Index Patterns = \(indexPatternList.indexPatterns.count)\n----------")
-
+        ServiceProvider.shared.loadIndexPatterns(1, pageSize: 20) { (result) in
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let data):
+                if let indexPatternList = data as? IndexPatternsListResponse {
+                    print("Total Index Patterns = \(indexPatternList.indexPatterns.count)\n----------")
+                    
+                }
             }
         }
     }
@@ -83,15 +86,15 @@ class DashboardsViewController: UIViewController {
         let fromDate = dateFormatter.date(from: "2020-01-01") ?? Date()
         let toDate = dateFormatter.date(from: "2020-08-01") ?? Date()
 
-        ServiceProvider.shared.loadVideoContent("covid19-stats", fromDate: fromDate, toDate: toDate, timeField: "date", query: query) { (res, error) in
-            guard error == nil else {
-                print("\(error!.localizedDescription)")
-                return
-            }
-            
-            if let videoContentList = res as? VideoContentListResponse {
-                print("Total Video Contents = \(videoContentList.buckets.count)\n----------")
+        ServiceProvider.shared.loadVideoContent("covid19-stats", fromDate: fromDate, toDate: toDate, timeField: "date", query: query) { (result) in
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let data):
+                if let videoContentList = data as? VideoContentListResponse {
+                    print("Total Video Contents = \(videoContentList.buckets.count)\n----------")
 
+                }
             }
         }
     }
@@ -122,15 +125,15 @@ class DashboardsViewController: UIViewController {
         params.timeTo = "now"//"2020-08-16T00:00:00.000Z"
         params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel?.id }).first?.visState?.aggregationsArray ?? []
 
-        ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
-            guard error == nil else {
-                print(error!.localizedDescription)
-                return
-            }
-            
-            if let result = res as? [String: Any],
-                let finalResult = result["responses"] as? [[String: Any]] {
-                print("\(String(describing: finalResult.first))")
+        ServiceProvider.shared.loadVisualizationData(params) { (result) in
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let data):
+                if let result = data as? [String: Any],
+                    let finalResult = result["responses"] as? [[String: Any]] {
+                    print("\(String(describing: finalResult.first))")
+                }
             }
         }
     }
@@ -153,15 +156,16 @@ class DashboardsViewController: UIViewController {
         params.timeTo = "now"//"2020-08-16T00:00:00.000Z"
         params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel.id}).first?.visState?.aggregationsArray ?? []
 
-        ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
-            guard error == nil else {
-                print(error!.localizedDescription)
-                return
-            }
+        ServiceProvider.shared.loadVisualizationData(params) { (result) in
             
-            if let result = res as? [String: Any],
-                let finalResult = result["responses"] as? [[String: Any]] {
-                print("\(String(describing: finalResult.first))")
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let data):
+                if let result = data as? [String: Any],
+                    let finalResult = result["responses"] as? [[String: Any]] {
+                    print("\(String(describing: finalResult.first))")
+                }
             }
         }
     }
@@ -178,15 +182,16 @@ class DashboardsViewController: UIViewController {
         params.timeTo = "now"//"2020-08-16T00:00:00.000Z"
         params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel.id }).first?.visState?.aggregationsArray ?? []
 
-        ServiceProvider.shared.loadVisualizationData(params) { (res, error) in
-            guard error == nil else {
-                print(error!.localizedDescription)
-                return
-            }
+        ServiceProvider.shared.loadVisualizationData(params) { (result) in
             
-            if let result = res as? [String: Any],
-                let finalResult = result["responses"] as? [[String: Any]] {
-                print("\(String(describing: finalResult.first))")
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let data):
+                if let result = data as? [String: Any],
+                    let finalResult = result["responses"] as? [[String: Any]] {
+                    print("\(String(describing: finalResult.first))")
+                }
             }
         }
     }
@@ -206,14 +211,15 @@ class DashboardsViewController: UIViewController {
         params.timeTo = "now"
         params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel?.id}).first?.visState?.aggregationsArray ?? []
 
-        ServiceProvider.shared.loadSavedSearchData(params) { (res, error) in
-            guard error == nil else {
-                print(error!.localizedDescription)
-                return
-            }
+        ServiceProvider.shared.loadSavedSearchData(params) { (result) in
             
-            if let result = res as? [[String: Any]] {
-                print("\(String(describing: result))")
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let data):
+                if let result = data as? [[String: Any]] {
+                    print("\(String(describing: result))")
+                }
             }
         }
     }

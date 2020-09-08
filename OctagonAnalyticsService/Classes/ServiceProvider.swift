@@ -8,9 +8,10 @@
 import Foundation
 import Alamofire
 
-public typealias CompletionBlock = (_ result: Any?,_ error: OAServiceError?) -> Void
+public typealias ServiceResult = Result<Any?, OAError>
+public typealias CompletionBlock = (ServiceResult) -> Void
 
-public class ServiceProvider {
+public class ServiceProvider: OAErrorHandler {
     
     public static var shared   = ServiceProvider()
     
@@ -24,16 +25,14 @@ public class ServiceProvider {
         AF.request(request).responseData { (response) in
             switch response.result {
             case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
+                completion?(.failure(self.parse(error: error)))
             case .success(let value):
                 do {
                     let decoder = JSONDecoder()                    
                     let loginReponseModel = try decoder.decode(ServiceConfiguration.version.loginResponseModel.self, from: value)
-                    completion?(loginReponseModel.asUIModel(), nil)
+                    completion?(.success(loginReponseModel.asUIModel()))
                 } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
+                    completion?(.failure(self.parse(error: error)))
                 }
             }
         }
@@ -45,10 +44,9 @@ public class ServiceProvider {
         AF.request(request).responseData { (response) in
             switch response.result {
             case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
+                completion?(.failure(self.parse(error: error)))
             case .success( _):
-                completion?(true, nil)
+                completion?(.success(true))
             }
         }
     }
@@ -64,15 +62,17 @@ public class ServiceProvider {
         AF.request(request).responseData {[weak self] (response) in
             switch response.result {
             case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
+                if let self = self {
+                    completion?(.failure(self.parse(error: error)))
+                }
             case .success(let value):
                 do {
                     let dashboardListModel = try JSONDecoder().decode(ServiceConfiguration.version.dashboardListModel.self, from: value)
                     self?.UpdateVisStateFor(dashboardListModel, completion: completion)
                 } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
+                    if let self = self {
+                        completion?(.failure(self.parse(error: error)))
+                    }
                 }
             }
         }
@@ -85,9 +85,8 @@ public class ServiceProvider {
         
         if !(params is ControlsVizDataParams) && !(params is TilesVizDataParams) {
             guard let indexPattern = indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
-                    let err = OAServiceError(description: "Visualization Not found", code: 1000)
-                    completion?(nil, err)
-                    return
+                completion?(.failure(OAError.unknown("Visualization Not found")))
+                return
             }
             indexPatternName = indexPattern.title
         }
@@ -97,18 +96,15 @@ public class ServiceProvider {
         AF.request(request).responseData { (response) in
             switch response.result {
             case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
+                completion?(.failure(self.parse(error: error)))
             case .success(let value):
                 
                 do {
                     let result = try JSONSerialization.jsonObject(with: value, options: .allowFragments)
                     let resp = params.postResponseProcedure(result)
-                    completion?(resp, nil)
-
+                    completion?(.success(resp))
                 } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
+                    completion?(.failure(self.parse(error: error)))
                 }
             }
         }
@@ -119,54 +115,54 @@ public class ServiceProvider {
     public func loadSavedSearchData(_ params: SavedSearchDataParams, completion: CompletionBlock?) {
                 
         guard let savedSearchId = params.savedSearchId else {
-            let serviceError = OAServiceError(description: "Missing SavedSearch ID", code: 1000)
-            completion?(nil, serviceError)
+            completion?(.failure(OAError.unknown("Missing SavedSearch ID")))
             return
         }
         let info = PanelInfo(savedSearchId, type: "search")
         
-        loadVisStateDataFor([info]) { [weak self] (res, err) in
-            
-            guard err == nil else {
-                completion?(nil, err)
-                return
-            }
-
-            guard let visStateContent = res as? VisStateContainer else {
-                let serviceError = OAServiceError(description: "Something went wrong, please retry", code: 1000)
-                completion?(nil, serviceError)
-                return
-            }
-
-            guard let indexPattern = self?.indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
-                    let err = OAServiceError(description: "SavedSearch Not found", code: 1000)
-                    completion?(nil, err)
+        loadVisStateDataFor([info]) { [weak self] (result) in
+            switch result {
+            case .failure(let error):
+                if let self = self {
+                    completion?(.failure(self.parse(error: error)))
+                }
+            case .success(let data):
+                guard let visStateContent = data as? VisStateContainer else {
+                    completion?(.failure(OAError.unknown("Something went wrong, please retry")))
                     return
-            }
-                    
-            let sort = visStateContent.visStateHolder?.first?.sortList ?? []
-            let request = DashboardServiceBuilder.loadSavedSearchData(indexPatternName: indexPattern.title, sort: sort, searchDataParams: params)
-            
-            AF.request(request).responseData { (response) in
-                switch response.result {
-                case .failure(let error):
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
-                case .success(let value):
-                    
-                    do {
-                        let result = try JSONSerialization.jsonObject(with: value, options: .allowFragments)
+                }
+                
+                guard let indexPattern = self?.indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
+                    completion?(.failure(OAError.unknown("SavedSearch Not found")))
+                    return
+                }
+                
+                let sort = visStateContent.visStateHolder?.first?.sortList ?? []
+                let request = DashboardServiceBuilder.loadSavedSearchData(indexPatternName: indexPattern.title, sort: sort, searchDataParams: params)
+                
+                AF.request(request).responseData { (response) in
+                    switch response.result {
+                    case .failure(let error):
+                        if let self = self {
+                            completion?(.failure(self.parse(error: error)))
+                        }
+                    case .success(let value):
                         
-                        let visStateHolder = visStateContent.visStateHolder?.first
-                        let resp = params.postResponseProcedure(result, visStateHolder: visStateHolder)
-                        completion?(resp, nil)
-                    } catch let error {
-                        let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                        completion?(nil, serviceError)
+                        do {
+                            let result = try JSONSerialization.jsonObject(with: value, options: .allowFragments)
+                            
+                            let visStateHolder = visStateContent.visStateHolder?.first
+                            let resp = params.postResponseProcedure(result, visStateHolder: visStateHolder)
+                            completion?(.success(resp))
+                        } catch let error {
+                            if let self = self {
+                                completion?(.failure(self.parse(error: error)))
+                            }
+                        }
                     }
                 }
             }
-
+            
         }
     }
 
@@ -178,15 +174,13 @@ public class ServiceProvider {
         AF.request(request).responseData { (response) in
             switch response.result {
             case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
+                completion?(.failure(self.parse(error: error)))
             case .success(let value):
                 do {
                     let canvasListModel = try JSONDecoder().decode(ServiceConfiguration.version.canvasListModel.self, from: value)
-                    completion?(canvasListModel.asUIModel(), nil)
+                    completion?(.success(canvasListModel.asUIModel()))
                 } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
+                    completion?(.failure(self.parse(error: error)))
                 }
             }
         }
@@ -200,18 +194,20 @@ public class ServiceProvider {
         AF.request(request).responseData {[weak self] (response) in
             switch response.result {
             case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
+                if let self = self {
+                    completion?(.failure(self.parse(error: error)))
+                }
             case .success(let value):
                 do {
                     let indexPatternListModel = try JSONDecoder().decode(ServiceConfiguration.version.indexPatternListModel.self, from: value)
                     let ipListModel = indexPatternListModel.asUIModel()
                     self?.indexPatternsList = ipListModel.indexPatterns
-                    completion?(ipListModel, nil)
+                    completion?(.success(ipListModel))
 
                 } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
+                    if let self = self {
+                        completion?(.failure(self.parse(error: error)))
+                    }
                 }
             }
         }
@@ -232,61 +228,64 @@ public class ServiceProvider {
         
         let queryPart = videoDataQuery(fromDate, toDate: toDate, timeField: timeField)
         let queryForHitCount: [String: Any] = ["query": queryPart, "size": 0]
-
-        getNumberOfRecordsFor(indexPatternName, query: queryForHitCount) { [weak self] (res, error) in
-            guard let strongSelf = self, error == nil else {
-                completion?(nil, error)
-                return
-            }
+        getNumberOfRecordsFor(indexPatternName, query: queryForHitCount) { [weak self] (result) in
             
-            guard let total = res as? CGFloat else {
-                let err = OAServiceError(description: "Please try again", code: 1000)
-                completion?(nil, err)
-                return
-            }
-            
-            //Max allowed buckets = 10,000. We need to devide the request into multiple request
-            let totalNumberOfRequests = (total / 10000).rounded(.up)
-            if totalNumberOfRequests == 0 {
-                let err = OAServiceError(description: "No data found", code: 1000)
-                completion?(nil, err)
-            } else {
-                
-                let dateDifference = toDate.timeIntervalSince(fromDate)
-                let dif = dateDifference / TimeInterval(totalNumberOfRequests)
-                      
-                var from = fromDate
-                var to = from.addingTimeInterval(dif)
-
-                for _ in 0 ..< Int(totalNumberOfRequests) {
-
-                    let queryPart = strongSelf.videoDataQuery(from, toDate: to, timeField: timeField)
-                    var finalQuery = query
-                    finalQuery["query"] = queryPart
-                    finalQuery["size"] = 0
-
-                    self?.dispatchGroup.enter()
-                    self?.loadVideoData(indexPatternName, query: finalQuery) { (res, err) in
-                        guard err == nil else {
-                            self?.dispatchGroup.leave()
-                            return
-                        }
-                        
-                        if let videoContentListObj = res as? VideoContentListResponse {
-                            self?.videoContentListResponseArray.append(videoContentListObj)
-                        }
-                        self?.dispatchGroup.leave()
-                    }
-                    
-                    from = to.addingTimeInterval(1)
-                    to = from.addingTimeInterval(dif)
+            switch result {
+            case .failure(_):
+                completion?(result)
+            case .success(let res):
+                guard let strongSelf = self else {
+                    completion?(.failure(OAError.unknown("")))
+                    return
+                }
+                guard let total = res as? CGFloat else {
+                    completion?(.failure(OAError.unknown("Please try again")))
+                    return
                 }
                 
-                self?.dispatchGroup.notify(queue: .main) {
-                    let list = (self?.videoContentListResponseArray.reduce([], { (res, video) -> [VideoContentService] in
-                        return res + video.buckets
-                    }) ?? []).sorted(by: { $1.date != nil && $0.date?.compare($1.date!) == .orderedAscending })
-                    completion?(VideoContentListResponse(list), nil)
+                //Max allowed buckets = 10,000. We need to devide the request into multiple request
+                let totalNumberOfRequests = (total / 10000).rounded(.up)
+                if totalNumberOfRequests == 0 {
+                    completion?(.failure(OAError.unknown("No data found")))
+                } else {
+                    
+                    let dateDifference = toDate.timeIntervalSince(fromDate)
+                    let dif = dateDifference / TimeInterval(totalNumberOfRequests)
+                          
+                    var from = fromDate
+                    var to = from.addingTimeInterval(dif)
+
+                    for _ in 0 ..< Int(totalNumberOfRequests) {
+
+                        let queryPart = strongSelf.videoDataQuery(from, toDate: to, timeField: timeField)
+                        var finalQuery = query
+                        finalQuery["query"] = queryPart
+                        finalQuery["size"] = 0
+
+                        self?.dispatchGroup.enter()
+                        self?.loadVideoData(indexPatternName, query: finalQuery) { (result) in
+                            switch result {
+                            case .failure(let err):
+                                self?.dispatchGroup.leave()
+                                return
+                            case .success(let res):
+                                if let videoContentListObj = res as? VideoContentListResponse {
+                                    self?.videoContentListResponseArray.append(videoContentListObj)
+                                }
+                                self?.dispatchGroup.leave()
+                            }
+                        }
+                        
+                        from = to.addingTimeInterval(1)
+                        to = from.addingTimeInterval(dif)
+                    }
+                    
+                    self?.dispatchGroup.notify(queue: .main) {
+                        let list = (self?.videoContentListResponseArray.reduce([], { (res, video) -> [VideoContentService] in
+                            return res + video.buckets
+                        }) ?? []).sorted(by: { $1.date != nil && $0.date?.compare($1.date!) == .orderedAscending })
+                        completion?(.success(VideoContentListResponse(list)))
+                    }
                 }
             }
         }
@@ -301,45 +300,43 @@ extension ServiceProvider {
         let idsList = dashboardListModel.dashboards.compactMap({ $0.allPanelsInfoList })
         let panelsIdList: [PanelInfo] = idsList.reduce([], +)
         guard panelsIdList.count > 0 else {
-            completion?(nil, nil)
+            completion?(.failure(OAError.unknown("")))
             return
         }
-        loadVisStateDataFor(panelsIdList) { (res, err) in
+        loadVisStateDataFor(panelsIdList) { (result) in
 
-            guard err == nil else {
-                completion?(nil, err)
-                return
-            }
-
-            guard let visStateContent = res as? VisStateContainer else {
-                let serviceError = OAServiceError(description: "Something went wrong, please retry", code: 1000)
-                completion?(nil, serviceError)
-                return
-            }
-
-            dashboardListModel.dashboards.forEach { (dashboards) in
-                var panels: [PanelBase] =   []
-                dashboards.attributes.panelsJsonList.forEach { (dict) in
-                    guard let id = dict["id"] as? String,
-                        let visState = visStateContent.visStateHolder?.filter({ $0.id == id}).first else { return }
-
-                    do {
-                        let data = try JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
-                        let panel = try JSONDecoder().decode(ServiceConfiguration.version.panelModel.self, from: data)
-                        panel.visState  =   visState
-                        panels.append(panel)
-                    }
-                    catch let error {
-                        let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                        completion?(nil, serviceError)
-                    }
+            switch result {
+            case .success(let data):
+                guard let visStateContent = data as? VisStateContainer else {
+                    completion?(.failure(OAError.unknown("Something went wrong, please retry")))
+                    return
                 }
 
-                dashboards.attributes.panels = panels
-                dashboards.attributes.panels.forEach({ $0.dashboardItemBase = dashboards })
-            }
+                dashboardListModel.dashboards.forEach { (dashboards) in
+                    var panels: [PanelBase] =   []
+                    dashboards.attributes.panelsJsonList.forEach { (dict) in
+                        guard let id = dict["id"] as? String,
+                            let visState = visStateContent.visStateHolder?.filter({ $0.id == id}).first else { return }
 
-            completion?(dashboardListModel.asUIModel(), nil)
+                        do {
+                            let data = try JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+                            let panel = try JSONDecoder().decode(ServiceConfiguration.version.panelModel.self, from: data)
+                            panel.visState  =   visState
+                            panels.append(panel)
+                        }
+                        catch let error {
+                            completion?(.failure(self.parse(error: error)))
+                        }
+                    }
+
+                    dashboards.attributes.panels = panels
+                    dashboards.attributes.panels.forEach({ $0.dashboardItemBase = dashboards })
+                }
+
+                completion?(.success(dashboardListModel.asUIModel()))
+            case .failure(_):
+                completion?(result)
+            }
         }
 
     }
@@ -351,17 +348,15 @@ extension ServiceProvider {
         AF.request(request).responseData { (response) in
             switch response.result {
             case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
+                completion?(.failure(self.parse(error: error)))
             case .success(let value):
                 do {
 
                     let content = try JSONDecoder().decode(VisStateContainer.self, from: value)
-                    completion?(content, nil)
+                    completion?(.success(content))
 
                 } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
+                    completion?(.failure(self.parse(error: error)))
                 }
             }
         }
@@ -374,15 +369,13 @@ extension ServiceProvider {
         AF.request(request).responseData { (response) in
             switch response.result {
             case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
+                completion?(.failure(self.parse(error: error)))
             case .success(let value):
                 do {
                     let videoResponseModel = try JSONDecoder().decode(VideoContentListResponseBase.self, from: value)
-                    completion?(videoResponseModel.asUIModel(), nil)
+                    completion?(.success(videoResponseModel.asUIModel()))
                 } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
+                    completion?(.failure(self.parse(error: error)))
                 }
             }
         }
@@ -396,17 +389,15 @@ extension ServiceProvider {
         AF.request(request).responseData { (response) in
             switch response.result {
             case .failure(let error):
-                let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                completion?(nil, serviceError)
+                completion?(.failure(self.parse(error: error)))
             case .success(let value):
                 do {
                     let json = try JSONSerialization.jsonObject(with: value, options: []) as? [String: Any]
                     let result = json?["hits"] as? [String: Any]
                     let total = ServiceConfiguration.version.getTotalFrom(result)
-                    completion?(total, nil)
+                    completion?(.success(total))
                 } catch let error {
-                    let serviceError = OAServiceError(description: error.localizedDescription, code: 1000)
-                    completion?(nil, serviceError)
+                    completion?(.failure(self.parse(error: error)))
                 }
             }
         }
