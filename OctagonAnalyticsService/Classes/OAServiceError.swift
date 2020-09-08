@@ -47,7 +47,7 @@ public enum OAError: LocalizedError {
 }
 
 extension OAError {
-    var code: Int {
+   public var code: Int {
         switch self {
         case .notfound:
             return 1001
@@ -60,7 +60,7 @@ extension OAError {
 }
 
 extension OAError {
-    var errorDescription: String {
+   public var errorDescription: String {
         switch self {
         case .notfound:
             return "Unable to Reach Server"
