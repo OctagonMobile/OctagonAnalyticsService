@@ -265,7 +265,7 @@ public class ServiceProvider: OAErrorHandler {
                         self?.dispatchGroup.enter()
                         self?.loadVideoData(indexPatternName, query: finalQuery) { (result) in
                             switch result {
-                            case .failure(let err):
+                            case .failure( _):
                                 self?.dispatchGroup.leave()
                                 return
                             case .success(let res):

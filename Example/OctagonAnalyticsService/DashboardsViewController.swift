@@ -51,7 +51,7 @@ class DashboardsViewController: UIViewController {
             case .failure(let error):
                 print("\(error.localizedDescription)")
             case .success(let data):
-                if let list = data as? Bool {
+                if let _ = data as? Bool {
                     print("Logged Out\n----------")
                     self?.navigationController?.popViewController(animated: true)
                 }
