@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class SavedSearchDataParams: VizDataParamsBase {
+public class SavedSearchDataParams: VizDataParamsBase, OAErrorHandler {
     
     public var savedSearchId: String?
     public var pageSize: Int   =   10
@@ -85,7 +85,7 @@ public class SavedSearchDataParams: VizDataParamsBase {
 
     func postResponseProcedure(_ response: Any, visStateHolder: VisStateHolderBase?) -> Any? {
         
-        let error = super.postResponseProcedure(response)
+        let error = parseResponseForError(response as? [String: Any])
         guard error == nil else {
             return error
         }
