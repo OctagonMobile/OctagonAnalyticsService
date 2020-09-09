@@ -24,6 +24,10 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
         return metricAggregationsList.first
     }
     
+    internal var size: Int {
+        return 100
+    }
+    
     //MARK: Functions
     override func generatedQueryDataForVisualization(_ indexPatternName: String, params: VizDataParamsBase?) -> Data? {
         
@@ -70,7 +74,7 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
                         "filter": []
                     ]
                 ],
-             "size": 100,
+             "size": size,
              "_source": [
                "excludes": []
              ],

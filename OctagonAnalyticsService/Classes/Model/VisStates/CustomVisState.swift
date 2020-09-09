@@ -63,13 +63,25 @@ public class TileVisStateService: VisStateService {
     public var imageHashField: String      = ""
     public var maxDistance: Int            = 15
     public var containerId: Int            = 1
-    
+    public var specifytype: TileType        = .unknown
+    public var imlServer: String            = ""
+    public var urlThumbnail: String         = ""
+    public var images: String               = ""
+    public var thumbnailFilePath: String?
+    public var imageFilePath: String?
+
     override init(_ responseModel: VisStateHolderBase) {
         super.init(responseModel)
         guard let visstateBaseModel = responseModel.visStateBase else { return }
         self.imageHashField =   visstateBaseModel.params?.imageHashField ?? ""
         self.maxDistance    =   visstateBaseModel.params?.maxDistance ?? 15
         self.containerId    =   visstateBaseModel.params?.containerId ?? 1
+        self.specifytype    =   visstateBaseModel.params?.specifytype ?? .unknown
+        self.imlServer      =   visstateBaseModel.params?.imlServer ?? ""
+        self.urlThumbnail   =   visstateBaseModel.params?.urlThumbnail ?? ""
+        self.images         =   visstateBaseModel.params?.images ?? ""
+        self.thumbnailFilePath  =   visstateBaseModel.params?.thumbnailFilePath
+        self.imageFilePath  =   visstateBaseModel.params?.imageFilePath
     }
 }
 

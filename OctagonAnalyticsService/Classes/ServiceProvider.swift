@@ -83,7 +83,7 @@ public class ServiceProvider: OAErrorHandler {
         
         var indexPatternName = ""
         
-        if !(params is ControlsVizDataParams) && !(params is TilesVizDataParams) {
+        if !(params is ControlsVizDataParams) {
             guard let indexPattern = indexPatternsList.filter({ $0.id == params.indexPatternId }).first else {
                 completion?(.failure(OAError.unknown("Visualization Not found")))
                 return

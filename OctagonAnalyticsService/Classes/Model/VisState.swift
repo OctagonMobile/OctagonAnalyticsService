@@ -243,6 +243,12 @@ class VisStateParams: Decodable {
     var imageHashField: String?
     var maxDistance: Int?
     var containerId: Int?
+    var specifytype: TileType?
+    var imlServer: String?
+    var urlThumbnail: String?
+    var images: String?
+    var thumbnailFilePath: String?
+    var imageFilePath: String?
 
     //GraphVisState
     var query: String?
@@ -271,7 +277,7 @@ class VisStateParams: Decodable {
         minFontSize, maxFontSize,
         markdown, fontSize,
         isDonut,
-        imageHashField, maxDistance, containerId,
+        imageHashField, maxDistance, containerId, specifytype, imlServer, urlThumbnail, images,
         query, node_image_base_url, node_image_property,
         wms, user_field, mapType, quickButtons,
         type, gauge,
@@ -298,7 +304,38 @@ class VisStateParams: Decodable {
         self.imageHashField = try? container.decode(String.self, forKey: .imageHashField)
         self.maxDistance    = try? container.decode(Int.self, forKey: .maxDistance)
         self.containerId    = try? container.decode(Int.self, forKey: .containerId)
-        
+        if let tileType = try? container.decode(String.self, forKey: .specifytype) {
+            specifytype =   TileType(rawValue: tileType.capitalized)
+            
+            enum ThumbnailCodingKeys: String, CodingKey {
+                case photo, audio, video
+            }
+            
+            enum ContentCodingKeys: String, CodingKey {
+                case images, audio, video
+            }
+
+            let thumbnailTypeContainer = try decoder.container(keyedBy: ThumbnailCodingKeys.self)
+            let contentTypeContainer = try decoder.container(keyedBy: ContentCodingKeys.self)
+
+            switch specifytype {
+            case .photo?:
+                self.thumbnailFilePath = try? thumbnailTypeContainer.decode(String.self, forKey: .photo)
+                self.imageFilePath = try? contentTypeContainer.decode(String.self, forKey: .images)
+            case .audio?:
+                self.thumbnailFilePath = try? thumbnailTypeContainer.decode(String.self, forKey: .audio)
+                self.imageFilePath = try? contentTypeContainer.decode(String.self, forKey: .audio)
+            case .video?:
+                self.thumbnailFilePath = try? thumbnailTypeContainer.decode(String.self, forKey: .video)
+                self.imageFilePath = try? contentTypeContainer.decode(String.self, forKey: .video)
+            default:
+                break
+            }
+        }
+        self.imlServer      = try? container.decode(String.self, forKey: .imlServer)
+        self.urlThumbnail   = try? container.decode(String.self, forKey: .urlThumbnail)
+        self.images         = try? container.decode(String.self, forKey: .images)
+
         self.query              = try? container.decode(String.self, forKey: .query)
         self.nodeImageBaseUrl   = try? container.decode(String.self, forKey: .node_image_base_url)
         self.nodeImageProperty  = try? container.decode(String.self, forKey: .node_image_property)

@@ -22,6 +22,15 @@ public enum TileType: String {
         }
     }
     
+    public var urlPropertyKey: String {
+        switch self {
+        case .photo: return "images"
+        case .audio: return "audio"
+        case .video: return "video"
+        default:
+            return ""
+        }
+    }
 }
 
 public class TileService {

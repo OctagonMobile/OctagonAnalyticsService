@@ -102,7 +102,7 @@ class DashboardsViewController: UIViewController {
     // Load Visualization Data
     @IBAction func loadVizDataAction(_ sender: UIButton) {
         
-        let testDashboard = dashboards.filter({ $0.id == "8e5cc1a0-ed33-11ea-a6cf-1f9c31f185da"}).first
+        let testDashboard = dashboards.filter({ $0.id == "3ab21730-6c1e-11ea-9bcf-c9547acb85c3"}).first
         
         if testDashboard?.panels.first?.visState?.type == .inputControls {
             loadControlsVizData()
@@ -174,13 +174,25 @@ class DashboardsViewController: UIViewController {
         
         let testDashboard = dashboards.filter({ $0.id == "3ab21730-6c1e-11ea-9bcf-c9547acb85c3"}).first
                 
-        guard let panel = testDashboard?.panels.first else { return }
+        guard let panel = testDashboard?.panels.first,
+        let tileVisState = (panel.visState as? TileVisStateService) else { return }
         
-        let params = TilesVizDataParams(.images)
+        guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
+
+        let params = TilesVizDataParams(indexPatternId, tileViewType: .photo)
         params.panelType = panel.visState?.type ?? .unKnown
         params.timeFrom = "now-5y"//"2015-08-16T00:00:00.000Z"
         params.timeTo = "now"//"2020-08-16T00:00:00.000Z"
         params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel.id }).first?.visState?.aggregationsArray ?? []
+        
+        
+        params.specifyType = tileVisState.specifytype
+        params.urlThumbnail = tileVisState.urlThumbnail
+        params.imlServer = tileVisState.imlServer
+        
+        params.thumbnailFilePath = tileVisState.thumbnailFilePath != nil ? tileVisState.thumbnailFilePath! : tileVisState.images
+        params.imageFilePath = tileVisState.imageFilePath ?? ""
+        params.imageHashField   =   tileVisState.imageHashField
 
         ServiceProvider.shared.loadVisualizationData(params) { (result) in
             
