@@ -104,11 +104,15 @@ class DashboardsViewController: UIViewController {
         
         let testDashboard = dashboards.filter({ $0.id == "3ab21730-6c1e-11ea-9bcf-c9547acb85c3"}).first
         
-        if testDashboard?.panels.first?.visState?.type == .inputControls {
+        let panelType = testDashboard?.panels.first?.visState?.type
+        if panelType == .inputControls {
             loadControlsVizData()
             return
-        } else if testDashboard?.panels.first?.visState?.type == .tile {
+        } else if panelType == .tile {
             loadTilesViewVizData()
+            return
+        } else if panelType == .faceTile {
+            loadFaceTileView()
             return
         }
         
@@ -208,6 +212,42 @@ class DashboardsViewController: UIViewController {
         }
     }
 
+    func loadFaceTileView() {
+        let testDashboard = dashboards.filter({ $0.id == "3ab21730-6c1e-11ea-9bcf-c9547acb85c3"}).first
+                
+        guard let panel = testDashboard?.panels.first,
+        let faceTileVisState = (panel.visState as? FaceTileVisStateService) else { return }
+        
+        guard let indexPatternId = testDashboard?.panels.first?.visState?.indexPatternId else { return }
+
+        let params = FaceTileVizDataParams(indexPatternId)
+        params.panelType = panel.visState?.type ?? .unKnown
+        params.timeFrom = "now-5y"
+        params.timeTo = "now"
+        params.aggregationsArray = testDashboard?.panels.filter({ $0.id == panel.id }).first?.visState?.aggregationsArray ?? []
+
+        if let file = faceTileVisState.file {
+            params.file =   file
+        }
+        
+        params.file     =   faceTileVisState.file ?? ""
+        params.faceUrl  =   faceTileVisState.faceUrl ?? ""
+        params.box      =   faceTileVisState.box
+
+        ServiceProvider.shared.loadVisualizationData(params) { (result) in
+            
+            switch result {
+            case .failure(let error):
+                print("\(error.localizedDescription)")
+            case .success(let data):
+                if let result = data as? [String: Any],
+                    let finalResult = result["responses"] as? [[String: Any]] {
+                    print("\(String(describing: finalResult.first))")
+                }
+            }
+        }
+
+    }
 
     @IBAction func loadSavedSearchDataAction(_ sender: UIButton) {
         

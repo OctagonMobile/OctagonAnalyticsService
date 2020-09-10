@@ -85,6 +85,22 @@ public class TileVisStateService: VisStateService {
     }
 }
 
+public class FaceTileVisStateService: VisStateService {
+    
+    public var box: String         = ""
+    public var faceUrl: String?
+    public var file: String?
+
+    override init(_ responseModel: VisStateHolderBase) {
+        super.init(responseModel)
+        guard let visstateBaseModel = responseModel.visStateBase else { return }
+        
+        self.box        =   visstateBaseModel.params?.box ?? ""
+        self.faceUrl    =   visstateBaseModel.params?.faceUrl
+        self.file       =   visstateBaseModel.params?.file
+    }
+}
+
 public class GraphVisStateService: VisStateService {
     
     public var query: String               =   ""

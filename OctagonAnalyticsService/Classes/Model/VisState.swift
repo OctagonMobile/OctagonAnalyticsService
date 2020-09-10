@@ -140,6 +140,7 @@ class VisStateHolderBase: Decodable {
         case .markdown:                 return MarkDownVisStateService(self)
         case .gauge, .goal:             return GaugeVisStateService(self)
         case .inputControls:            return InputControlsVisStateService(self)
+        case .faceTile:                 return FaceTileVisStateService(self)
         default:
             return VisStateService(self)
         }
@@ -250,6 +251,11 @@ class VisStateParams: Decodable {
     var thumbnailFilePath: String?
     var imageFilePath: String?
 
+    //FaceTileVisState
+    var box: String?
+    var faceUrl: String?
+    var file: String?
+
     //GraphVisState
     var query: String?
     var nodeImageBaseUrl: String?
@@ -278,6 +284,7 @@ class VisStateParams: Decodable {
         markdown, fontSize,
         isDonut,
         imageHashField, maxDistance, containerId, specifytype, imlServer, urlThumbnail, images,
+        box, faceUrl, file,
         query, node_image_base_url, node_image_property,
         wms, user_field, mapType, quickButtons,
         type, gauge,
@@ -335,6 +342,10 @@ class VisStateParams: Decodable {
         self.imlServer      = try? container.decode(String.self, forKey: .imlServer)
         self.urlThumbnail   = try? container.decode(String.self, forKey: .urlThumbnail)
         self.images         = try? container.decode(String.self, forKey: .images)
+
+        self.box            = try? container.decode(String.self, forKey: .box)
+        self.faceUrl        = try? container.decode(String.self, forKey: .faceUrl)
+        self.file           = try? container.decode(String.self, forKey: .file)
 
         self.query              = try? container.decode(String.self, forKey: .query)
         self.nodeImageBaseUrl   = try? container.decode(String.self, forKey: .node_image_base_url)
