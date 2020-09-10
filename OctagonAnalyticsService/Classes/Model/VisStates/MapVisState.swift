@@ -25,6 +25,8 @@ public class MapVisStateService: VisStateService {
 
     /// This field is used in MapTracking Panel (Filtering key)
     public var userField: String          = ""
+    public var locationField: String      = ""
+    public var timeField: String          = ""
 
     public var mapType: MapType        = .unknown
     
@@ -45,6 +47,8 @@ public class MapVisStateService: VisStateService {
         self.format         =   visstateBaseModel.params?.wms?.options?.format ?? ""
         self.defaultLayerName    =   visstateBaseModel.params?.wms?.options?.defaultLayerName ?? ""
         self.userField      =   visstateBaseModel.params?.userField ?? ""
+        self.locationField  =   visstateBaseModel.params?.locationField ?? ""
+        self.timeField      =   visstateBaseModel.params?.timeField ?? ""
         self.mapType        =   visstateBaseModel.params?.mapType ?? .unknown
         self.mapLayers      =   visstateBaseModel.params?.mapLayers?.compactMap({ $0.asUIModel() }) ?? []
     }

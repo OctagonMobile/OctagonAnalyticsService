@@ -257,6 +257,8 @@ class VisStateParams: Decodable {
 
     //MapVisState
     var wms: WmsParams?
+    var timeField: String?
+    var locationField: String?
     var userField: String?
     var mapType: MapVisStateService.MapType?
     var mapLayers: [MapLayerResponse]?
@@ -279,7 +281,7 @@ class VisStateParams: Decodable {
         isDonut,
         imageHashField, maxDistance, containerId, specifytype, imlServer, urlThumbnail, images,
         query, node_image_base_url, node_image_property,
-        wms, user_field, mapType, quickButtons,
+        wms, time_field, location_field, user_field, mapType, quickButtons,
         type, gauge,
         controls,
         metric
@@ -342,6 +344,8 @@ class VisStateParams: Decodable {
         
         self.wms    =   try? container.decode(WmsParams.self, forKey: .wms)
         self.userField  =   try? container.decode(String.self, forKey: .user_field)
+        self.locationField = try? container.decode(String.self, forKey: .location_field)
+        self.timeField = try? container.decode(String.self, forKey: .location_field)
         self.mapLayers  =   try? container.decode([MapLayerResponse].self, forKey: .quickButtons)
         if let type = try? container.decode(String.self, forKey: .mapType) {
             self.mapType    =   MapVisStateService.MapType(rawValue: type)
