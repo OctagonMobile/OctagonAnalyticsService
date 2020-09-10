@@ -50,7 +50,7 @@ public class MapVisStateService: VisStateService {
         self.userField      =   visstateBaseModel.params?.userField ?? ""
         self.locationField  =   visstateBaseModel.params?.locationField ?? ""
         self.timeField      =   visstateBaseModel.params?.timeField ?? ""
-        self.faceUrl        =   visstateBaseModel.params?.faceUrl ?? ""
+        self.faceUrl        =   visstateBaseModel.params?.faceUrlMap ?? ""
         self.mapType        =   visstateBaseModel.params?.mapType ?? .unknown
         self.mapLayers      =   visstateBaseModel.params?.mapLayers?.compactMap({ $0.asUIModel() }) ?? []
     }
