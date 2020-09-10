@@ -345,7 +345,7 @@ class VisStateParams: Decodable {
         self.wms    =   try? container.decode(WmsParams.self, forKey: .wms)
         self.userField  =   try? container.decode(String.self, forKey: .user_field)
         self.locationField = try? container.decode(String.self, forKey: .location_field)
-        self.timeField = try? container.decode(String.self, forKey: .location_field)
+        self.timeField = try? container.decode(String.self, forKey: .time_field)
         self.mapLayers  =   try? container.decode([MapLayerResponse].self, forKey: .quickButtons)
         if let type = try? container.decode(String.self, forKey: .mapType) {
             self.mapType    =   MapVisStateService.MapType(rawValue: type)
