@@ -27,6 +27,7 @@ public class MapVisStateService: VisStateService {
     public var userField: String          = ""
     public var locationField: String      = ""
     public var timeField: String          = ""
+    public var faceUrl: String            = ""
 
     public var mapType: MapType        = .unknown
     
@@ -49,6 +50,7 @@ public class MapVisStateService: VisStateService {
         self.userField      =   visstateBaseModel.params?.userField ?? ""
         self.locationField  =   visstateBaseModel.params?.locationField ?? ""
         self.timeField      =   visstateBaseModel.params?.timeField ?? ""
+        self.faceUrl        =   visstateBaseModel.params?.faceUrl ?? ""
         self.mapType        =   visstateBaseModel.params?.mapType ?? .unknown
         self.mapLayers      =   visstateBaseModel.params?.mapLayers?.compactMap({ $0.asUIModel() }) ?? []
     }
