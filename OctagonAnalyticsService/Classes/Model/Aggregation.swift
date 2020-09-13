@@ -12,7 +12,7 @@ public enum MetricType: String {
     case unKnown        =   "unKnown"
     case count          =   "count"
     case sum            =   "sum"
-    case uniqueCount    =   "unique_count"
+    case uniqueCount    =   "cardinality"
     case topHit         =   "top_hits"
     case max            =   "max"
     case min            =   "min"
