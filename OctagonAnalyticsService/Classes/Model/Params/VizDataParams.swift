@@ -291,6 +291,8 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
 
                         if metricAggs.metricType == .count {
                             metricDict["value"] = bucket["doc_count"] as? Double
+                        } else if let metricAggDict =  bucket["\(metricAggs.id)"] as? [String: [[String : Any]]], let valuesDict = metricAggDict["values"]?.first {
+                            metricDict["value"] = valuesDict["value"]
                         } else {
                             metricDict["value"] = (bucket["\(metricAggs.id)"] as? [String: Any])?["value"] as? Double
                         }
@@ -315,6 +317,8 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
                     var metricDict: [String: Any] = [:]
                     if metricAggs.metricType == .count {
                         metricDict["value"] = (responseContent?["hits"] as? [String: Any])?["total"] ?? 0.0
+                    } else if let metricAggDict =  (responseContent?["aggregations"] as? [String: Any])?["\(metricAggs.id)"] as? [String: [[String : Any]]], let valuesDict = metricAggDict["values"]?.first {
+                        metricDict["value"] = valuesDict["value"]
                     } else {
                         let content = (responseContent?["aggregations"] as? [String: Any])?["\(metricAggs.id)"] as? [String: Any]
                         metricDict["value"] = content?["value"] as? Double ?? 0.0
