@@ -291,6 +291,8 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
 
                         if metricAggs.metricType == .count {
                             metricDict["value"] = bucket["doc_count"] as? Double
+                        } else if let metricAggDict =  bucket["\(metricAggs.id)"] as? [String: [[String : Any]]], let valuesDict = metricAggDict["values"]?.first {
+                            metricDict["value"] = valuesDict["value"]
                         } else {
                             metricDict["value"] = (bucket["\(metricAggs.id)"] as? [String: Any])?["value"] as? Double
                         }
