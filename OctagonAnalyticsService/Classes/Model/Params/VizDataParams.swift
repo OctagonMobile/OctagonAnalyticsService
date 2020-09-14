@@ -283,7 +283,12 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
 
             if let groupAggs = aggregationsArray.filter({ $0.schema == "group" }).first {
                 let aggregationsDict = responseContent?["aggregations"] as? [String: Any]
-                let buckets = (aggregationsDict?[groupAggs.id] as? [String: Any])?["buckets"] as? [[String: Any]]
+                var buckets = (aggregationsDict?[groupAggs.id] as? [String: Any])?["buckets"] as? [[String: Any]]
+                if groupAggs.bucketType == .range {
+                    let aggDict = (aggregationsDict?[groupAggs.id] as? [String: Any])
+                    let bucketsDict = aggDict?["buckets"] as? [String: [String: Any]]
+                    buckets = bucketsDict?.values.map { return $0 }
+                }
                 for bucket in buckets ?? [] {
                     
                     for metricAggs in metricAggregationsList {
@@ -304,7 +309,9 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
                                 let format = groupAggs.params?.interval == .yearly ? "yyyy" : "yyyy-MM-dd"
                                 metricDict["label"] = Date(milliseconds: milliSec).toFormat(format)
                             }
-                        } else {
+                        } else if groupAggs.bucketType == .range {
+                             metricDict["label"] = "\(bucket["from"] ?? "") to \(bucket["to"] ?? "")"
+                        }  else {
                             let labelText = bucket["key"] as? String
                             metricDict["label"] = labelText != nil ? labelText : "\(bucket["key"] ?? "")"
                         }
