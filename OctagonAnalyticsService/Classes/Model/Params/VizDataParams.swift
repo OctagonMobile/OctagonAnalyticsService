@@ -304,6 +304,8 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
                                 let format = groupAggs.params?.interval == .yearly ? "yyyy" : "yyyy-MM-dd"
                                 metricDict["label"] = Date(milliseconds: milliSec).toFormat(format)
                             }
+                        } else if let metricAggDict =  bucket["\(metricAggs.id)"] as? [String: [[String : Any]]], let valuesDict = metricAggDict["values"]?.first {
+                            metricDict["value"] = valuesDict["value"]
                         } else {
                             let labelText = bucket["key"] as? String
                             metricDict["label"] = labelText != nil ? labelText : "\(bucket["key"] ?? "")"
