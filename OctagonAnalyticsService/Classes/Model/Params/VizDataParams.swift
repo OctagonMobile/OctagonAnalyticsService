@@ -326,6 +326,10 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
                     var metricDict: [String: Any] = [:]
                     if metricAggs.metricType == .count {
                         metricDict["value"] = (responseContent?["hits"] as? [String: Any])?["total"] ?? 0.0
+                    } else if metricAggs.metricType == .topHit {
+                        if let metricAggDict =  (responseContent?["aggregations"] as? [String: Any]) {
+                            metricDict["value"] = parseTopHitValue(dict: metricAggDict, metricAgg: metricAggs)
+                        }
                     } else if let metricAggDict =  (responseContent?["aggregations"] as? [String: Any])?["\(metricAggs.id)"] as? [String: [[String : Any]]], let valuesDict = metricAggDict["values"]?.first {
                         metricDict["value"] = valuesDict["value"]
                     } else {
