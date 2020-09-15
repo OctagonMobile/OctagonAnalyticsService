@@ -296,6 +296,8 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
 
                         if metricAggs.metricType == .count {
                             metricDict["value"] = bucket["doc_count"] as? Double
+                        } else if metricAggs.metricType == .topHit {
+                            metricDict["value"] = parseTopHitValue(dict: bucket, metricAgg: metricAggs)
                         } else if let metricAggDict =  bucket["\(metricAggs.id)"] as? [String: [[String : Any]]], let valuesDict = metricAggDict["values"]?.first {
                             metricDict["value"] = valuesDict["value"]
                         } else {
@@ -344,5 +346,45 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
 
         }
         return response
+    }
+    
+    func parseTopHitValue(dict: [String: Any], metricAgg: AggregationService) -> Double {
+
+        let firstMetricId = metricAgg.id
+        var values: [Double] = []
+        if let firstAgg = dict[firstMetricId] as? [String: Any],
+            let hitsDict = firstAgg["hits"] as? [String : Any],
+            let hitsArray = hitsDict["hits"] as? [[String: Any]] {
+            for hit in hitsArray {
+                if let source = hit["_source"] as? [String: Any],
+                    let value = source[metricAgg.field] as? Double {
+                    values.append(value)
+                }
+            }
+        }
+        
+        if let aggregate = metricAgg.params?.aggregate {
+            let value = values.applyAggregate(aggregate)
+            return  Double(round(100*value)/100)
+        }
+        
+        return 0
+    }
+}
+
+extension Collection where Element == Double {
+    func applyAggregate(_ fn: AggregateFunction) -> Double {
+        switch fn {
+        case .average:
+            return reduce(0, +) / Double(count)
+        case .max:
+            return self.max() ?? 0.0
+        case .min:
+            return self.min() ?? 0.0
+        case .sum:
+            return reduce(0, +)
+        case .unknown:
+            return 0.0
+        }
     }
 }
