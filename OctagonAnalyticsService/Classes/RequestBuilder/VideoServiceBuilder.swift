@@ -53,8 +53,7 @@ enum VideoServiceBuilder: URLRequestBuilder {
     }
     
     var headers: HTTPHeaders {
-        var header = HTTPHeaders()
-        header["kbn-xsrf"] = "reporting"
+        var header = defHeaders
 
         switch self {
         case .loadVideoData, .loadVideoDataTotalCount:

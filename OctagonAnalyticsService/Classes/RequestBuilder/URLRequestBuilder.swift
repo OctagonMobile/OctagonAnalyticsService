@@ -44,8 +44,16 @@ public extension URLRequestBuilder {
     }
 
     var headers: HTTPHeaders {
+        return defHeaders
+    }
+    
+    var defHeaders: HTTPHeaders {
         var header = HTTPHeaders()
         header["kbn-xsrf"] = "reporting"
+        if ServiceConfiguration.isKeycloackEnabled,
+            let accessToken = ServiceConfiguration.keycloakAccessToken {
+            header["Authorization"] = "Bearer \(accessToken)"
+        }
         return header
     }
 

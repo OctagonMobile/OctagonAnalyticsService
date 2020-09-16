@@ -12,12 +12,16 @@ public struct ServiceConfiguration {
     static var baseUrl: String         =   ""
     static var version: VersionType    =   .v654
     
+    static var isKeycloackEnabled: Bool =   false
+    public static var keycloakAccessToken: String?
+
     // Timeout for query in milli seconds
     static var timeout: Int             =   3000
 
-    public static func configure(_ baseUrl: String, version: VersionType = .v654)  {
+    public static func configure(_ baseUrl: String, version: VersionType = .v654, keycloackEnabled: Bool = false)  {
         ServiceConfiguration.baseUrl = baseUrl
         ServiceConfiguration.version = version
+        ServiceConfiguration.isKeycloackEnabled = keycloackEnabled
     }
 }
 

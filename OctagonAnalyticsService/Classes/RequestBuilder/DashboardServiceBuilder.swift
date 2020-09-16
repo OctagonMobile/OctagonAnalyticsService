@@ -56,8 +56,7 @@ enum DashboardServiceBuilder: URLRequestBuilder {
     }
     
     var headers: HTTPHeaders {
-        var header = HTTPHeaders()
-        header["kbn-xsrf"] = "reporting"
+        var header = defHeaders
 
         switch self {
         case .loadVisStateData, .loadVisualizationData, .loadSavedSearchData:
