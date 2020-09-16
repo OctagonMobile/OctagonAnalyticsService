@@ -370,7 +370,7 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
         }
         
         if let aggregate = metricAgg.params?.aggregate {
-            let value = values.applyAggregate(aggregate)
+            let value = values.isEmpty ? 0 : values.applyAggregate(aggregate)
             return  Double(round(100*value)/100)
         }
         
