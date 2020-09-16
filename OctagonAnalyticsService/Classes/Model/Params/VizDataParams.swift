@@ -261,7 +261,7 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
         if aggregation.metricType == .topHit {
             dict = ["\(aggregation.metricType.rawValue)":
                 ["docvalue_fields" : [["field": "\(aggregation.field)"]],
-                 "sort":[aggregation.params?.sortField: ["order": aggregation.params?.sortOrder]]]]
+                 "sort":[[aggregation.params?.sortField: ["order": aggregation.params?.sortOrder]]]]
         } else if aggregation.metricType == .median {
             dict = ["percentiles": ["field": "\(aggregation.field)", "percents": [50], "keyed": false]]
         } else {
