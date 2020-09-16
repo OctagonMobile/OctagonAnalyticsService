@@ -259,7 +259,9 @@ public class VizDataParams: VizDataParamsBase, OAErrorHandler {
     func createMetricAggregationFor(_ aggregation: AggregationService) -> [String: Any] {
         var dict = [String: Any]()
         if aggregation.metricType == .topHit {
-            dict = ["\(aggregation.metricType.rawValue)": ["docvalue_fields" : [["field": "\(aggregation.field)"]]]]
+            dict = ["\(aggregation.metricType.rawValue)":
+                ["docvalue_fields" : [["field": "\(aggregation.field)"]],
+                 "sort":[aggregation.params?.sortField: ["order": aggregation.params?.sortOrder]]]]
         } else if aggregation.metricType == .median {
             dict = ["percentiles": ["field": "\(aggregation.field)", "percents": [50], "keyed": false]]
         } else {

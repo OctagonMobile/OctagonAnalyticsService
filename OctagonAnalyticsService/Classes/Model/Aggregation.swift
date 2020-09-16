@@ -111,6 +111,8 @@ public class AggregationParamsService {
     public var size: Int                        = 0
     public var order: String?
     public var orderBy: String?
+    public var sortOrder: String?
+    public var sortField: String?
     public var ranges: [BucketRange]            =   []
     public var dateRangesList: [BucketDateRange]    =   []
 
@@ -123,6 +125,8 @@ public class AggregationParamsService {
         self.size           =   responseModel.size ?? 0
         self.order          =   responseModel.order
         self.orderBy        =   responseModel.orderBy
+        self.sortField      =   responseModel.sortField
+        self.sortOrder      =   responseModel.sortOrder
         self.ranges         =   responseModel.rangeList.compactMap({ $0.asUIModel()})
         self.dateRangesList         =   responseModel.dateRangeList.compactMap({ $0.asUIModel()})
     }
@@ -202,7 +206,9 @@ class AggregationResponseParams: Decodable {
     var size: Int?
     var order: String?
     var orderBy: String?
-
+    var sortField: String?
+    var sortOrder: String?
+    
     // This is used only in Range Bucket type
     var rangeList: [BucketRangeResponse] =   []
     
@@ -210,7 +216,7 @@ class AggregationResponseParams: Decodable {
     var dateRangeList: [BucketDateRangeResponse] =   []
     
     private enum CodingKeys: String, CodingKey {
-        case field, precision, interval, customInterval, aggregate, size, order, orderBy,
+        case field, precision, interval, customInterval, aggregate, size, order, orderBy, sortField, sortOrder,
         ranges
     }
 
@@ -223,6 +229,8 @@ class AggregationResponseParams: Decodable {
         self.size           =   try? container.decode(Int.self, forKey: .size)
         self.order          =   try? container.decode(String.self, forKey: .order)
         self.orderBy        =   try? container.decode(String.self, forKey: .orderBy)
+        self.sortField      =   try? container.decode(String.self, forKey: .sortField)
+        self.sortOrder      =   try? container.decode(String.self, forKey: .sortOrder)
 
         if let intrvlType  = try? container.decode(String.self, forKey: .interval) {
             self.interval = AggregationParamsService.IntervalType(rawValue: intrvlType) ?? .unKnown
