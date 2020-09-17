@@ -59,10 +59,11 @@ public class VizDataParamsBase {
               
                 let dateLength: Int = (value.count - 1) / 2
               
-                let dateIndex = value.index(value.startIndex, offsetBy: dateLength)
-                let fromDate = value[..<dateIndex]
+                let fromDateIndex = value.index(value.startIndex, offsetBy: dateLength)
+                let fromDate = value[..<fromDateIndex]
                 
-                let toDate = value[dateIndex...]
+                let toDateIndex = value.index(value.startIndex, offsetBy: dateLength+1)
+                let toDate = value[toDateIndex...]
                 let filterDict = [ "\(filterField)" : ["gte" : fromDate, "lt": toDate]]
                 return ["range": filterDict]
             }
