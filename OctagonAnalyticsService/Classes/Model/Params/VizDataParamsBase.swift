@@ -51,6 +51,22 @@ public class VizDataParamsBase {
                 let filterDict = [ "\(filterField)" : ["gte" : from, "lt": to]]
                 return ["range": filterDict]
             }
+        
+        case "date_range":
+            
+            if let filterField = filterObj["filterField"] as? String,
+                let value = filterObj["filterValue"] as? String {
+              
+                let dateLength: Int = (value.count - 1) / 2
+              
+                let fromDateIndex = value.index(value.startIndex, offsetBy: dateLength)
+                let fromDate = value[..<fromDateIndex]
+                
+                let toDateIndex = value.index(value.startIndex, offsetBy: dateLength+1)
+                let toDate = value[toDateIndex...]
+                let filterDict = [ "\(filterField)" : ["gte" : fromDate, "lt": toDate]]
+                return ["range": filterDict]
+            }
 
         case "date_histogram":
             if let filterField = filterObj["filterField"] as? String,
