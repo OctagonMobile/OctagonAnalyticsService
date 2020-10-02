@@ -14,7 +14,7 @@ public class LoginResponse {
  
     init(_ responseModel: LoginResponseBase) {
         self.userName = responseModel.userName
-        self.isDemoUser = responseModel.isDemoUser
+        self.isDemoUser = responseModel.isDemoUser ?? false
     }
 }
 
@@ -22,7 +22,7 @@ public class LoginResponse {
 class LoginResponseBase: Decodable {
     
     var userName: String
-    var isDemoUser: Bool
+    var isDemoUser: Bool?
 
     private enum CodingKeys: String, CodingKey {
         case userName   =   "username"
@@ -37,7 +37,7 @@ class LoginResponseBase: Decodable {
         let tenantsContainer = try container.nestedContainer(keyedBy: CodingKeys.NestedCodingKeys.self, forKey: .tenants)
 
         self.userName   = try container.decode(String.self, forKey: .userName)
-        self.isDemoUser = try tenantsContainer.decode(Bool.self, forKey: .isDemoUser)
+        self.isDemoUser = try? tenantsContainer.decode(Bool.self, forKey: .isDemoUser)
     }
     
     func asUIModel() -> LoginResponse {
@@ -47,8 +47,8 @@ class LoginResponseBase: Decodable {
 
 //MARK: Version - 7.3.2
 class LoginResponse732: LoginResponseBase {
-    var isGlobalTenant: Bool
-    var isAdminTenant: Bool
+    var isGlobalTenant: Bool?
+    var isAdminTenant: Bool?
     
     private enum CodingKeys: String, CodingKey {
         case tenants    =   "tenants"
@@ -62,8 +62,8 @@ class LoginResponse732: LoginResponseBase {
         let container   = try decoder.container(keyedBy: CodingKeys.self)
         let tenantsContainer = try container.nestedContainer(keyedBy: CodingKeys.NestedCodingKeys.self, forKey: .tenants)
 
-        self.isGlobalTenant = try tenantsContainer.decode(Bool.self, forKey: .isGlobalTenant)
-        self.isAdminTenant = try tenantsContainer.decode(Bool.self, forKey: .isAdminTenant)
+        self.isGlobalTenant = try? tenantsContainer.decode(Bool.self, forKey: .isGlobalTenant)
+        self.isAdminTenant = try? tenantsContainer.decode(Bool.self, forKey: .isAdminTenant)
         try super.init(from: decoder)
     }
 }
